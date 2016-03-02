@@ -4,11 +4,13 @@ This repository contains R functions to facilitate work at the [Sheffield Clinic
 
 ## Installation
 
-If all you want to do is use these functions then its pretty straight-forward to install them thanks to the `[devtools](https://cran.r-project.org/web/packages/devtools/index.html)` package.  Install it from CRAN and then install this repository...
+If all you want to do is use these functions then its pretty straight-forward to install them thanks to the `[devtools](https://cran.r-project.org/web/packages/devtools/index.html)` package.  Install it from CRAN and then install this repository from GitHub...
 
 ```
 install.packages('devtools')
 devtools::install_github('ns-ctru/ctru')
+## And of course load the library
+library(ctru)
 ```
 
 You can now use the functions `read_prospect()`, fields_prospect()` and so forth.
