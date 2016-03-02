@@ -16,3 +16,11 @@ You can now use the functions `read_prospect()`, fields_prospect()` and so forth
 ## Collaborating
 
 To collaborate in this work you will need to install [Git](https://git-scm.com) on your computer and have a [GitHub account](https://www.github.com/join).  If you're not familiar with either of these you may find the tutorial [Conversational Git](http://blog.anvard.org/conversational-git/) a useful place to start.
+
+### Cloning
+
+Once you've got a GitHub account you need to [clone](https://git-scm.com/docs/git-clone) this repository or make [pull requests](https://git-scm.com/docs/git-pull).
+
+### SSH Keys
+
+I would advocate using [SSH Keys](https://help.github.com/articles/generating-an-ssh-key/) with your GitHub account to make it easy to push updates without having to enter your password.
