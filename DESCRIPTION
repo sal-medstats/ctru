@@ -1,0 +1,22 @@
+Package: ctru
+Title: Working with data at Sheffield Clinical Trials Research Unit
+Version: 0.0.0.9000
+Authors@R: person("Neil", "Shephard", email = "n.shephard@sheffield.ac.uk", role = c("aut", "cre"))
+Description: The functions contained within this package simplify some of the repetitive tasks common to most studies carried out in the Clinical Trials Research Unit in the School of Health and Related Research (ScHARR) at the University of Sheffield.  Because all studies utilise the 'bespoke' database Prospect the structure of data exported from Prospect (dumps of simple ASCII text-files of the underlying tables in the relational database) whilst unique to each study have common features.  Similarly much of the analyses have common features such as performing Intention To Treat (ITT) and Per-Protocol (PP) analyses which will invariably need to be presented side-by-side for comparisson.  The functions in this package are an attempt to abstract and simplify such common tasks with a view to sharing code and reducing the amount of time and effort spent working in isolation.
+Depends: R (>= 3.2.3),
+	 dplyr(>= 0.4.1),
+	 ggplot2 (>= 1.0.1),
+	 haven (>= 0.2.0),
+	 Hmisc (>= 3.17-1),
+	 knitr (>= 1.11),
+	 lubridate (>= 1.5.0),
+	 magrittr (>= 1.5),
+         reshape2 (>= 1.4.1),
+         stargazer(>= 5.1),
+	 stringr (>= 1.0-1),
+         texreg (>= 1.35),
+         tidyr (>= 0.3.1),
+         xtable (>= 1.7-4)
+
+License: GPL-2
+LazyData: true
