@@ -121,6 +121,7 @@ You need to install the `devtools` package which will make writing packages and 
 install.packages('devtools')
 ```
 
+
 ### Initialise a package
 
 `devtools` has a number of functions to facilitate making a package, the first you will use is `devtools::create()` which takes one simple argument, the name of the package.
@@ -133,3 +134,35 @@ drwxr-xr-x 1 you you 4096 Mar  3 16:45 man
 drwxr-xr-x 1 you you 4096 Mar  3 16:45 R
 ```
 
+You should now edit `DESCRIPTION` filling in the fields with the appropriate values and writing an informative description.  Its recommended to lazy load the data, and it is recommended to apply a copy-left license such as the [GPL-2](http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html) or [GPL-3](http://www.gnu.org/licenses/gpl-3.0.en.html) to your work so that others may freely use it (that is the intention of this work, to share it with others).
+
+#### Include `ctru` and other packages as dependencies
+
+Traditionally you might be used to writing R-scripts that at the start have a series of libraries loaded using `library()` this works for scripts but not for packages.  Instead you should list any package that yours depends on in the `DESCRIPTION` file under the `Depends:` section.  This means that when someone installs your package if a dependency is not present it will also be installed (similarly if you install this `ctru` package and do not have its dependencies installed they will be installed for you automatically).
+
+At a bare minimum your Depends should read...
+
+```{r}
+Depends:
+    R (>= 3.2.3),
+    ctru (>= 0.0.0.9)
+```
+
+...but there are a large number of useful packages that you might commonly use so its worth including them.
+
+```{r}
+Depends:
+    R (>= 3.2.3),
+    ctru (>= 0.0.0.9),
+    dplyr (>= 0.4.1),
+    ggplot2 (>= 1.0.1),
+    knitr (>= 1.11),
+    lubridate (>= 1.5.0),
+    magrittr (>= 1.5),
+    reshape2 (),
+    stargazer(>= 5.1),
+    stringr (>= 1.0.0),
+    texreg (>= 1.35),
+    tidyr (>= 0.3.1),
+    xtable (>= 1.7-4)
+```
