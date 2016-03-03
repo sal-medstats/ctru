@@ -1,0 +1,84 @@
+---
+title: "CTRU R Functions"
+author: "n.shephard@sheffield.ac.uk"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{CTRU R Functions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+[Sheffield Clinical Trials Research Unit]() conducts clinical trials of different medical and therapeautic interventions.  The Standard Operating Procedures (SOPs) state that work should be conducted in a reproducible manner to which end software such as [R](https://www.r-project.org) or [Stata](https://www.stata.com/).  Many of the tasks involved in performing the statistical analysis are common across the studies conducted, for example the bespoke database system [Prospect](https://www.ctru-prospect.shef.ac.uk/) is used to store all data for which the CTRU has data management responsibilities and any subsequent data analysis will use the data exported from the tables of the database to ASCII text files.  This means there is scope for streamlining the work flow by writing generalised functions to perform the tasks that are common across studies such as reading in files exported from Prospect and formatting factor variables and converting dates and that is the premise of the `ctru` package this vignette describes.
+
+## Data Import
+
+The starting point of any statistical analysis involves exporting the data from [Prospect](https://www.ctru-prospect.shef.ac.uk/) and importing it into R.
+
+### Exporting from Prospect
+
+Prospect provides some flexibility/options when exporting data such as whether numerical values should be exported for factor variables, including row numbers and formats for Boolean operators.  Whilst you are free to choose these options the following are suggested...
+
+| Option                                                | Choice                      | Explanation                                |
+|:------------------------------------------------------|:---------------------------:|:-------------------------------------------|
+| Use numerical values for lookup lists                 | Yes                         | Export factor variables as numbers         |
+| Include time/user stamps                              | No                          | Irrelevant to statistical analysis         |
+| Include site column in events/forms/subforms          | Yes                         | Useful to have site information in all files|
+| Include group column in events/forms/subforms         | Yes                         | Useful to have allocation in all files     |
+| Include the row number of the subform                 | No                          | Irrelevant to statistical analysis         |
+| Include verified column in forms/subforms             | No                          | Irrelevant to statistical analysis         |
+| Remove line breaks                                    | Yes                         |                                            |
+| Convert numeric string fields to Excel-friendly format| No                          | Not using Excel so irrelevant              |
+| Include database IDs                                  | No                          | Irrelevant to statistical analysis         |
+| Export blank strings as ""                            | Yes                         | Ensures blank strings are blank            |
+| Date format						| yyyy-mm-dd                  | Conforms to ISO8601                        |
+| Boolean format                                        | 1 = Ticked; 0 = Not ticked  | Ensures missing are blank                  |
+| File format                                           | CSV                         | Output to ASCII text                       |
+| Newline character                                     | CR+LF (\n\r)                | Universal carriage returns                 |
+| Sites                                                 | All                         | Ensures data from all sites                |
+| Study Data                                            | All                         | Exports all data                           |
+
+The export will also include the file `Lookups.csv` and it is this file along with two other files extracted from the database specification that are used to facilitate importing and labelling data.
+
+### Database Specification
+
+Each database setup in Prospect has a matching *Data Specification* which is usually a Google Spreadsheet owned by a member of the Data Management Team and shared with the statistician.  Within these are two key worksheets `Fields` and `Forms` which describe all of the fields in the database and each of the tables (each table corresponds to a specific Case Report Form, hence the name `Forms`).
+
+You should export both of these worksheets as ASCII CSV and save them in the same directory as the other files you have extracted from Prospect.  You will need to have *Edit* permission on the spreadsheet in order to be able to perform such an export.  If you do not have such permissions then request them from the document owner.
+
+### Importing to R
+
+You should now extract all files contained in the `.zip` that Prospect exported as well as `Fields.csv` and `Forms.csv` you saved from the Database Specification Googlesheet into the same directory.  This will include `Lookups.csv` which is the first file to be processed since it contains the dictionary for mapping encoded, numeric factor variables to their text description.  Start by processing it with `read_prospect()`
+
+```{r}
+## Create a list to store all objects in
+master <- list()
+## Read in the 'Lookups.csv' to this list
+master$data.dictionary <- read_prospect(file       = 'Lookups.csv',
+                                        header     = TRUE,
+					sep        = ',',
+					dictionary = NULL)
+```
+
+You now have the dictionary loaded into R that the `read_prospect()` function can subsequently use to encode factor variables.
+
+```{r}
+## Read in EQ5D data
+master$eq5d <- read_prospect(file       = 'EQ-5D-5L.csv'
+                             header     = TRUE,
+                             sep        = ',',
+                             dictionary = master$data.dictionary)
+## Read in Blood sample data
+master$blood.sample <- read_prospect(file       = 'Blood sample.csv'
+                                     header     = TRUE,
+                                     sep        = ',',
+                                     dictionary = master$data.dictionary)
+```
+
+## Common Summaries
+
+Every study screens and recruits individuals, often at multiple centers, to the study.  Details of screening and recruitment are recorded and it is usefl to include such information in the Statistical Analysis Report.
+
+
+
+
