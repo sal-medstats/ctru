@@ -71,11 +71,11 @@ read_prospect <- function(file            = 'Lookups.csv',
     if(convert.dates == TRUE){
         ## Convert 'dt' variables
         for(x in grep('dt', colnames(new))){
-            new[,x] <- ymd(new[,x])
+            new[[x]] <- ymd(new[[x]])
         }
         ## Convert 'date' variables
         for(x in grep('date', colnames(new))){
-            new[,x] <- ymd(new[,x])
+            new[[x]] <- ymd(new[[x]])
         }
     }
     ## Convert factors
