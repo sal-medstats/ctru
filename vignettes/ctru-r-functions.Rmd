@@ -64,21 +64,72 @@ You now have the dictionary loaded into R that the `read_prospect()` function ca
 
 ```{r}
 ## Read in EQ5D data
-master$eq5d <- read_prospect(file       = 'EQ-5D-5L.csv'
-                             header     = TRUE,
-                             sep        = ',',
-                             dictionary = master$data.dictionary)
+master$eq5d <- read_prospect(file          = 'EQ-5D-5L.csv'
+                             header        = TRUE,
+                             sep           = ',',
+			     convert.dates = TRUE,
+                             dictionary    = master$data.dictionary)
 ## Read in Blood sample data
-master$blood.sample <- read_prospect(file       = 'Blood sample.csv'
-                                     header     = TRUE,
-                                     sep        = ',',
-                                     dictionary = master$data.dictionary)
+master$blood.sample <- read_prospect(file          = 'Blood sample.csv'
+                                     header        = TRUE,
+                                     sep           = ',',
+				     convert.dates = TRUE,
+                                     dictionary    = master$data.dictionary)
 ```
 
-## Common Summaries
+You can simplify this even further and reduce the time spent on reading your files in by utilising `lapply()` to work through a list of files in a given directory and have it apply `read_prospect()` to each file and return the results as a list...
+
+**NB** The following has not been tested.
+
+```{r}
+## Read in all files in the current directory
+master <- lapply(x = list.files("."),
+                 read_prospect(file          = x,
+		               header        = TRUE,
+			       sep           = ',',
+			       convert.dates = TRUE,
+			       dictionary    = master$data.dictionary))
+```
+
+
+## Common Summaries & Analyses
+
+
+### Screening and Randomisation
 
 Every study screens and recruits individuals, often at multiple centers, to the study.  Details of screening and recruitment are recorded and it is usefl to include such information in the Statistical Analysis Report.
 
+** ToDo ** Write how to use this function.
 
+### Regression Modelling
 
+A large number of studies assess the efficacy of an intervention by means of a regression model that allows the estimation of the effect an intervention has on the desired outcome whilst adjusting for co-variates and clustering (if a clustered study design is being utilised).  Invariably most analyses will be repeated twice, once using an Intention To Treat (ITT) cohort and once using a Per-Protocol (PP) cohort and it is natural to present the results of both simultaneously.  the `regress_ctru()` function is a wrapper that achieves this allowing arbitrary regression equations to be specified for a range of regression modelling functions.  It saves and returns the results of each model fit as well as combining them into formatted tables (LaTeX/HTML/ASCII) using the [Stargazer]() package.
+
+** ToDo ** Write how to use this function.
+
+## Writing Packages
+
+A useful approach to working on a given project is to write an R package which contains all functions specific to your study.  This makes the statistical analysis self-contained as the package should include the data itself, the functions written to manipulate and analyse them and a literate method of collating all results into a document such as a PDF (using [Knitr](http://yihui.name/knitr/)) or website (using [Shiny](http://shiny.rstudio.com/))
+
+The single best resource you can read to learn how to write R packages is Hadley Wickhams book *R packages* which is available [on-line for free](http://r-pkgs.had.co.nz/).
+
+### Install requirements
+
+You need to install the `devtools` package which will make writing packages and documenting them a *lot* easier.
+
+```{r}
+install.packages('devtools')
+```
+
+### Initialise a package
+
+`devtools` has a number of functions to facilitate making a package, the first you will use is `devtools::create()` which takes one simple argument, the name of the package.
+
+```{r}
+devtools::create('my_package')
+system('ls -l my_package')
+-rw-r--r-- 1 you you  123 Mar  3 16:45 DESCRIPTION
+drwxr-xr-x 1 you you 4096 Mar  3 16:45 man
+drwxr-xr-x 1 you you 4096 Mar  3 16:45 R
+```
 
