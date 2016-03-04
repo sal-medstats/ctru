@@ -27,10 +27,10 @@
 #' @examples
 #'
 #' @export
-regress_ctru <- function(df          = ,
+regress_ctru <- function(df          = test,
                          pp          = 'pp',
                          outcome     = 'outcome',
-                         predictors  = c('age', 'gender', 'allocation',
+                         predictors  = c('age', 'gender', 'allocation'),
                          cluster     = NA,
                          regress     = 'lm',
                          link        = 'binomial',
@@ -75,4 +75,5 @@ regress_ctru <- function(df          = ,
     if(ascii == TRUE){
         
     }
+    return(results)
 }
