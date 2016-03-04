@@ -13,7 +13,7 @@ devtools::install_github('ns-ctru/ctru')
 library(ctru)
 ```
 
-You can now use the functions `read_prospect()`, fields_prospect()` and so forth.
+You can now use the functions `read_prospect()`, `fields_prospect()` and so forth.
 
 ## Collaborating
 
