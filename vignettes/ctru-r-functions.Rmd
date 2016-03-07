@@ -81,7 +81,7 @@ You can simplify this even further and reduce the time spent on reading your fil
 
 **NB** The following has not been tested.
 
-```{r}
+```
 ## Read in all files in the current directory
 master <- lapply(x = list.files("."),
                  read_prospect(file          = x,
@@ -117,7 +117,7 @@ The single best resource you can read to learn how to write R packages is Hadley
 
 You need to install the `devtools` package which will make writing packages and documenting them a *lot* easier.
 
-```{r}
+```
 install.packages('devtools')
 ```
 
@@ -126,7 +126,7 @@ install.packages('devtools')
 
 `devtools` has a number of functions to facilitate making a package, the first you will use is `devtools::create()` which takes one simple argument, the name of the package.
 
-```{r}
+```
 devtools::create('my_package')
 system('ls -l my_package')
 -rw-r--r-- 1 you you  123 Mar  3 16:45 DESCRIPTION
@@ -142,7 +142,7 @@ Traditionally you might be used to writing R-scripts that at the start have a se
 
 At a bare minimum your Depends should read...
 
-```{r}
+```
 Depends:
     R (>= 3.2.3),
     ctru (>= 0.0.0.9)
@@ -150,7 +150,7 @@ Depends:
 
 ...but there are a large number of useful packages that you might commonly use so its worth including them.
 
-```{r}
+```
 Depends:
     R (>= 3.2.3),
     ctru (>= 0.0.0.9),
