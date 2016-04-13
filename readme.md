@@ -34,3 +34,11 @@ I would advocate using [SSH Keys](https://help.github.com/articles/generating-an
 
 * Function to download 'Fields' and 'Froms' tabs from DM Googlesheets using either [googlesheets](https://cran.r-project.org/web/packages/googlesheets/index.html) or [gsheet](https://cran.r-project.org/web/packages/gsheet/index.html).
 * Function for calculating EQ5D-5L (supposedly due to be added to Prospect but not clear when, see [slide 40 and 41](http://www.slideshare.net/OHENews/ohe-seminar-5ll-value-set-oct2014-revised-jun15)).  Could possibly have it summarise and plot scores by user-specified variable (default being the event and the group)
+
+### Features of Functions
+
+#### `regress_ctru()`
+
+* Include options to set the reference level (via `relevel()`)for each factor variable in a model (something akin to the way `texreg()` handles things).
+* Include ability to bootstrap regression results, particularly important for mixed models where p-values are unreliable due to uncertainty in the degrees of freedom.  Some leverage to do this via `texreg()` but `stargazer()` is a more flexible tabulating option.
+* Include all results from ITT/PP models, coefficients and CIs, p-values as part fo the returned list which can then be parsed for inclusion in text.
