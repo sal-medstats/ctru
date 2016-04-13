@@ -12,10 +12,10 @@
 #' all subsequent files.
 #'
 #' 
-#' @param file File to read in
-#' @param header Header option (default \code{TRUE} shouldn't need changing)
-#' @param sep Seperator used (default \code{,} (comma) shouldn't need changing)
-#' @param dates A list of character strings to use as regular expressions to identify date
+#' @param file File to read in.
+#' @param header Header option (default \code{TRUE} shouldn't need changing).
+#' @param sep Seperator used (default \code{,} (comma) shouldn't need changing).
+#' @param dates A list of character strings to use as regular expressions to identify date.
 #'              variables that need converting from character to string.
 #' @param dictionary Dictionary object.
 #'
@@ -52,7 +52,8 @@ read_prospect <- function(file            = 'Lookups.csv',
                           header          = TRUE,
                           sep             = ',',
                           convert.dates   = TRUE,
-                          dictionary      = data.dictionary){
+                          dictionary      = data.dictionary,
+                          ...){
     # Read in the file
     new <- read.csv(file     = file,
                     header   = header,

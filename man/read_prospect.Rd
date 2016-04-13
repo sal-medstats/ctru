@@ -5,18 +5,18 @@
 \title{Read Prospect Exports}
 \usage{
 read_prospect(file = "Lookups.csv", header = TRUE, sep = ",",
-  convert.dates = TRUE, dictionary = data.dictionary)
+  convert.dates = TRUE, dictionary = data.dictionary, ...)
 }
 \arguments{
-\item{file}{File to read in}
+\item{file}{File to read in.}
 
-\item{header}{Header option (default \code{TRUE} shouldn't need changing)}
+\item{header}{Header option (default \code{TRUE} shouldn't need changing).}
 
-\item{sep}{Seperator used (default \code{,} (comma) shouldn't need changing)}
+\item{sep}{Seperator used (default \code{,} (comma) shouldn't need changing).}
 
 \item{dictionary}{Dictionary object.}
 
-\item{dates}{A list of character strings to use as regular expressions to identify date
+\item{dates}{A list of character strings to use as regular expressions to identify date.
 variables that need converting from character to string.}
 }
 \value{

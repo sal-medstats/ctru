@@ -50,7 +50,7 @@ You should export both of these worksheets as ASCII CSV and save them in the sam
 
 You should now extract all files contained in the `.zip` that Prospect exported as well as `Fields.csv` and `Forms.csv` you saved from the Database Specification Googlesheet into the same directory.  This will include `Lookups.csv` which is the first file to be processed since it contains the dictionary for mapping encoded, numeric factor variables to their text description.  Start by processing it with `read_prospect()`
 
-```{r}
+```
 ## Create a list to store all objects in
 master <- list()
 ## Read in the 'Lookups.csv' to this list
@@ -62,7 +62,7 @@ master$data.dictionary <- read_prospect(file       = 'Lookups.csv',
 
 You now have the dictionary loaded into R that the `read_prospect()` function can subsequently use to encode factor variables.
 
-```{r}
+```
 ## Read in EQ5D data
 master$eq5d <- read_prospect(file          = 'EQ-5D-5L.csv'
                              header        = TRUE,
