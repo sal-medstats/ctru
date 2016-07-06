@@ -3,15 +3,18 @@
 #' @description Read in the raw CSV files exported from Prospect.
 #'
 #' @details
-#' Case Report Forms are stored in the Prospect Database (https://www.ctru-prospect.shef.ac.uk/)
-#' and are exported as CSV files.  These need reading into R for linking because the relational
-#' structure that exists within Prospect is lost on export prior to analysis.
+#' Data collected on Case Report Forms are stored in the Prospect Database
+#' (https://www.ctru-prospect.shef.ac.uk/) and are exported as CSV files, one for
+#' each table in the datatbase.  These need reading into R for linking because
+#' the relational structure that exists within Prospect is lost on export prior
+#' to analysis.  Many of the fields are factor variables and need encoding.  This
+#' function facilitates that process.
 #'
 #' When using this function the _first_ file that should be converted is 'Lookups.csv' as this
 #' is the dictionary file that can be used to automatically encode all factor variables across
 #' all subsequent files.
 #'
-#' 
+#'
 #' @param file File to read in.
 #' @param header Header option (default \code{TRUE} shouldn't need changing).
 #' @param sep Seperator used (default \code{,} (comma) shouldn't need changing).
@@ -46,7 +49,7 @@
 #'                                 sep           = ',',
 #'                                 convert.dates = TRUE,
 #'                                 dictionary    = data.dictionary)
-#' 
+#'
 #' @export
 read_prospect <- function(file            = 'Lookups.csv',
                           header          = TRUE,
