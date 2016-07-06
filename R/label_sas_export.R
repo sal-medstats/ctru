@@ -38,16 +38,14 @@
 #'                                  convert.dates = FALSE,
 #'                                  dictionary    = NULL)
 #'
+#' ## Read the SAS data file e.g. using haven
+#' my.df <- read_sas(file = 'my.df.sas7bdat')
+#'
 #' ## Now use the data dictionary to encode factor variables and convert dates
-#' screening <- label_sas_export(df            = 'Screening.csv',
+#' screening <- label_sas_export(df            = my.df,
 #'                               convert.dates = TRUE,
 #'                               dictionary    = data.dictionary)
 #'
-#' ## You can use lapply() to read in all files in a given directory
-#' lapply(x        = list.files(pattern = ".csv"),
-#'        function = read_prospect(df            = x,
-#'                                 convert.dates = TRUE,
-#'                                 dictionary    = data.dictionary)
 #'
 #' @export
 label_sas_export <- function(df              = data,
