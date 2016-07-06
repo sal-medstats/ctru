@@ -47,7 +47,6 @@
 #'                               dictionary    = data.dictionary)
 #'
 #'
-#' @export
 label_sas_export <- function(df              = data,
                              convert.dates   = TRUE,
                              dictionary      = data.dictionary,
