@@ -3,9 +3,9 @@
 #' @description Derive EQ5D scores from the individual responses
 #'
 #' @details
-#' 
 #'
-#' 
+#'
+#'
 #' @param df Data frame containing EQ5D data.
 #' @param dimensions Number of dimensions to the EQ5D data (invariably 5 but included in case older versions are to be used)
 #' @param levels Number of levels in responses, older versions of EQ5D used 3, newer 5.
@@ -55,9 +55,9 @@ eq5d_score<- function(df                = test,
                                    "I have moderate problems washing or dressing myself",
                                    "I have severe problems washing or dressing myself",
                                    "I am unable to wash or dress myself")
-        } 
+        }
         else if(length(mobility.response) != 5){
-            print('Error : mobility.response is not of length 5')  
+            print('Error : mobility.response is not of length 5')
         }
         if(is.na(self.response)){
             self.response <- c("I have no problems in walking about",
@@ -88,7 +88,7 @@ eq5d_score<- function(df                = test,
         }
         else if(length(pain.response)     != 5){
             print('Error : pain.response is not of length 5')
-        } 
+        }
         if(is.na(anxiety.response)){
             anxiety.response <- c("I am not anxious or depressed",
                                   "I am slightly anxious or depressed",
@@ -97,37 +97,41 @@ eq5d_score<- function(df                = test,
                                   "I am extremely anxious or depressed" )
         }
         else if(length(anxiety.response)  != 5){
-            print('Error : anxiety.response is not of length 5')  
-        } 
+            print('Error : anxiety.response is not of length 5')
+        }
         ## Calculate the score
-        ## ToDo - Use custom responses
         df <- within(df, {
                      eq5d <- 1.003
-                     eq5d[!is.na(pain) & pain == pain.response[2]]             <- eq5d - 0.059
-                     eq5d[!is.na(pain) & pain == pain.repsonse[3]]             <- eq5d - 0.099
-                     eq5d[!is.na(pain) & pain == pain.response[4]]             <- eq5d - 0.245
-                     eq5d[!is.na(pain) & pain == pain.response[5]]             <- eq5d - 0.298
-                     eq5d[!is.na(self) & self == self.response[2]]             <- eq5d - 0.058
-                     eq5d[!is.na(self) & self == self.response[3]]             <- eq5d - 0.083
-                     eq5d[!is.na(self) & self == self.response[4]]             <- eq5d - 0.176
-                     eq5d[!is.na(self) & self == self.response[5]]             <- eq5d - 0.208
-                     eq5d[!is.na(activity) & activity == activity.repsonse[2]] <- eq5d - 0.048
-                     eq5d[!is.na(activity) & activity == activity.repsonse[3]] <- eq5d - 0.067
-                     eq5d[!is.na(activity) & activity == activity.repsonse[4]] <- eq5d - 0.165
-                     eq5d[!is.na(activity) & activity == activity.repsonse[5]] <- eq5d - 0.165
-                     eq5d[!is.na(mobility) & mobility == mobility.response[2]] <- eq5d - 0.057
-                     eq5d[!is.na(mobility) & mobility == mobility.response[3]] <- eq5d - 0.075
-                     eq5d[!is.na(mobility) & mobility == mobility.response[4]] <- eq5d - 0.208
-                     eq5d[!is.na(mobility) & mobility == mobility.response[5]] <- eq5d - 0.255
-                     eq5d[!is.na(anxiety) & anxiety == anxiety.response[2]]    <- eq5d - 0.073
-                     eq5d[!is.na(anxiety) & anxiety == anxiety.response[3]]    <- eq5d - 0.099
-                     eq5d[!is.na(anxiety) & anxiety == anxiety.response[4]]    <- eq5d - 0.282
-                     eq5d[!is.na(anxiety) & anxiety == anxiety.response[5]]    <- eq5d - 0.282
-                     eq5d[!is.na(pain) & pain         == pain.response[1] &
-                          !is.na(self) & self         == self.response[1] &
-                          !is.na(activity) & activity == activity.repsonse[1] &
-                          !is.na(mobility) & mobility == mobility.response[1] &
-                          !is.na(anxiety) & anxiety   == anxiety.response[1]] <- 1    
+                     eq5d[pain == pain.response[2]]         <- eq5d[pain == pain.response[2]] - 0.059
+                     eq5d[pain == pain.repsonse[3]]         <- eq5d[pain == pain.response[3]] - 0.099
+                     eq5d[pain == pain.response[4]]         <- eq5d[pain == pain.response[4]] - 0.245
+                     eq5d[pain == pain.response[5]]         <- eq5d[pain == pain.response[5]] - 0.298
+                     eq5d[self == self.response[2]]         <- eq5d[self == self.response[2]] - 0.058
+                     eq5d[self == self.response[3]]         <- eq5d[self == self.response[3]] - 0.083
+                     eq5d[self == self.response[4]]         <- eq5d[self == self.response[4]] - 0.176
+                     eq5d[self == self.response[5]]         <- eq5d[self == self.response[5]] - 0.208
+                     eq5d[activity == activity.repsonse[2]] <- eq5d[activity == activity.repsonse[2]] - 0.048
+                     eq5d[activity == activity.repsonse[3]] <- eq5d[activity == activity.repsonse[3]] - 0.067
+                     eq5d[activity == activity.repsonse[4]] <- eq5d[activity == activity.repsonse[4]] - 0.165
+                     eq5d[activity == activity.repsonse[5]] <- eq5d[activity == activity.repsonse[5]] - 0.165
+                     eq5d[mobility == mobility.response[2]] <- eq5d[activity == mobility.repsonse[2]] - 0.057
+                     eq5d[mobility == mobility.response[3]] <- eq5d[activity == mobility.repsonse[3]] - 0.075
+                     eq5d[mobility == mobility.response[4]] <- eq5d[activity == mobility.repsonse[4]] - 0.208
+                     eq5d[mobility == mobility.response[5]] <- eq5d[activity == mobility.repsonse[5]] - 0.255
+                     eq5d[anxiety == anxiety.response[2]]   <- eq5d[anxiety == anxiety.response[2]] - 0.073
+                     eq5d[anxiety == anxiety.response[3]]   <- eq5d[anxiety == anxiety.response[3]] - 0.099
+                     eq5d[anxiety == anxiety.response[4]]   <- eq5d[anxiety == anxiety.response[4]] - 0.282
+                     eq5d[anxiety == anxiety.response[5]]   <- eq5d[anxiety == anxiety.response[5]] - 0.282
+                     eq5d[pain     == pain.response[1] &
+                          self     == self.response[1] &
+                          activity == activity.repsonse[1] &
+                          mobility == mobility.response[1] &
+                          anxiety  == anxiety.response[1]] <- 1
+                     eq5d[is.na(pain) |
+                          is.na(self) |
+                          is.na(activity) |
+                          is.na(mobility) |
+                          is.na(anxiety)] <- NA
 
         })
     }
