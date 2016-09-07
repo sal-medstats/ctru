@@ -28,9 +28,9 @@
 #'
 #' @references
 #'
-#' As of writing the scoring for the EQ5D-5L had not been published but is detailed on slides 40-41 of...
+#' EQ-5D-5L scoring is based on the method published at...
 #'
-#' http://www.slideshare.net/OHENews/ohe-seminar-5ll-value-set-oct2014-revised-jun15
+#' https://www.ohe.org/publications/valuing-health-related-quality-life-eq-5d-5l-value-set-england
 #'
 #' @export
 eq5d_score<- function(df                = test,
@@ -102,26 +102,26 @@ eq5d_score<- function(df                = test,
         ## Calculate the score
         df <- within(df, {
                      eq5d <- 1.003
-                     eq5d[pain == pain.response[2]]         <- eq5d[pain == pain.response[2]] - 0.059
-                     eq5d[pain == pain.repsonse[3]]         <- eq5d[pain == pain.response[3]] - 0.099
-                     eq5d[pain == pain.response[4]]         <- eq5d[pain == pain.response[4]] - 0.245
-                     eq5d[pain == pain.response[5]]         <- eq5d[pain == pain.response[5]] - 0.298
-                     eq5d[self == self.response[2]]         <- eq5d[self == self.response[2]] - 0.058
-                     eq5d[self == self.response[3]]         <- eq5d[self == self.response[3]] - 0.083
-                     eq5d[self == self.response[4]]         <- eq5d[self == self.response[4]] - 0.176
-                     eq5d[self == self.response[5]]         <- eq5d[self == self.response[5]] - 0.208
-                     eq5d[activity == activity.repsonse[2]] <- eq5d[activity == activity.repsonse[2]] - 0.048
+                     eq5d[pain == pain.response[2]]         <- eq5d[pain == pain.response[2]] - 0.060
+                     eq5d[pain == pain.repsonse[3]]         <- eq5d[pain == pain.response[3]] - 0.075
+                     eq5d[pain == pain.response[4]]         <- eq5d[pain == pain.response[4]] - 0.276
+                     eq5d[pain == pain.response[5]]         <- eq5d[pain == pain.response[5]] - 0.341
+                     eq5d[self == self.response[2]]         <- eq5d[self == self.response[2]] - 0.057
+                     eq5d[self == self.response[3]]         <- eq5d[self == self.response[3]] - 0.076
+                     eq5d[self == self.response[4]]         <- eq5d[self == self.response[4]] - 0.181
+                     eq5d[self == self.response[5]]         <- eq5d[self == self.response[5]] - 0.217
+                     eq5d[activity == activity.repsonse[2]] <- eq5d[activity == activity.repsonse[2]] - 0.051
                      eq5d[activity == activity.repsonse[3]] <- eq5d[activity == activity.repsonse[3]] - 0.067
-                     eq5d[activity == activity.repsonse[4]] <- eq5d[activity == activity.repsonse[4]] - 0.165
-                     eq5d[activity == activity.repsonse[5]] <- eq5d[activity == activity.repsonse[5]] - 0.165
-                     eq5d[mobility == mobility.response[2]] <- eq5d[activity == mobility.repsonse[2]] - 0.057
-                     eq5d[mobility == mobility.response[3]] <- eq5d[activity == mobility.repsonse[3]] - 0.075
-                     eq5d[mobility == mobility.response[4]] <- eq5d[activity == mobility.repsonse[4]] - 0.208
-                     eq5d[mobility == mobility.response[5]] <- eq5d[activity == mobility.repsonse[5]] - 0.255
-                     eq5d[anxiety == anxiety.response[2]]   <- eq5d[anxiety == anxiety.response[2]] - 0.073
-                     eq5d[anxiety == anxiety.response[3]]   <- eq5d[anxiety == anxiety.response[3]] - 0.099
-                     eq5d[anxiety == anxiety.response[4]]   <- eq5d[anxiety == anxiety.response[4]] - 0.282
-                     eq5d[anxiety == anxiety.response[5]]   <- eq5d[anxiety == anxiety.response[5]] - 0.282
+                     eq5d[activity == activity.repsonse[4]] <- eq5d[activity == activity.repsonse[4]] - 0.174
+                     eq5d[activity == activity.repsonse[5]] <- eq5d[activity == activity.repsonse[5]] - 0.190
+                     eq5d[mobility == mobility.response[2]] <- eq5d[activity == mobility.repsonse[2]] - 0.051
+                     eq5d[mobility == mobility.response[3]] <- eq5d[activity == mobility.repsonse[3]] - 0.063
+                     eq5d[mobility == mobility.response[4]] <- eq5d[activity == mobility.repsonse[4]] - 0.212
+                     eq5d[mobility == mobility.response[5]] <- eq5d[activity == mobility.repsonse[5]] - 0.275
+                     eq5d[anxiety == anxiety.response[2]]   <- eq5d[anxiety == anxiety.response[2]] - 0.079
+                     eq5d[anxiety == anxiety.response[3]]   <- eq5d[anxiety == anxiety.response[3]] - 0.104
+                     eq5d[anxiety == anxiety.response[4]]   <- eq5d[anxiety == anxiety.response[4]] - 0.296
+                     eq5d[anxiety == anxiety.response[5]]   <- eq5d[anxiety == anxiety.response[5]] - 0.301
                      eq5d[pain     == pain.response[1] &
                           self     == self.response[1] &
                           activity == activity.repsonse[1] &
