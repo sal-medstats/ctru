@@ -33,20 +33,20 @@
 #' https://www.ohe.org/publications/valuing-health-related-quality-life-eq-5d-5l-value-set-england
 #'
 #' @export
-eq5d_score<- function(df                = test,
-                      dimensions        = 5,
-                      levels            = 5,
-                      mobility          = 'mobility',
-                      self              = 'self.care',
-                      activity          = 'usual.activity',
-                      pain              = 'pain.discomfort',
-                      anxiety           = 'anxiety.depression',
-                      mobility.repsonse = c('None', 'Slight', 'Moderate', 'Severe', 'Extreme'),
-                      self.repsonse     = c('None', 'Slight', 'Moderate', 'Severe', 'Extreme'),
-                      activity.repsonse = c('None', 'Slight', 'Moderate', 'Severe', 'Extreme'),
-                      pain.repsonse     = c('None', 'Slight', 'Moderate', 'Severe', 'Extreme'),
-                      anxiety.repsonse  = c('None', 'Slight', 'Moderate', 'Severe', 'Extreme'),
-                      ...){
+eq5d_score <- function(df                = test,
+                       dimensions        = 5,
+                       levels            = 5,
+                       mobility          = 'mobility',
+                       self              = 'self.care',
+                       activity          = 'usual.activity',
+                       pain              = 'pain.discomfort',
+                       anxiety           = 'anxiety.depression',
+                       mobility.repsonse = c('None', 'Slight', 'Moderate', 'Severe', 'Extreme'),
+                       self.repsonse     = c('None', 'Slight', 'Moderate', 'Severe', 'Extreme'),
+                       activity.repsonse = c('None', 'Slight', 'Moderate', 'Severe', 'Extreme'),
+                       pain.repsonse     = c('None', 'Slight', 'Moderate', 'Severe', 'Extreme'),
+                       anxiety.repsonse  = c('None', 'Slight', 'Moderate', 'Severe', 'Extreme'),
+                       ...){
     if(dimensions == 5 & levels == 5){
         ## Check if custom responses specified and if so that their lengths are 5
         if(is.na(mobility.response)){
