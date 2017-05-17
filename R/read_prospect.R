@@ -75,6 +75,13 @@ read_prospect <- function(file               = 'Lookups.csv',
                       field <- gsub("_", ".", field)
         })
     }
+    if(!is.null(dictionary)){
+        ## Subset the dictionary, required because sometimes a field name
+        ## is used multiple times across different forms
+        ## TODO - Work out how to handle subforms?
+        dictionary <- dplyr::filter(dictionary,
+                                    form == gsub('\\.csv', '', file))
+    }
     ## Convert specified dates
     if(convert.dates == TRUE){
         ## Convert 'dt' variables
