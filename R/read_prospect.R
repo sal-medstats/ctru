@@ -18,8 +18,8 @@
 #' @param file File to read in.
 #' @param header Header option (default \code{TRUE} shouldn't need changing).
 #' @param sep Seperator used (default \code{,} (comma) shouldn't need changing).
-#' @param dates A list of character strings to use as regular expressions to identify date.
-#'              variables that need converting from character to string.
+#' @param convert.dates Convert dates to internal date format.
+#' @param convert.underscore Optionally convert underscores (\code{_}) in filenames to periods (\code{.}.)
 #' @param dictionary Dictionary object.
 #'
 #' @return Data frame containing the specified file with dates converted to POSIX and factors
@@ -51,22 +51,26 @@
 #'                                 dictionary    = data.dictionary)
 #'
 #' @export
-read_prospect <- function(file            = 'Lookups.csv',
-                          header          = TRUE,
-                          sep             = ',',
-                          convert.dates   = TRUE,
-                          dictionary      = data.dictionary,
+read_prospect <- function(file               = 'Lookups.csv',
+                          header             = TRUE,
+                          sep                = ',',
+                          convert.dates      = TRUE,
+                          convert.underscore = FALSE,
+                          dictionary         = data.dictionary,
                           ...){
     # Read in the file
     new <- read.csv(file     = file,
                     header   = header,
                     sep      = sep)
-    ## Lowercase and convert variable names
-    names(new) <- gsub("_", ".", names(new)) %>%
-                  tolower()
+    ## Lowercase variable names
+    names(new) <- names(new) %>% tolower()
+    ## Optionally replace periods to underscore
+    if(convert.underscore == TRUE){
+        names(new) <- gsub("_", ".", names(new))
+    }
     ## If this is the data dictionary convert '_' in field to '.' so that
     ## we can use it for labelling variables later on
-    if(file == 'Lookups.csv'){
+    if(file == 'Lookups.csv' & convert.underscore == TRUE){
         new <- within(new,{
                       field <- gsub("_", ".", field)
         })
