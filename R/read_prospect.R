@@ -75,9 +75,8 @@ read_prospect <- function(file               = 'Lookups.csv',
     ## If this is the data dictionary convert '_' in field to '.' so that
     ## we can use it for labelling variables later on
     if(file == 'Lookups.csv' & convert.underscore == TRUE){
-        new <- within(new,{
-                      field <- gsub("_", ".", field)
-        })
+        new <- mutate(new,
+                      field = gsub("_", ".", field))
     }
     if(!is.null(dictionary)){
         ## Subset the dictionary, required because sometimes a field name
