@@ -68,6 +68,10 @@ read_prospect <- function(file               = 'Lookups.csv',
     if(convert.underscore == TRUE){
         names(new) <- gsub("_", ".", names(new))
     }
+    ## Replace any periods in names to underscore
+    else{
+        names(new) <- gsub("\\.", "_", names(new))
+    }
     ## If this is the data dictionary convert '_' in field to '.' so that
     ## we can use it for labelling variables later on
     if(file == 'Lookups.csv' & convert.underscore == TRUE){
