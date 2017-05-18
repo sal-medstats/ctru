@@ -19,6 +19,7 @@
 #' @param activity.repsonse List of custom responses for \code{activity} item.
 #' @param pain.repsonse List of custom responses for \code{pain} item.
 #' @param anxiety.repsonse List of custom responses for \code{anxiety} item.
+#' @param shorten Logical indicator of whether to convert supplied responses to shorter \code{None} / \code{Slight} / \code{Moderate} / \code{Severe} / \code{Extreme}.
 #'
 #' @return A list containing the model fit from the ITT analyses (\code{$itt}), the model
 #'         fit from PP analyses (\code{$pp}) and optionally LaTeX (\code{$latex}), HTML
@@ -46,6 +47,7 @@ eq5d_score <- function(df                = test,
                        activity.repsonse = c('None', 'Slight', 'Moderate', 'Severe', 'Extreme'),
                        pain.repsonse     = c('None', 'Slight', 'Moderate', 'Severe', 'Extreme'),
                        anxiety.repsonse  = c('None', 'Slight', 'Moderate', 'Severe', 'Extreme'),
+                       shorten           = FALSE,
                        ...){
     if(dimensions == 5 & levels == 5){
         ## Check if custom responses specified and if so that their lengths are 5
@@ -60,11 +62,11 @@ eq5d_score <- function(df                = test,
             print('Error : mobility.response is not of length 5')
         }
         if(is.na(self.response)){
-            self.response <- c("I have no problems in walking about",
+            self.response <- c("I have no problem in walking about",
                                "I have slight problems in walking about",
                                "I have moderate problems in walking about",
                                "I have severe problems in walking about",
-                               "I am unable to walk about")
+                               "I am unable to walk")
         }
         else if(length(self.response)     != 5){
             print('Error : self.response is not of length 5')
@@ -100,40 +102,88 @@ eq5d_score <- function(df                = test,
             print('Error : anxiety.response is not of length 5')
         }
         ## Calculate the score
-        df <- within(df, {
-                     eq5d <- 1.003
-                     eq5d[pain == pain.response[2]]         <- eq5d[pain == pain.response[2]] - 0.060
-                     eq5d[pain == pain.repsonse[3]]         <- eq5d[pain == pain.response[3]] - 0.075
-                     eq5d[pain == pain.response[4]]         <- eq5d[pain == pain.response[4]] - 0.276
-                     eq5d[pain == pain.response[5]]         <- eq5d[pain == pain.response[5]] - 0.341
-                     eq5d[self == self.response[2]]         <- eq5d[self == self.response[2]] - 0.057
-                     eq5d[self == self.response[3]]         <- eq5d[self == self.response[3]] - 0.076
-                     eq5d[self == self.response[4]]         <- eq5d[self == self.response[4]] - 0.181
-                     eq5d[self == self.response[5]]         <- eq5d[self == self.response[5]] - 0.217
-                     eq5d[activity == activity.repsonse[2]] <- eq5d[activity == activity.repsonse[2]] - 0.051
-                     eq5d[activity == activity.repsonse[3]] <- eq5d[activity == activity.repsonse[3]] - 0.067
-                     eq5d[activity == activity.repsonse[4]] <- eq5d[activity == activity.repsonse[4]] - 0.174
-                     eq5d[activity == activity.repsonse[5]] <- eq5d[activity == activity.repsonse[5]] - 0.190
-                     eq5d[mobility == mobility.response[2]] <- eq5d[activity == mobility.repsonse[2]] - 0.051
-                     eq5d[mobility == mobility.response[3]] <- eq5d[activity == mobility.repsonse[3]] - 0.063
-                     eq5d[mobility == mobility.response[4]] <- eq5d[activity == mobility.repsonse[4]] - 0.212
-                     eq5d[mobility == mobility.response[5]] <- eq5d[activity == mobility.repsonse[5]] - 0.275
-                     eq5d[anxiety == anxiety.response[2]]   <- eq5d[anxiety == anxiety.response[2]] - 0.079
-                     eq5d[anxiety == anxiety.response[3]]   <- eq5d[anxiety == anxiety.response[3]] - 0.104
-                     eq5d[anxiety == anxiety.response[4]]   <- eq5d[anxiety == anxiety.response[4]] - 0.296
-                     eq5d[anxiety == anxiety.response[5]]   <- eq5d[anxiety == anxiety.response[5]] - 0.301
-                     eq5d[pain     == pain.response[1] &
-                          self     == self.response[1] &
-                          activity == activity.repsonse[1] &
-                          mobility == mobility.response[1] &
-                          anxiety  == anxiety.response[1]] <- 1
-                     eq5d[is.na(pain) |
-                          is.na(self) |
-                          is.na(activity) |
-                          is.na(mobility) |
-                          is.na(anxiety)] <- NA
-
-        })
+        df <- df %>%
+              mutate(eq5d <- 1.003,
+                     ## Deduct pain.response
+                     eq5d <- case_when(.$pain == pain.response[1] ~ .$eq5d,
+                                       .$pain == pain.response[2] ~ .$eq5d - 0.060,
+                                       .$pain == pain.response[3] ~ .$eq5d - 0.075,
+                                       .$pain == pain.response[4] ~ .$eq5d - 0.276,
+                                       .$pain == pain.response[5] ~ .$eq5d - 0.341),
+                     ## Deduct self
+                     eq5d <- case_when(.$self == self.response[1] ~ .$eq5d,
+                                       .$self == self.response[2] ~ .$eq5d - 0.057,
+                                       .$self == self.response[3] ~ .$eq5d - 0.076,
+                                       .$self == self.response[4] ~ .$eq5d - 0.181,
+                                       .$self == self.response[5] ~ .$eq5d - 0.217),
+                     ## Deduct activity
+                     eq5d <- case_when(.$activity == activity.response[1] ~ .$eq5d,
+                                       .$activity == activity.response[2] ~ .$eq5d - 0.051,
+                                       .$activity == activity.response[3] ~ .$eq5d - 0.067,
+                                       .$activity == activity.response[4] ~ .$eq5d - 0.174,
+                                       .$activity == activity.response[5] ~ .$eq5d - 0.190),
+                     ## Deduct mobility
+                     eq5d <- case_when(.$mobility == mobility.response[1] ~ .$eq5d,
+                                       .$mobility == mobility.response[2] ~ .$eq5d - 0.051,
+                                       .$mobility == mobility.response[3] ~ .$eq5d - 0.063,
+                                       .$mobility == mobility.response[4] ~ .$eq5d - 0.212,
+                                       .$mobility == mobility.response[5] ~ .$eq5d - 0.275),
+                     ## Deduct anxiety
+                     eq5d <- case_when(.$anxiety == anxiety.response[1] ~ .$eq5d,
+                                       .$anxiety == anxiety.response[2] ~ .$eq5d - 0.079,
+                                       .$anxiety == anxiety.response[3] ~ .$eq5d - 0.104,
+                                       .$anxiety == anxiety.response[4] ~ .$eq5d - 0.296,
+                                       .$anxiety == anxiety.response[5] ~ .$eq5d - 0.301),
+                     ## Set to 1 if all is fine
+                     eq5d <- ifelse(pain     == pain.response[1] &
+                                    self     == self.response[1] &
+                                    activity == activity.repsonse[1] &
+                                    mobility == mobility.response[1] &
+                                    anxiety  == anxiety.response[1],
+                                    yes = 1,
+                                    no  = eq5d),
+                     ## Double check if anything is missing
+                     eq5d <- ifelse(is.na(pain) |
+                                    is.na(self) |
+                                    is.na(activity) |
+                                    is.na(mobility) |
+                                    is.na(anxiety),
+                                    yes = NA,
+                                    no  = eq5d))
+        if(shorten == TRUE){
+            eq5d <- eq5d %>%
+                mutate(pain = recode_factor(pain,
+                                            pain.response[1] = 'None',
+                                            pain.response[2] = 'Slight',
+                                            pain.response[3] = 'Moderate',
+                                            pain.response[4] = 'Severe',
+                                            pain.response[5] = 'Extreme'),
+                       self = recode_factor(self,
+                                            self.response[1] = 'None',
+                                            self.response[2] = 'Slight',
+                                            self.response[3] = 'Moderate',
+                                            self.response[4] = 'Severe',
+                                            self.response[5] = 'Extreme'),
+                       activity = recode_factor(activity,
+                                                activity.response[1] = 'None',
+                                                activity.response[2] = 'Slight',
+                                                activity.response[3] = 'Moderate',
+                                                activity.response[4] = 'Severe',
+                                                activity.response[5] = 'Extreme'),
+                       mobility = recode_factor(mobility,
+                                                mobility.response[1] = 'None',
+                                                mobility.response[2] = 'Slight',
+                                                mobility.response[3] = 'Moderate',
+                                                mobility.response[4] = 'Severe',
+                                                mobility.response[5] = 'Extreme'),
+                       anxiety = recode_factor(anxiety,
+                                               anxiety.response[1] = 'None',
+                                               anxiety.response[2] = 'Slight',
+                                               anxiety.response[3] = 'Moderate',
+                                               anxiety.response[4] = 'Severe',
+                                               anxiety.response[5] = 'Extreme'),
+                       )
+        }
     }
     if(dimensions == 5 & levels == 3){
         ## ToDo - Find scoring method
