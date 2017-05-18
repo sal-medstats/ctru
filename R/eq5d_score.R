@@ -14,11 +14,11 @@
 #' @param activity Variable name in data frame that holds the \code{activity} response.
 #' @param pain Variable name in data frame that holds the \code{pain} response.
 #' @param anxiety Variable name in data frame that holds the \code{anxiety} response.
-#' @param mobility.repsonse List of custom responses for \code{mobility} item.
-#' @param self.repsonse List of custom responses for \code{self} item.
-#' @param activity.repsonse List of custom responses for \code{activity} item.
-#' @param pain.repsonse List of custom responses for \code{pain} item.
-#' @param anxiety.repsonse List of custom responses for \code{anxiety} item.
+#' @param mobility.response List of custom responses for \code{mobility} item.
+#' @param self.response List of custom responses for \code{self} item.
+#' @param activity.response List of custom responses for \code{activity} item.
+#' @param pain.response List of custom responses for \code{pain} item.
+#' @param anxiety.response List of custom responses for \code{anxiety} item.
 #' @param shorten Logical indicator of whether to convert supplied responses to shorter \code{None} / \code{Slight} / \code{Moderate} / \code{Severe} / \code{Extreme}.
 #'
 #' @return A list containing the model fit from the ITT analyses (\code{$itt}), the model
@@ -42,11 +42,11 @@ eq5d_score <- function(df                = test,
                        activity          = 'usual.activity',
                        pain              = 'pain.discomfort',
                        anxiety           = 'anxiety.depression',
-                       mobility.repsonse = c('None', 'Slight', 'Moderate', 'Severe', 'Extreme'),
-                       self.repsonse     = c('None', 'Slight', 'Moderate', 'Severe', 'Extreme'),
-                       activity.repsonse = c('None', 'Slight', 'Moderate', 'Severe', 'Extreme'),
-                       pain.repsonse     = c('None', 'Slight', 'Moderate', 'Severe', 'Extreme'),
-                       anxiety.repsonse  = c('None', 'Slight', 'Moderate', 'Severe', 'Extreme'),
+                       mobility.response = c('None', 'Slight', 'Moderate', 'Severe', 'Extreme'),
+                       self.response     = c('None', 'Slight', 'Moderate', 'Severe', 'Extreme'),
+                       activity.response = c('None', 'Slight', 'Moderate', 'Severe', 'Extreme'),
+                       pain.response     = c('None', 'Slight', 'Moderate', 'Severe', 'Extreme'),
+                       anxiety.response  = c('None', 'Slight', 'Moderate', 'Severe', 'Extreme'),
                        shorten           = FALSE,
                        ...){
     if(dimensions == 5 & levels == 5){
@@ -137,7 +137,7 @@ eq5d_score <- function(df                = test,
                      ## Set to 1 if all is fine
                      eq5d <- ifelse(pain     == pain.response[1] &
                                     self     == self.response[1] &
-                                    activity == activity.repsonse[1] &
+                                    activity == activity.response[1] &
                                     mobility == mobility.response[1] &
                                     anxiety  == anxiety.response[1],
                                     yes = 1,
@@ -153,35 +153,35 @@ eq5d_score <- function(df                = test,
         if(shorten == TRUE){
             eq5d <- eq5d %>%
                 mutate(pain = recode_factor(pain,
-                                            pain.response[1] = 'None',
-                                            pain.response[2] = 'Slight',
-                                            pain.response[3] = 'Moderate',
-                                            pain.response[4] = 'Severe',
-                                            pain.response[5] = 'Extreme'),
+                                            `pain.response[1]` = 'None',
+                                            `pain.response[2]` = 'Slight',
+                                            `pain.response[3]` = 'Moderate',
+                                            `pain.response[4]` = 'Severe',
+                                            `pain.response[5]` = 'Extreme'),
                        self = recode_factor(self,
-                                            self.response[1] = 'None',
-                                            self.response[2] = 'Slight',
-                                            self.response[3] = 'Moderate',
-                                            self.response[4] = 'Severe',
-                                            self.response[5] = 'Extreme'),
+                                            `self.response[1]` = 'None',
+                                            `self.response[2]` = 'Slight',
+                                            `self.response[3]` = 'Moderate',
+                                            `self.response[4]` = 'Severe',
+                                            `self.response[5]` = 'Extreme'),
                        activity = recode_factor(activity,
-                                                activity.response[1] = 'None',
-                                                activity.response[2] = 'Slight',
-                                                activity.response[3] = 'Moderate',
-                                                activity.response[4] = 'Severe',
-                                                activity.response[5] = 'Extreme'),
+                                                `activity.response[1]` = 'None',
+                                                `activity.response[2]` = 'Slight',
+                                                `activity.response[3]` = 'Moderate',
+                                                `activity.response[4]` = 'Severe',
+                                                `activity.response[5]` = 'Extreme'),
                        mobility = recode_factor(mobility,
-                                                mobility.response[1] = 'None',
-                                                mobility.response[2] = 'Slight',
-                                                mobility.response[3] = 'Moderate',
-                                                mobility.response[4] = 'Severe',
-                                                mobility.response[5] = 'Extreme'),
+                                                `mobility.response[1]` = 'None',
+                                                `mobility.response[2]` = 'Slight',
+                                                `mobility.response[3]` = 'Moderate',
+                                                `mobility.response[4]` = 'Severe',
+                                                `mobility.response[5]` = 'Extreme'),
                        anxiety = recode_factor(anxiety,
-                                               anxiety.response[1] = 'None',
-                                               anxiety.response[2] = 'Slight',
-                                               anxiety.response[3] = 'Moderate',
-                                               anxiety.response[4] = 'Severe',
-                                               anxiety.response[5] = 'Extreme'),
+                                               `anxiety.response[1]` = 'None',
+                                               `anxiety.response[2]` = 'Slight',
+                                               `anxiety.response[3]` = 'Moderate',
+                                               `anxiety.response[4]` = 'Severe',
+                                               `anxiety.response[5]` = 'Extreme'),
                        )
         }
     }
