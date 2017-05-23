@@ -95,6 +95,10 @@ read_prospect <- function(file               = 'Lookups.csv',
         for(x in grep('date', colnames(new))){
             new[[x]] <- ymd(new[[x]])
         }
+        ## Convert 'date' variables
+        for(x in grep('dob', colnames(new))){
+            new[[x]] <- ymd(new[[x]])
+        }
     }
     ## Convert factors
     if(!is.null(dictionary)){
