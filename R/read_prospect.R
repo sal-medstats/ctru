@@ -21,6 +21,7 @@
 #' @param convert.dates Convert dates to internal date format.
 #' @param convert.underscore Optionally convert underscores (\code{_}) in filenames to periods (\code{.}.)
 #' @param dictionary Dictionary object.
+#' @param check.duplicates Optionally check for duplicate rows across all variables.
 #'
 #' @return Data frame containing the specified file with dates converted to POSIX and factors
 #'         converted to with labels applied to them.
@@ -57,6 +58,7 @@ read_prospect <- function(file               = 'Lookups.csv',
                           convert.dates      = TRUE,
                           convert.underscore = FALSE,
                           dictionary         = data.dictionary,
+                          check.duplicates   = TRUE,
                           ...){
     # Read in the file
     new <- read.csv(file     = file,
@@ -84,6 +86,13 @@ read_prospect <- function(file               = 'Lookups.csv',
         ## TODO - Work out how to handle subforms?
         dictionary <- dplyr::filter(dictionary,
                                     form == gsub('\\.csv', '', file))
+    }
+    ## Check for duplicates
+    if(check.duplicates == TRUE){
+        if(anyDuplicated(new) > 0){
+            print('Error : There are duplicated rows in this file.')
+            exit
+        }
     }
     ## Convert specified dates
     if(convert.dates == TRUE){
