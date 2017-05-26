@@ -32,7 +32,7 @@ table_summary <- function(df     = .,
           unique()
     ## gather() data, just in case there is > 1 variable selected to be summarised
     df <- df %>%
-        gather(key = variable, value = value, !!quo_select)
+          gather(key = variable, value = value, !!quo_select)
     ## Summarise selected variables by specified groups
     results <- df %>%
                group_by(!!quo_group, variable) %>%
