@@ -43,7 +43,20 @@ I would advocate using [SSH Keys](https://help.github.com/articles/generating-an
 * Include ability to bootstrap regression results, particularly important for mixed models where p-values are unreliable due to uncertainty in the degrees of freedom.  Some leverage to do this via `texreg()` but `stargazer()` is a more flexible tabulating option.
 * Include all results from ITT/PP models, coefficients and CIs, p-values as part fo the returned list which can then be parsed for inclusion in text.
 
-#### `summary_ctru()`
+#### `table_summary()`
 
 * Function to summarise specified measurements by specified subset.
 * N/Mean/SD/Min/Max/Median/IQR reported for specified variables for the specified grouping.
+
+##### ToDo
+
+* Full support for Non-Standard Evaluation when explicitly supplying grouing variables as an argument rather than `...`.
+
+#### `idm_lsoa()`
+
+* Function to combine [Lower Super Output Area (LSOA) level Index of Multiple Deprivation](https://www.gov.uk/government/statistics/english-indices-of-deprivation-2015) statistics with an arbitrary user specified data frame based on 2011 postcode.  Provides the overall IMD score and each component as absolute numbers and deciles as well as the ranking of all scores and components across England.
+
+##### ToDo
+
+* Add in 2010 data.
+* Add in data on LSOAs in Wales.
