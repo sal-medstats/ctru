@@ -28,42 +28,47 @@ Once you've got a GitHub account you need to [clone](https://git-scm.com/docs/gi
 I would advocate using [SSH Keys](https://help.github.com/articles/generating-an-ssh-key/) with your GitHub account to make it easy to push updates without having to enter your password.
 
 
-## ToDo
 
-### Functions
+## Functions
 
-* Function to download 'Fields' and 'Froms' tabs from DM Googlesheets using either [googlesheets](https://cran.r-project.org/web/packages/googlesheets/index.html) or [gsheet](https://cran.r-project.org/web/packages/gsheet/index.html).
-* Function for calculating EQ5D-5L (supposedly due to be added to Prospect but not clear when, see [slide 40 and 41](http://www.slideshare.net/OHENews/ohe-seminar-5ll-value-set-oct2014-revised-jun15)).  Could possibly have it summarise and plot scores by user-specified variable (default being the event and the group)
-
-### Features of Functions
-
-#### `read_prospect()`
+### `read_prospect()`
 
 * Function to facilitate reading and labelling of data exported from as plain text files from the CTRU 'bespoke' database [Prospect](https://www.ctru-prospect.shef.ac.uk/).
 * Uses the exported `Lookups.csv` to convert all factor variables to the correct encoding.
 * Unfortunately it can't recreate the relational nature of the data that exists within the database from which it has been exported :-/.
 
+#### ToDo
 
-#### `regress_ctru()`
+* Add functionality to download 'Fields' and 'Froms' tabs from DM Googlesheets using either [googlesheets](https://cran.r-project.org/web/packages/googlesheets/index.html).
+
+### `regress_ctru()`
 
 * Include options to set the reference level (via `relevel()`)for each factor variable in a model (something akin to the way `texreg()` handles things).
 * Include ability to bootstrap regression results, particularly important for mixed models where p-values are unreliable due to uncertainty in the degrees of freedom.  Some leverage to do this via `texreg()` but `stargazer()` is a more flexible tabulating option.
 * Include all results from ITT/PP models, coefficients and CIs, p-values as part fo the returned list which can then be parsed for inclusion in text.
 
-#### `table_summary()`
+### `table_summary()`
 
 * Function to summarise specified measurements by specified subset.
 * N/Mean/SD/Min/Max/Median/IQR reported for specified variables for the specified grouping.
 
-##### ToDo
+#### ToDo
 
 * Full support for Non-Standard Evaluation when explicitly supplying grouing variables as an argument rather than `...`.
 
-#### `idm_lsoa()`
+### `idm_lsoa()`
 
 * Function to combine [Lower Super Output Area (LSOA) level Index of Multiple Deprivation](https://www.gov.uk/government/statistics/english-indices-of-deprivation-2015) statistics with an arbitrary user specified data frame based on 2011 postcode.  Provides the overall IMD score and each component as absolute numbers and deciles as well as the ranking of all scores and components across England.
 
-##### ToDo
+#### ToDo
 
 * Add in 2010 data.
 * Add in data on LSOAs in Wales.
+
+### `eq5d_score()`
+
+* Function for calculating EQ5D-5L (supposedly due to be added to Prospect but not clear when, see [slide 40 and 41](http://www.slideshare.net/OHENews/ohe-seminar-5ll-value-set-oct2014-revised-jun15)).  Could possibly have it summarise and plot scores by user-specified variable (default being the event and the group)
+
+#### ToDo
+
+* Very much a work in progress, need to fully understand [Non-Standard Evaluation](http://dplyr.tidyverse.org/articles/programming.html) to get the function working and fully flexible.
