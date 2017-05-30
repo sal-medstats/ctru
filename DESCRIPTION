@@ -15,8 +15,8 @@ Description: The functions contained within this package simplify some of the
     simplify such common tasks with a view to sharing code and reducing the amount
     of time and effort spent working in isolation.
 Depends:
-    R (>= 3.2.3),
-    dplyr(>= 0.4.1),
+    R (>= 3.4.0),
+    dplyr(>= 0.6.0),
     ggplot2 (>= 1.0.1),
     haven (>= 0.2.0),
     Hmisc (>= 3.17-1),
