@@ -14,35 +14,29 @@
 #' @param postcode The variable in the data frame the contains the postcode.
 #' @param imd_year The year of IMDs to combine with the postcodes.
 #' @param lsoa_postcode Data frame that contains the Postcode to LSOA mappings
-#' @param postcode_length Whether to use the seven or eight digit version of postocde.
 #'
 #' @export
 ## ToDo - Get Wales codes
 imd_lsoa <- function(df              = .,
-                     postcode        = postcode,
+                     postcode        = 'postcode',
                      imd_year        = 2015,
                      lsoa_postcode   = imd_lsoa_postcode,
-                     postcode_length = 8,
                      ...){
     ## List to return
     results <- list()
+    ## Expand supplied postcodes to always be 8 characters ('#### ###')
+    ## ToDo - Get this working with NSE under dplyr-0.6.0
+    df$postcode_length = nchar(df$postcode)
+    df <- df %>%
+                  mutate(pcd8 = case_when(postcode_length == 8 ~ gsub(' ', ' ',   .$`postcode`),
+                                          postcode_length == 7 ~ gsub(' ', '  ',  .$`postcode`),
+                                          postcode_length == 6 ~ gsub(' ', '   ', .$`postcode`)))
     ## Obtain the LSOA IMD for the specified year
     if(imd_year == 2015){
-        if(postcode_length == 8){
-            results <- merge(df,
-                             imd_lsoa_postcode,
-                             by.x  = postcode,
-                             by.y  = pcd8,
-                             all.x = TRUE)
-        }
-        else if(postcode_length == 7){
-            results <- merge(df,
-                             imd_lsoa_postcode,
-                             by.x  = postcode,
-                             by.y  = pcd7,
-                             all.x = TRUE)
+        merged <- left_join(df,
+                            imd_lsoa_postcode,
+                            by = 'pcd8')
 
-        }
     }
     else if(imd_year == 2010){
         ## ToDo : Write this section
