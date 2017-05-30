@@ -5,8 +5,9 @@
 #'
 #' @details
 #'
-#' People like to see the raw numbers but often think about them in
-#' percentages, this wrapper function facilitates production of such tables.
+#' People like to see the raw numbers but often think about them the summary
+#' statistics that describe them.  This wrapper function facilitates production
+#' of such tables.
 #'
 #'
 #' @param df Data frame.
