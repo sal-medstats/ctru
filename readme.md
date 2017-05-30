@@ -37,6 +37,13 @@ I would advocate using [SSH Keys](https://help.github.com/articles/generating-an
 
 ### Features of Functions
 
+#### `read_prospect()`
+
+* Function to facilitate reading and labelling of data exported from as plain text files from the CTRU 'bespoke' database [Prospect](https://www.ctru-prospect.shef.ac.uk/).
+* Uses the exported `Lookups.csv` to convert all factor variables to the correct encoding.
+* Unfortunately it can't recreate the relational nature of the data that exists within the database from which it has been exported :-/.
+
+
 #### `regress_ctru()`
 
 * Include options to set the reference level (via `relevel()`)for each factor variable in a model (something akin to the way `texreg()` handles things).
