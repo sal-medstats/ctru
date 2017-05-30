@@ -46,5 +46,5 @@ imd_lsoa <- function(df              = .,
         print('Error : Please specify imd_year as either 2015 or 2010')
         exit()
     }
-    return(results)
+    return(merged)
 }
