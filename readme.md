@@ -1,3 +1,5 @@
+[![ORCiD](https://img.shields.io/badge/ORCiD-0000--0001--8301--6857-green.svg)](https://orcid.org/0000-0001-8301-6857)
+
 # CTRU R Functions
 
 This repository contains R functions to facilitate work at the [Sheffield Clinical Trials Research Unit (CTRU)](https://www.shef.ac.uk/scharr/sections/dts/ctru), part of the [School of Health and Related Research (ScHARR)](http://www.sheffield.ac.uk/scharr) at [The University of Sheffield](http://www.sheffield.ac.uk/).  The intention is to share code between colleagues so that common repetitive tasks become trivial and we do not spend time solving the same problems.
