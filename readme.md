@@ -4,7 +4,7 @@
 
 This repository contains R functions to facilitate work at the [Sheffield Clinical Trials Research Unit (CTRU)](https://www.shef.ac.uk/scharr/sections/dts/ctru), part of the [School of Health and Related Research (ScHARR)](http://www.sheffield.ac.uk/scharr) at [The University of Sheffield](http://www.sheffield.ac.uk/).  The intention is to share code between colleagues so that common repetitive tasks become trivial and we do not spend time solving the same problems.
 
-## Installation
+## Installation and Usage
 
 If all you want to do is use these functions then its pretty straight-forward to install them thanks to the [`devtools`](https://cran.r-project.org/web/packages/devtools/index.html) package.  Install it from CRAN and then install this repository from GitHub...
 
@@ -69,7 +69,7 @@ I would advocate using [SSH Keys](https://help.github.com/articles/generating-an
 
 ### `eq5d_score()`
 
-* Function for calculating EQ5D-5L (supposedly due to be added to Prospect but not clear when, see [slide 40 and 41](http://www.slideshare.net/OHENews/ohe-seminar-5ll-value-set-oct2014-revised-jun15)).  Could possibly have it summarise and plot scores by user-specified variable (default being the event and the group)
+* Function for calculating EQ5D-5L (see [slide 40 and 41](http://www.slideshare.net/OHENews/ohe-seminar-5ll-value-set-oct2014-revised-jun15) for scoring).  Could possibly have it summarise and plot scores by user-specified variable (default being the event and the group)
 
 #### ToDo
 
