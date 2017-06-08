@@ -1,6 +1,6 @@
 Package: ctru
 Title: Working with data at Sheffield Clinical Trials Research Unit
-Version: 0.0.0.20170530
+Version: 0.0.0.20170608
 Authors@R: person("Neil", "Shephard", email = "n.shephard@sheffield.ac.uk", role = c("aut", "cre"))
 Description: The functions contained within this package simplify some of the
     repetitive tasks common to most studies carried out in the Clinical Trials
@@ -23,6 +23,7 @@ Depends:
     knitr (>= 1.11),
     lubridate (>= 1.5.0),
     magrittr (>= 1.5),
+    plotly (>= 4.7.0),
     readxl (>= 1.0.0),
     reshape2 (>= 1.4.1),
     rlang (>= 0.1.1),
