@@ -24,7 +24,8 @@
 #' @export
 recruitment <- function(df              = master$screening_form,
                         screening       = screening_no,
-                        enrolment      = enrolment_no,
+                        enrolment       = enrolment_no,
+                        plot.by         = 'both',
                         facet           = NULL,
                         theme           = theme_bw(),
                         plotly          = FALSE,
@@ -56,15 +57,30 @@ recruitment <- function(df              = master$screening_form,
                                   screen_site) %>%
                             mutate(status = 'Screened')
         ## Tables by Month
-        results$table_screened_month <- results$screened %>%
-                                        mutate(year_month = paste(year(event_date),
-                                                                  month(event_date),
-                                                                  sep = '-')) %>%
-                                        group_by(site, year_month) %>%
-                                        summarise(n = n()) %>%
-                                        spread(key = status, value = n) %>%
-                                        mutate(Percent = (Recruited * 100) / Screened) %>%
-                                        dplyr::select(site, year_month, Screened, Recruited)
+        if(plot.by %in% c('all')){
+            results$table_screened_month <- dplyr::filter(results$screened, site == 'All') %>%
+                                            mutate(year_month = paste(year(event_date),
+                                                                      month(event_date),
+                                                                      sep = '-')) %>%
+                                            group_by(site, year_month) %>%
+                                            summarise(Screened = n())
+        }
+        else if(plot.by %in% c('site')){
+            results$table_screened_month <- dplyr::filter(results$screened, site != 'All') %>%
+                                            mutate(year_month = paste(year(event_date),
+                                                                      month(event_date),
+                                                                      sep = '-')) %>%
+                                            group_by(site, year_month) %>%
+                                            summarise(Screened = n())
+        }
+        else if(plot.by %in% c('both')){
+            results$table_screened_month <- results$screened %>%
+                                            mutate(year_month = paste(year(event_date),
+                                                                      month(event_date),
+                                                                      sep = '-')) %>%
+                                            group_by(site, year_month) %>%
+                                            summarise(Screened = n())
+        }
         ## Plot
         if(plot.by %in% c('all', 'both')){
             ## Metric : Screening
@@ -115,15 +131,30 @@ recruitment <- function(df              = master$screening_form,
                                    recruit_site) %>%
                              mutate(status = 'Recruited')
         ## Tables by Month
-        results$table_recruited_month <- results$recruited %>%
-                                         mutate(year_month = paste(year(event_date),
-                                                                   month(event_date),
-                                                                   sep = '-')) %>%
-                                         group_by(site, year_month) %>%
-                                         summarise(n = n()) %>%
-                                         spread(key = status, value = n) %>%
-                                         mutate(Percent = (Recruited * 100) / Screened) %>%
-                                         dplyr::select(site, year_month, Screened, Recruited)
+        if(plot.by %in% c('all')){
+            results$table_recruited_month <- dplyr::filter(results$recruited, site == 'All') %>%
+                                             mutate(year_month = paste(year(event_date),
+                                                                       month(event_date),
+                                                                       sep = '-')) %>%
+                                             group_by(site, year_month) %>%
+                                             summarise(Recruited = n())
+        }
+        if(plot.by %in% c('site')){
+            results$table_recruited_month <- dplyr::filter(results$recruited, site != 'All') %>%
+                                             mutate(year_month = paste(year(event_date),
+                                                                       month(event_date),
+                                                                       sep = '-')) %>%
+                                             group_by(site, year_month) %>%
+                                             summarise(Recruited = n())
+        }
+        else if(plot.by %in% c('both')){
+            results$table_recruited_month <- results$recruited %>%
+                                             mutate(year_month = paste(year(event_date),
+                                                                       month(event_date),
+                                                                       sep = '-')) %>%
+                                             group_by(site, year_month) %>%
+                                             summarise(Recruited = n())
+        }
         ## Plot
         if(plot.by %in% c('all', 'both')){
             ## Metric : Recruited
@@ -147,27 +178,27 @@ recruitment <- function(df              = master$screening_form,
     }
     if(!is.null(screening) & !is.null(enrolment)){
         ## Combine Screening and Recruitment and gather
-        results$screened_recruited <- rbind(screened,
-                                            recruited) ## %>%
+        results$screened_recruited <- rbind(results$screened,
+                                            results$recruited) ## %>%
                                       ## gather()
         ## Tables by Month
-        results$table_screened_month <- results$screened %>%
-                                        mutate(year_month = paste(year(event_date),
-                                                                  month(event_date),
-                                                                  sep = '-')) %>%
-                                        group_by(site, status, year_month) %>%
-                                        summarise(n = n()) %>%
-                                        spread(key = status, value = n) %>%
-                                        mutate(Percent = (Recruited * 100) / Screened) %>%
-                                        dplyr::select(site, year_month, Screened, Recruited)
+        results$table_screened_recruited_month <- results$screened %>%
+                                                  mutate(year_month = paste(year(event_date),
+                                                                            month(event_date),
+                                                                            sep = '-')) %>%
+                                                  group_by(site, status, year_month) %>%
+                                                  summarise(n = n()) %>%
+                                                  spread(key = status, value = n) %>%
+                                                  mutate(Percent = (Recruited * 100) / Screened) %>%
+                                                  dplyr::select(site, year_month, Screened, Recruited)
+        results$screened_recruited <- results$screened_recruited %>%
+                                      dplyr::select(-n) %>%
+                                      spread(key = status, value = sum)
         ## Plot
         if(plot.by %in% c('all', 'both')){
             ## Metric : Screened and Recruited
             ## Site   : All
-            results$screened_recruited <- results$screened_recruited %>%
-                                          dplyr::select(-n) %>%
-                                          spread(key = status, value = sum)
-            results$plot_screen_recruit_all <- dplyr::filter(results$t,
+            results$plot_screen_recruit_all <- dplyr::filter(results$screened_recruited,
                                                              site == 'All') %>%
                                                ggplot() +
                                                geom_line(aes(x = event_date, y = Screened)) +
@@ -175,10 +206,10 @@ recruitment <- function(df              = master$screening_form,
                                                xlab('Date') + ylab('N') + ggtitle('Screening and Recruitment across all Sites') +
                                                theme
         }
-        if(plot.by %in% c('all', 'both')){
+        if(plot.by %in% c('site', 'both')){
             ## Metric : Screened and Recruited
             ## Site   : Site
-            results$plot_screen_recruit_site <- dplyr::filter(results$t,
+            results$plot_screen_recruit_site <- dplyr::filter(results$screened_recruited,
                                                               site != 'All') %>%
                                                 ggplot() +
                                                 geom_line(aes(x = event_date, y = Screened, color = site)) +
