@@ -15,7 +15,7 @@
 #'
 #' @param df Data frame to summarise, default is \code{master$screening_form}
 #' @param screening Variable that uniquely identifies screening (default \code{screening_no}).
-#' @param enrollment Variable that uniquely identifies enrollment (default \code{enrollment_no}).
+#' @param enrolment Variable that uniquely identifies enrolment (default \code{enrolment_no}).
 #' @param plot.by Plot overall (\code{all}) or by site (\code{site}).
 #' @param facet Number of columns to facet a plot by, if \code{NULL} then no faceting is applied.
 #' @param theme ggplot2 theme to apply.
@@ -24,15 +24,15 @@
 #' @export
 recruitment <- function(df              = master$screening_form,
                         screening       = screening_no,
-                        enrollment      = enrolment_no,
+                        enrolment      = enrolment_no,
                         facet           = NULL,
                         theme           = theme_bw(),
                         plotly          = FALSE,
                         ...){
     ## List to return results
     results <- list()
-    ## Parse the supplied options for screening and enrollment
-    ## TODO Parse the screening and enrollment options using dplyr-0.6.0 non-standard evaluation
+    ## Parse the supplied options for screening and enrolment
+    ## TODO Parse the screening and enrolment options using dplyr-0.6.0 non-standard evaluation
     ##      Should allow to set options to group_by() when tabulating and for plotting
     ##      so that one data set is produced conditional on options and then only one set of
     ##      table/ploting is required leaving less code to maintain
@@ -87,7 +87,7 @@ recruitment <- function(df              = master$screening_form,
         }
     }
     ## Recruitment
-    if(!is.null(enrollment)){
+    if(!is.null(enrolment)){
         ## Empty strings imported for default 'enrolment_no' ensure these are
         ## NA
         df <- df %>%
@@ -145,7 +145,7 @@ recruitment <- function(df              = master$screening_form,
                                            theme
         }
     }
-    if(!is.null(screening) & !is.null(enrollment)){
+    if(!is.null(screening) & !is.null(enrolment)){
         ## Combine Screening and Recruitment and gather
         results$screened_recruited <- rbind(screened,
                                             recruited) ## %>%
@@ -197,7 +197,7 @@ recruitment <- function(df              = master$screening_form,
                                         guides(colour = FALSE) +
                                         theme(axis.text.x = element_text(angle = 90))
         }
-        if(!is.null(enrollment)){
+        if(!is.null(enrolment)){
             ## Metric : Recruitment
             ## Site   : Site
             results$plot_recruit_site <- results$plot_recruit_site +
@@ -205,7 +205,7 @@ recruitment <- function(df              = master$screening_form,
                                          guides(colour = FALSE) +
                                          theme(axis.text.x = element_text(angle = 90))
         }
-        if(!is.null(screening) & !is.null(enrollment)){
+        if(!is.null(screening) & !is.null(enrolment)){
             ## Metric : Screened and Recruited
             ## Site   : All
             results$plot_screen_recruit_site <- results$plot_screen_recruit_site +
@@ -221,12 +221,12 @@ recruitment <- function(df              = master$screening_form,
             ## Site   : Site
             results$plot_screen_site <- ggplotly(results$plot_screen_site)
         }
-        if(!is.null(enrollment)){
+        if(!is.null(enrolment)){
             ## Metric : Recruitment
             ## Site   : Site
             results$plot_recruit_site <- ggplotly(results$plot_recruit_site)
         }
-        if(!is.null(screening) & !is.null(enrollment)){
+        if(!is.null(screening) & !is.null(enrolment)){
             ## Metric : Screened and Recruited
             ## Site   : All
             results$plot_screen_recruit_site <- ggplotly(results$plot_screen_recruit_site)
