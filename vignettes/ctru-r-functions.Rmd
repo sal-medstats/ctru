@@ -175,13 +175,29 @@ screening_recruitment <- ctru::recruitment(df = master$screening_form,
 
 ### Indices of Multiple Deprivation, Lower Super Output Area and Postcodes
 
-Many studies wish to use an indicator of deprivation as a predictor variable in their analyses.
+Many studies wish to use an indicator of deprivation as a predictor variable in their analyses, yet they have not explicitly assessed this as part of the data captured on participants.  Instead the aim is to use the geographical location where individuals reside as a proxy for their socio-economic status using the [Index of Multiple Deprivation](https://en.wikipedia.org/wiki/Multiple_deprivation_index) a set of metrics produced by the Office for National Statistics that quantifies deprivation using seven domains, *Income*, *Employment*, *Health and Disability*, *Education Skills and Training*, *Barriers to Housing and Services*, *Crime* and *Living Environment*.  These are calculated for small geogrphical areas known as [Lower Super Output Areas (LSOAs)]() which have roughly 1500 inhabitants.
+
+A common problem that frequently arises is mapping study participants address' to Lower Super Output Areas so that the indices of deprivation can be assigned and utilised.  Rather than reinventing the wheel for each individual study the function `imd_lsoa()` has been written to perform the task using the included `imd_lsoa_postcode` data frame that is part of the `ctru` package.
+
+#### Usage
+
+Assuming you have a data frame (`my_df`) that contains the postcode of individuals in your study (and a unique study identifier so the data can be linked to all other components) then it is simple to merge in the indices of multiple deprivation using the supplied data frame (`imd_lsoa_postcode`).
+
+```
+my_df <- imd_lsoa(df            = my_df,
+                  postcode      = 'postcode',
+				  imd_year      = 2015,
+				  lsoa_postcode = imd_lsoa_postcode)
+```
+
+
 
 ### Regression Modelling
 
 A large number of studies assess the efficacy of an intervention by means of a regression model that allows the estimation of the effect an intervention has on the desired outcome whilst adjusting for co-variates and clustering (if a clustered study design is being utilised).  Invariably most analyses will be repeated twice, once using an Intention To Treat (ITT) cohort and once using a Per-Protocol (PP) cohort and it is natural to present the results of both simultaneously.  the `regress_ctru()` function is a wrapper that achieves this allowing arbitrary regression equations to be specified for a range of regression modelling functions.  It saves and returns the results of each model fit as well as combining them into formatted tables (LaTeX/HTML/ASCII) using the [Stargazer]() package.
 
-** ToDo ** Write how to use this function.
+** ToDo ** Write the function and how to use it.
+
 
 ## Writing Packages
 
