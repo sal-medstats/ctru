@@ -89,9 +89,10 @@ recruitment <- function(df              = master$screening_form,
                                             mutate(year_month = paste(year(event_date),
                                                                       month(event_date),
                                                                       sep = '-')) %>%
-                                            group_by(year_month) %>%
-                                            summarise(Screened = sum(sum, na.rm = TRUE))
-            results$table_screened_all_month$Site <- 'All'
+                                            group_by(site, year_month) %>%
+                                            summarise(Screened = sum(sum, na.rm = TRUE)) %>%
+                                            ungroup()
+            names(results$table_screened_all_month) <- gsub('site', 'Site', names(results$table_screened_all_month))
             names(results$table_screened_all_month) <- gsub('year_month', 'Date', names(results$table_screened_all_month))
         }
         if(plot.by %in% c('site', 'both')){
@@ -100,19 +101,23 @@ recruitment <- function(df              = master$screening_form,
                                                                       month(event_date),
                                                                       sep = '-')) %>%
                                             group_by(site, year_month) %>%
-                                            summarise(Screened = sum(sum, na.rm = TRUE))
+                                            summarise(Screened = sum(sum, na.rm = TRUE)) %>%
+                                            ungroup()
             names(results$table_screened_site_month) <- gsub('site', 'Site', names(results$table_screened_site_month))
             names(results$table_screened_site_month) <- gsub('year_month', 'Date', names(results$table_screened_site_month))
         }
         if(plot.by %in% c('both')){
+            names(results$table_screened_all_month)  %>% print()
+            names(results$table_screened_site_month) %>% print()
             results$table_screened_month <- bind_rows(results$table_screened_all_month,
                                                       results$table_screened_site_month)
+            print('did it bind?')
         }
         ## Plot
         if(plot.by %in% c('all', 'both')){
             ## Metric : Screening
             ## Site   : All
-            results$plot_screened_all <- results$screened %>%
+            results$plot_screened_all <- dplyr::select(results$screened, site == 'All') %>%
                                          ggplot(aes(x = event_date, y = sum)) +
                                          geom_line() +
                                          xlab('Date') + ylab('N') + ggtitle('Recruitment across all Sites') +
@@ -122,7 +127,7 @@ recruitment <- function(df              = master$screening_form,
         if(plot.by %in% c('site', 'both')){
             ## Metric : Screening
             ## Site   : Site
-            results$plot_screened_site <- results$screened %>%
+            results$plot_screened_site <- dplyr::select(results$screened, site != 'All') %>%
                                           ggplot(aes(x = event_date, y = sum, colour = site)) +
                                           geom_line() +
                                           xlab('Date') + ylab('N') + ggtitle('Recruitment by Site') +
@@ -134,21 +139,23 @@ recruitment <- function(df              = master$screening_form,
         ## Tables by Month
         if(plot.by %in% c('all', 'both')){
             results$table_recruited_all_month <- dplyr::filter(results$recruited, site == 'All') %>%
-                                             mutate(year_month = paste(year(event_date),
-                                                                       month(event_date),
-                                                                       sep = '-')) %>%
-                                             group_by(site, year_month) %>%
-                                             summarise(Recruited = sum(sum, na.rm = TRUE))
-            results$table_recruited_all_month$Site <- 'All'
+                                                 mutate(year_month = paste(year(event_date),
+                                                                           month(event_date),
+                                                                           sep = '-')) %>%
+                                                 group_by(site, year_month) %>%
+                                                 summarise(Recruited = sum(sum, na.rm = TRUE)) %>%
+                                                 ungroup()
+            names(results$table_recruited_all_month) <- gsub('site', 'Site', names(results$table_recruited_all_month))
             names(results$table_recruited_all_month) <- gsub('year_month', 'Date', names(results$table_recruited_all_month))
         }
         if(plot.by %in% c('site', 'both')){
             results$table_recruited_site_month <- dplyr::filter(results$recruited, site != 'All') %>%
-                                             mutate(year_month = paste(year(event_date),
-                                                                       month(event_date),
-                                                                       sep = '-')) %>%
-                                             group_by(site, year_month) %>%
-                                             summarise(Recruited = sum(sum, na.rm = TRUE))
+                                                  mutate(year_month = paste(year(event_date),
+                                                                            month(event_date),
+                                                                            sep = '-')) %>%
+                                                  group_by(site, year_month) %>%
+                                                  summarise(Recruited = sum(sum, na.rm = TRUE)) %>%
+                                                  ungroup()
             names(results$table_recruited_site_month) <- gsub('site', 'Site', names(results$table_recruited_site_month))
             names(results$table_recruited_site_month) <- gsub('year_month', 'Date', names(results$table_recruited_site_month))
         }
@@ -160,17 +167,17 @@ recruitment <- function(df              = master$screening_form,
         if(plot.by %in% c('all', 'both')){
             ## Metric : Recruited
             ## Site   : All
-            results$plot_recruited_all <- results$recruited %>%
-                                       ggplot(aes(x = event_date, y = sum)) +
-                                       geom_line() +
-                                       xlab('Date') + ylab('N') + ggtitle('Recruitment across all Sites') +
-                                       guides(color = guide_legend(ncol = 2)) +
-                                       theme
+            results$plot_recruited_all <- dplyr::select(results$recruited, site == 'All') %>%
+                                          ggplot(aes(x = event_date, y = sum)) +
+                                          geom_line() +
+                                          xlab('Date') + ylab('N') + ggtitle('Recruitment across all Sites') +
+                                          guides(color = guide_legend(ncol = 2)) +
+                                          theme
         }
         if(plot.by %in% c('site', 'both')){
             ## Metric : Recruited
             ## Site   : Site
-            results$plot_recruited_site <- results$recruited %>%
+            results$plot_recruited_site <- dplyr::select(results$recruited, site != 'All') %>%
                                            ggplot(aes(x = event_date, y = sum, colour = site)) +
                                            geom_line() +
                                            xlab('Date') + ylab('N') + ggtitle('Recruitment by Site') +
