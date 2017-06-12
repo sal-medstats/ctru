@@ -54,7 +54,8 @@ recruitment <- function(df              = master$screening_form,
                    mutate(site = gsub('Hospital', '', site))
     results$screened <- bind_rows(screen_all,
                                   screen_site) %>%
-                        mutate(status = 'Screened')
+                        mutate(status = 'Screened') %>%
+                        as.data.frame()
     ## Empty strings imported for default 'enrolment_no' ensure these are
     ## NA
     df <- df %>%
@@ -79,7 +80,8 @@ recruitment <- function(df              = master$screening_form,
                     mutate(site = gsub('Hospital', '', site))
     results$recruited <- bind_rows(recruit_all,
                                    recruit_site) %>%
-                         mutate(status = 'Recruited')
+                         mutate(status = 'Recruited') %>%
+                         as.data.frame()
     rm(screen_all, screen_site, recruit_all, recruit_site)
     ## Tabulate and plot Screening
     if(!is.null(screening)){
@@ -114,7 +116,7 @@ recruitment <- function(df              = master$screening_form,
         if(plot.by %in% c('all', 'both')){
             ## Metric : Screening
             ## Site   : All
-            results$plot_screened_all <- dplyr::select(results$screened, site == 'All') %>%
+            results$plot_screened_all <- dplyr::filter(results$screened, site == 'All') %>%
                                          ggplot(aes(x = event_date, y = sum)) +
                                          geom_line() +
                                          xlab('Date') + ylab('N') + ggtitle('Recruitment across all Sites') +
@@ -124,7 +126,7 @@ recruitment <- function(df              = master$screening_form,
         if(plot.by %in% c('site', 'both')){
             ## Metric : Screening
             ## Site   : Site
-            results$plot_screened_site <- dplyr::select(results$screened, site != 'All') %>%
+            results$plot_screened_site <- dplyr::filter(results$screened, site != 'All') %>%
                                           ggplot(aes(x = event_date, y = sum, colour = site)) +
                                           geom_line() +
                                           xlab('Date') + ylab('N') + ggtitle('Recruitment by Site') +
@@ -164,7 +166,7 @@ recruitment <- function(df              = master$screening_form,
         if(plot.by %in% c('all', 'both')){
             ## Metric : Recruited
             ## Site   : All
-            results$plot_recruited_all <- dplyr::select(results$recruited, site == 'All') %>%
+            results$plot_recruited_all <- dplyr::filter(results$recruited, site == 'All') %>%
                                           ggplot(aes(x = event_date, y = sum)) +
                                           geom_line() +
                                           xlab('Date') + ylab('N') + ggtitle('Recruitment across all Sites') +
@@ -174,7 +176,7 @@ recruitment <- function(df              = master$screening_form,
         if(plot.by %in% c('site', 'both')){
             ## Metric : Recruited
             ## Site   : Site
-            results$plot_recruited_site <- dplyr::select(results$recruited, site != 'All') %>%
+            results$plot_recruited_site <- dplyr::filter(results$recruited, site != 'All') %>%
                                            ggplot(aes(x = event_date, y = sum, colour = site)) +
                                            geom_line() +
                                            xlab('Date') + ylab('N') + ggtitle('Recruitment by Site') +
@@ -203,31 +205,33 @@ recruitment <- function(df              = master$screening_form,
             ## Metric : Screened and Recruited
             ## Site   : All
             results$plot_screened_recruited_all <- dplyr::filter(results$screened_recruited,
-                                                             site == 'All') %>%
-                                               ggplot() +
-                                               geom_line(aes(x = event_date,
-                                                             y = Screened),
-                                                         linetype = 'dashed') +
-                                               geom_line(aes(x = event_date,
-                                                             y = Recruited),
-                                                         linetype = 'solid') +
-                                               xlab('Date') + ylab('N') + ggtitle('Screening and Recruitment across all Sites') +
-                                               theme
+                                                                 site == 'All') %>%
+                                                   ggplot() +
+                                                   geom_line(aes(x = event_date,
+                                                                 y = Screened),
+                                                             linetype = 'dashed') +
+                                                   geom_line(aes(x = event_date,
+                                                                 y = Recruited),
+                                                             linetype = 'solid') +
+                                                   xlab('Date') + ylab('N') +
+                                                   ggtitle('Screening and Recruitment across all Sites') +
+                                                   theme
         }
         if(plot.by %in% c('site', 'both')){
             ## Metric : Screened and Recruited
             ## Site   : Site
             results$plot_screened_recruited_site <- dplyr::filter(results$screened_recruited,
-                                                              site != 'All') %>%
-                                                ggplot() +
-                                                geom_line(aes(x = event_date,
-                                                              y = Screened, color = site),
-                                                          linetype = 'dashed') +
-                                                geom_line(aes(x = event_date,
-                                                              y = Recruited, color = site),
-                                                          linetype = 'solid') +
-                                                xlab('Date') + ylab('N') + ggtitle('Screening and Recruitment across all Sites') +
-                                                theme
+                                                                  site != 'All') %>%
+                                                    ggplot() +
+                                                    geom_line(aes(x = event_date,
+                                                                  y = Screened, color = site),
+                                                              linetype = 'dashed') +
+                                                    geom_line(aes(x = event_date,
+                                                                  y = Recruited, color = site),
+                                                              linetype = 'solid') +
+                                                    xlab('Date') + ylab('N') +
+                                                    ggtitle('Screening and Recruitment across all Sites') +
+                                                    theme
         }
     }
     ## Facet?
