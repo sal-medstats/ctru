@@ -9,7 +9,40 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-[Sheffield Clinical Trials Research Unit]() conducts clinical trials of different medical and therapeautic interventions.  The Standard Operating Procedures (SOPs) state that work should be conducted in a reproducible manner to which end software such as [R](https://www.r-project.org) or [Stata](https://www.stata.com/).  Many of the tasks involved in performing the statistical analysis are common across the studies conducted, for example the bespoke database system [Prospect](https://www.ctru-prospect.shef.ac.uk/) is used to store all data for which the CTRU has data management responsibilities and any subsequent data analysis will use the data exported from the tables of the database to ASCII text files.  This means there is scope for streamlining the work flow by writing generalised functions to perform the tasks that are common across studies such as reading in files exported from Prospect and formatting factor variables and converting dates and that is the premise of the `ctru` package this vignette describes.
+[Sheffield Clinical Trials Research Unit](https://www.sheffield.ac.uk/scharr/sections/dts/ctru) conducts clinical trials of different medical and therapeautic interventions.  The Standard Operating Procedures (SOPs) state that work should be conducted in a reproducible manner to which end software such as [R](https://www.r-project.org) or [Stata](https://www.stata.com/).  Many of the tasks involved in performing the statistical analysis are common across the studies conducted, for example the bespoke database system [Prospect](https://www.ctru-prospect.shef.ac.uk/) is used to store all data for which the CTRU has data management responsibilities and any subsequent data analysis will use the data exported from the tables of the database to ASCII text files.  It is very unfortunate that the relational nature of the Prospect database can not be used to output complete data sets as it means Statisticians have to recreate the relationships that exist within the database (i.e. duplication of work) and whilst it has been queried whether this can change but nothing has yet and is unlikely to in the foreseable future (there are several reasons which briefly are that access to the database is implemented at the WebUI level, meaning granting access to the database would allow access to all study data and to change this would require completely re-writing Prospect from the ground up, something which the CTRU can not afford as this work is out-sourced to [EpiGensys](https://www.epigenesys.org.uk/).
+
+Regardless, because study data always comes from Prospect it means there is scope for streamlining the work flow by writing generalised functions to perform the tasks that are common across studies such as reading in files exported from Prospect, and formatting factor variables, converting dates, summarising screening and recruitment, baseline and follow-up summaries etc. and that is the premise of the `ctru` package this vignette describes.
+
+## Installation
+
+The `ctru` package is hosted on [GitHub](https://github.com) at [`ns-ctru/ctru`](https://github.com/ns-ctru/ctru) and can be installed on any computer running [R](https://www.r-project.org/).  This requires that you install the `devtools` package which is available on [CRAN](https://cran.r-project.org/).  If you don't already have `devtools` installed do so...
+
+```
+install.packages(devtools)
+```
+
+...you can then install the [`ctru`](https://github.com/ns-ctru/ctru) by typing...
+
+```
+install_github(repo = 'ns-ctru/ctru')
+```
+
+...which will download and install this package and all of its dependencies, along with the associated datasets which are included.  If you want to use the library you will have to load it...
+
+```
+library(ctru)
+```
+
+...although if you are going to use it regularly you may wish to load it every time you start R(/RStudio) in which case you should add the following to your `~/.Rprofile`...
+
+```
+if(interactive()){
+	options(warn = -1, quietly = TRUE)
+    suppressMessages(library(ctru, quietly = TRUE))
+}
+```
+
+...which will load the package and all its dependencies (which will have been installed when you installed the `ctru` package).
 
 ## Data Import
 
@@ -44,7 +77,7 @@ The export will also include the file `Lookups.csv` and it is this file along wi
 
 Each database setup in Prospect has a matching *Data Specification* which is usually a Google Spreadsheet owned by a member of the Data Management Team and shared with the statistician.  Within these are two key worksheets `Fields` and `Forms` which describe all of the fields in the database and each of the tables (each table corresponds to a specific Case Report Form, hence the name `Forms`).
 
-You should export both of these worksheets as ASCII CSV and save them in the same directory as the other files you have extracted from Prospect.  You will need to have *Edit* permission on the spreadsheet in order to be able to perform such an export.  If you do not have such permissions then request them from the document owner.
+You should export both of these worksheets as ASCII CSV and save them in the same directory as the other files you have extracted from Prospect.  You may need to have *Edit* permission on the spreadsheet in order to be able to perform such an export.  If you do not have such permissions and encounter problems then request them from the document owner.
 
 ### Importing to R
 
@@ -54,27 +87,34 @@ You should now extract all files contained in the `.zip` that Prospect exported 
 ## Create a list to store all objects in
 master <- list()
 ## Read in the 'Lookups.csv' to this list
-master$data.dictionary <- read_prospect(file       = 'Lookups.csv',
-                                        header     = TRUE,
-					sep        = ',',
-					dictionary = NULL)
+master$lookups <- read_prospect(file       = 'Lookups.csv',
+	                            header     = TRUE,
+                                sep        = ',',
+                                dictionary = NULL)
 ```
 
-You now have the dictionary loaded into R that the `read_prospect()` function can subsequently use to encode factor variables.
+You now have the dictionary loaded into R and it can be used in subsequent calls to `read_prospect()` and factor variables will be automatically encoded and labelled.
 
 ```
+## Read in Screening and Recruitment data
+master$screening_form <- read_prospect(file =  'Screening Form.csv',
+                         header              = TRUE,
+                         sep                 = ',',
+                         convert.dates       = TRUE,
+                         convert.underscores = TRUE,
+                         dictionary          = master$lookups)
 ## Read in EQ5D data
 master$eq5d <- read_prospect(file          = 'EQ-5D-5L.csv'
                              header        = TRUE,
                              sep           = ',',
 			     convert.dates = TRUE,
-                             dictionary    = master$data.dictionary)
+                             dictionary    = master$lookups)
 ## Read in Blood sample data
 master$blood.sample <- read_prospect(file          = 'Blood sample.csv'
                                      header        = TRUE,
                                      sep           = ',',
 				     convert.dates = TRUE,
-                                     dictionary    = master$data.dictionary)
+                                     dictionary    = master$lookups)
 ```
 
 You can simplify this even further and reduce the time spent on reading your files in by utilising `lapply()` to work through a list of files in a given directory and have it apply `read_prospect()` to each file and return the results as a list...
@@ -85,10 +125,10 @@ You can simplify this even further and reduce the time spent on reading your fil
 ## Read in all files in the current directory
 master <- lapply(x = list.files("."),
                  read_prospect(file          = x,
-		               header        = TRUE,
-			       sep           = ',',
-			       convert.dates = TRUE,
-			       dictionary    = master$data.dictionary))
+		                       header        = TRUE,
+                               sep           = ',',
+                               convert.dates = TRUE,
+                               dictionary    = master$lookups))
 ```
 
 
@@ -97,9 +137,14 @@ master <- lapply(x = list.files("."),
 
 ### Screening and Randomisation
 
-Every study screens and recruits individuals, often at multiple centers, to the study.  Details of screening and recruitment are recorded and it is usefl to include such information in the Statistical Analysis Report.
+Every study screens and recruits individuals, often at multiple centers, to the study.  Details of screening and recruitment are recorded and it is useful to include plots and summaries of such information in the Statistical Analysis Report.  To this end the `recruitment()` function has been written which takes the `Screening_form.csv` that you should have read into an R data frame above and will produce tables by month across all sites and by site of the number of individuals screened and/or recruited and produce graphs of the same data (albeit at the daily level rather than monthly summaries).
 
-** ToDo ** Write how to use this function.
+Assuming you have read the exported `Screening_Form.csv` into a data
+
+
+### Indices of Multiple Deprivation, Lower Super Output Area and Postcodes
+
+Many studies wish to use an indicator of deprivation as a predictor variable in their analyses.
 
 ### Regression Modelling
 
@@ -145,7 +190,7 @@ At a bare minimum your Depends should read...
 ```
 Depends:
     R (>= 3.2.3),
-    ctru (>= 0.0.0.9)
+    ctru (>= 0.20170612)
 ```
 
 ...but there are a large number of useful packages that you might commonly use so its worth including them.
@@ -154,15 +199,12 @@ Depends:
 Depends:
     R (>= 3.2.3),
     ctru (>= 0.0.0.9),
-    dplyr (>= 0.4.1),
-    ggplot2 (>= 1.0.1),
-    knitr (>= 1.11),
-    lubridate (>= 1.5.0),
-    magrittr (>= 1.5),
-    reshape2 (),
-    stargazer(>= 5.1),
-    stringr (>= 1.0.0),
-    texreg (>= 1.35),
-    tidyr (>= 0.3.1),
-    xtable (>= 1.7-4)
+    tidyverse (>= 1.1.1),
+License: GPL-2
+LazyData: true
+Suggests:
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+RoxygenNote: 6.0.1
 ```
