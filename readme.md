@@ -21,15 +21,11 @@ You can now use the functions `read_prospect()`, `fields_prospect()` and so fort
 
 To collaborate in this work you will need to install [Git](https://git-scm.com) on your computer and have a [GitHub account](https://www.github.com/join).  If you're not familiar with either of these you may find the tutorial [Conversational Git](http://blog.anvard.org/conversational-git/) a useful place to start.  The [GitHub help pages](https://help.github.com/) are also excellent.
 
-### Cloning
-
-Once you've got a GitHub account you need to [clone](https://git-scm.com/docs/git-clone) this repository or make [pull requests](https://git-scm.com/docs/git-pull).
+Once you've got a GitHub account you need to [fork](https://guides.github.com/activities/forking/) the [`ns-ctru/ctru` repository](https://github.com/ns-ctru/ctru), [clone](https://git-scm.com/docs/git-clone) your fork to your computer to work on it, make changes/addition and [push](https://help.github.com/articles/pushing-to-a-remote/) them back to your fork then make a make [pull requests](https://git-scm.com/docs/git-pull).
 
 ### SSH Keys
 
-I would advocate using [SSH Keys](https://help.github.com/articles/generating-an-ssh-key/) with your GitHub account to make it easy to push updates without having to enter your password.
-
-
+I would advocate using [SSH Keys](https://help.github.com/articles/generating-an-ssh-key/) with your GitHub account to make it easy to push updates without having to enter your password every single time.
 
 ## Functions
 
@@ -43,11 +39,14 @@ I would advocate using [SSH Keys](https://help.github.com/articles/generating-an
 
 * Add functionality to download 'Fields' and 'Froms' tabs from DM Googlesheets using either [googlesheets](https://cran.r-project.org/web/packages/googlesheets/index.html).
 
-### `regress_ctru()`
+### `recruitment()`
 
-* Include options to set the reference level (via `relevel()`)for each factor variable in a model (something akin to the way `texreg()` handles things).
-* Include ability to bootstrap regression results, particularly important for mixed models where p-values are unreliable due to uncertainty in the degrees of freedom.  Some leverage to do this via `texreg()` but `stargazer()` is a more flexible tabulating option.
-* Include all results from ITT/PP models, coefficients and CIs, p-values as part fo the returned list which can then be parsed for inclusion in text.
+* Function to summarise screening and recruitment(/enrolment) to studies.
+* Produces tables and figures overall and by study site.
+
+#### ToDo
+
+* Possibly add option to summarise by treatment arm too.
 
 ### `table_summary()`
 
@@ -74,3 +73,10 @@ I would advocate using [SSH Keys](https://help.github.com/articles/generating-an
 #### ToDo
 
 * Very much a work in progress, need to fully understand [Non-Standard Evaluation](http://dplyr.tidyverse.org/articles/programming.html) to get the function working and fully flexible.
+
+
+### `regress_ctru()`
+
+* Include options to set the reference level (via `relevel()`)for each factor variable in a model (something akin to the way `texreg()` handles things).
+* Include ability to bootstrap regression results, particularly important for mixed models where p-values are unreliable due to uncertainty in the degrees of freedom.  Some leverage to do this via `texreg()` but `stargazer()` is a more flexible tabulating option.
+* Include all results from ITT/PP models, coefficients and CIs, p-values as part fo the returned list which can then be parsed for inclusion in text.
