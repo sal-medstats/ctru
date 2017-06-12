@@ -51,10 +51,9 @@ recruitment <- function(df              = master$screening_form,
                    summarise(n = n()) %>%
                    mutate(sum  = cumsum(n)) %>%
                    ungroup() %>%
-                   mutate(site = gsub('Hospital', '', site)) %>%
-                   as.data.frame()
-    results$screened <- rbind(screen_all,
-                              screen_site) %>%
+                   mutate(site = gsub('Hospital', '', site))
+    results$screened <- bind_rows(screen_all,
+                                  screen_site) %>%
                         mutate(status = 'Screened')
     ## Empty strings imported for default 'enrolment_no' ensure these are
     ## NA
@@ -77,14 +76,13 @@ recruitment <- function(df              = master$screening_form,
                     summarise(n = n()) %>%
                     mutate(sum  = cumsum(n)) %>%
                     ungroup() %>%
-                    mutate(site = gsub('Hospital', '', site)) %>%
-                    as.data.frame()
-    results$recruited <- rbind(recruit_all,
-                               recruit_site) %>%
+                    mutate(site = gsub('Hospital', '', site))
+    results$recruited <- bind_rows(recruit_all,
+                                   recruit_site) %>%
                          mutate(status = 'Recruited')
     rm(screen_all, screen_site, recruit_all, recruit_site)
     ## Tabulate and plot Screening
-    if(!is.null(screening) & is.null(enrolment)){
+    if(!is.null(screening)){
         ## Tables by Month
         if(plot.by %in% c('all', 'both')){
             results$table_screened_all_month <- dplyr::filter(results$screened, site == 'All') %>%
@@ -107,8 +105,8 @@ recruitment <- function(df              = master$screening_form,
             names(results$table_screened_site_month) <- gsub('year_month', 'Date', names(results$table_screened_site_month))
         }
         if(plot.by %in% c('both')){
-            results$table_screened_month <- rbind(results$table_screened_all_month,
-                                                  results$table_screened_site_month)
+            results$table_screened_month <- bind_rows(results$table_screened_all_month,
+                                                      results$table_screened_site_month)
         }
         ## Plot
         if(plot.by %in% c('all', 'both')){
@@ -132,7 +130,7 @@ recruitment <- function(df              = master$screening_form,
         }
     }
     ## Recruitment
-    if(is.null(screening) & !is.null(enrolment)){
+    if(!is.null(enrolment)){
         ## Tables by Month
         if(plot.by %in% c('all', 'both')){
             results$table_recruited_all_month <- dplyr::filter(results$recruited, site == 'All') %>%
@@ -155,8 +153,8 @@ recruitment <- function(df              = master$screening_form,
             names(results$table_recruited_site_month) <- gsub('year_month', 'Date', names(results$table_recruited_site_month))
         }
         if(plot.by %in% c('both')){
-            results$table_recruited_month <- rbind(results$table_recruited_all_month,
-                                                   results$table_recruited_site_month)
+            results$table_recruited_month <- bind_rows(results$table_recruited_all_month,
+                                                       results$table_recruited_site_month)
         }
         ## Plot
         if(plot.by %in% c('all', 'both')){
@@ -181,8 +179,8 @@ recruitment <- function(df              = master$screening_form,
     }
     if(!is.null(screening) & !is.null(enrolment)){
         ## Combine Screening and Recruitment and gather
-        results$screened_recruited <- rbind(results$screened,
-                                            results$recruited)
+        results$screened_recruited <- bind_rows(results$screened,
+                                                results$recruited)
         ## Tables by Month
         results$table_screened_recruited_month <- results$screened_recruited %>%
                                                   mutate(year_month = paste(year(event_date),
