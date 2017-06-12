@@ -17,7 +17,7 @@
 #' @param screening Variable that uniquely identifies screening (default \code{screening_no}).
 #' @param enrolment Variable that uniquely identifies enrolment (default \code{enrolment_no}).
 #' @param plot.by Plot overall (\code{all}) or by site (\code{site}).
-#' @param facet Number of columns to facet a plot by, if \code{NULL} then no faceting is applied.
+#' @param facet.col Number of columns to facet a plot by, if \code{NULL} then no faceting is applied.
 #' @param theme ggplot2 theme to apply.
 #' @param plotly Logical, to return ggplot2 graphs as plotly objects (default \code{FALSE}).
 #'
@@ -26,7 +26,7 @@ recruitment <- function(df              = master$screening_form,
                         screening       = screening_no,
                         enrolment       = enrolment_no,
                         plot.by         = 'both',
-                        facet           = NULL,
+                        facet.col       = NULL,
                         theme           = theme_bw(),
                         plotly          = FALSE,
                         ...){
@@ -62,8 +62,9 @@ recruitment <- function(df              = master$screening_form,
                                             mutate(year_month = paste(year(event_date),
                                                                       month(event_date),
                                                                       sep = '-')) %>%
-                                            group_by(site, year_month) %>%
-                                            summarise(Screened = n())
+                                            group_by(year_month) %>%
+                                            summarise(Screened = sum(sum, na.rm = TRUE))
+            names(results$table_screened_month) <- gsub('site', 'Site', names(results$table_screened_month))
         }
         else if(plot.by %in% c('site')){
             results$table_screened_month <- dplyr::filter(results$screened, site != 'All') %>%
@@ -71,7 +72,7 @@ recruitment <- function(df              = master$screening_form,
                                                                       month(event_date),
                                                                       sep = '-')) %>%
                                             group_by(site, year_month) %>%
-                                            summarise(Screened = n())
+                                            summarise(Screened = sum(sum, na.rm = TRUE))
         }
         else if(plot.by %in% c('both')){
             results$table_screened_month <- results$screened %>%
@@ -79,27 +80,27 @@ recruitment <- function(df              = master$screening_form,
                                                                       month(event_date),
                                                                       sep = '-')) %>%
                                             group_by(site, year_month) %>%
-                                            summarise(Screened = n())
+                                            summarise(Screened = sum(sum, na.rm = TRUE))
         }
         ## Plot
         if(plot.by %in% c('all', 'both')){
             ## Metric : Screening
             ## Site   : All
             results$plot_screened_all <- results$screened %>%
-                                       ggplot(aes(x = event_date, y = sum)) +
-                                       geom_line() +
-                                       xlab('Date') + ylab('N') + ggtitle('Recruitment across all Sites') +
-                                       guides(color = guide_legend(ncol = 2)) +
-                                       theme
+                                         ggplot(aes(x = event_date, y = sum)) +
+                                         geom_line() +
+                                         xlab('Date') + ylab('N') + ggtitle('Recruitment across all Sites') +
+                                         guides(color = guide_legend(ncol = 2)) +
+                                         theme
         }
-        else if(plot.by %in% c('site', 'both')){
+        if(plot.by %in% c('site', 'both')){
             ## Metric : Screening
             ## Site   : Site
             results$plot_screened_site <- results$screened %>%
-                                           ggplot(aes(x = event_date, y = sum, colour = site)) +
-                                           geom_line() +
-                                           xlab('Date') + ylab('N') + ggtitle('Recruitment by Site') +
-                                           theme
+                                          ggplot(aes(x = event_date, y = sum, colour = site)) +
+                                          geom_line() +
+                                          xlab('Date') + ylab('N') + ggtitle('Recruitment by Site') +
+                                          theme
         }
     }
     ## Recruitment
@@ -137,7 +138,7 @@ recruitment <- function(df              = master$screening_form,
                                                                        month(event_date),
                                                                        sep = '-')) %>%
                                              group_by(site, year_month) %>%
-                                             summarise(Recruited = n())
+                                             summarise(Recruited = sum(sum, na.rm = TRUE))
         }
         if(plot.by %in% c('site')){
             results$table_recruited_month <- dplyr::filter(results$recruited, site != 'All') %>%
@@ -145,7 +146,7 @@ recruitment <- function(df              = master$screening_form,
                                                                        month(event_date),
                                                                        sep = '-')) %>%
                                              group_by(site, year_month) %>%
-                                             summarise(Recruited = n())
+                                             summarise(Recruited = sum(sum, na.rm = TRUE))
         }
         else if(plot.by %in% c('both')){
             results$table_recruited_month <- results$recruited %>%
@@ -153,7 +154,7 @@ recruitment <- function(df              = master$screening_form,
                                                                        month(event_date),
                                                                        sep = '-')) %>%
                                              group_by(site, year_month) %>%
-                                             summarise(Recruited = n())
+                                             summarise(Recruited = sum(sum, na.rm = TRUE))
         }
         ## Plot
         if(plot.by %in% c('all', 'both')){
@@ -166,7 +167,7 @@ recruitment <- function(df              = master$screening_form,
                                        guides(color = guide_legend(ncol = 2)) +
                                        theme
         }
-        else if(plot.by %in% c('site', 'both')){
+        if(plot.by %in% c('site', 'both')){
             ## Metric : Recruited
             ## Site   : Site
             results$plot_recruited_site <- results$recruited %>%
@@ -179,18 +180,17 @@ recruitment <- function(df              = master$screening_form,
     if(!is.null(screening) & !is.null(enrolment)){
         ## Combine Screening and Recruitment and gather
         results$screened_recruited <- rbind(results$screened,
-                                            results$recruited) ## %>%
-                                      ## gather()
+                                            results$recruited)
         ## Tables by Month
-        results$table_screened_recruited_month <- results$screened %>%
+        results$table_screened_recruited_month <- results$screened_recruited %>%
                                                   mutate(year_month = paste(year(event_date),
                                                                             month(event_date),
                                                                             sep = '-')) %>%
                                                   group_by(site, status, year_month) %>%
-                                                  summarise(n = n()) %>%
+                                                  summarise(n = sum(sum, na.rm = TRUE)) %>%
                                                   spread(key = status, value = n) %>%
-                                                  mutate(Percent = (Recruited * 100) / Screened) %>%
-                                                  dplyr::select(site, year_month, Screened, Recruited)
+                                                  mutate(Percent = (Recruited * 100) / Screened)
+        ## dplyr::select(site, year_month, Screened, Recruited)
         results$screened_recruited <- results$screened_recruited %>%
                                       dplyr::select(-n) %>%
                                       spread(key = status, value = sum)
@@ -198,49 +198,57 @@ recruitment <- function(df              = master$screening_form,
         if(plot.by %in% c('all', 'both')){
             ## Metric : Screened and Recruited
             ## Site   : All
-            results$plot_screen_recruit_all <- dplyr::filter(results$screened_recruited,
+            results$plot_screened_recruited_all <- dplyr::filter(results$screened_recruited,
                                                              site == 'All') %>%
                                                ggplot() +
-                                               geom_line(aes(x = event_date, y = Screened)) +
-                                               geom_line(aes(x = event_date, y = Recruited)) +
+                                               geom_line(aes(x = event_date,
+                                                             y = Screened),
+                                                         linetype = 'dashed') +
+                                               geom_line(aes(x = event_date,
+                                                             y = Recruited),
+                                                         linetype = 'solid') +
                                                xlab('Date') + ylab('N') + ggtitle('Screening and Recruitment across all Sites') +
                                                theme
         }
         if(plot.by %in% c('site', 'both')){
             ## Metric : Screened and Recruited
             ## Site   : Site
-            results$plot_screen_recruit_site <- dplyr::filter(results$screened_recruited,
+            results$plot_screened_recruited_site <- dplyr::filter(results$screened_recruited,
                                                               site != 'All') %>%
                                                 ggplot() +
-                                                geom_line(aes(x = event_date, y = Screened, color = site)) +
-                                                geom_line(aes(x = event_date, y = Recruited, color = site)) +
+                                                geom_line(aes(x = event_date,
+                                                              y = Screened, color = site),
+                                                          linetype = 'dashed') +
+                                                geom_line(aes(x = event_date,
+                                                              y = Recruited, color = site),
+                                                          linetype = 'solid') +
                                                 xlab('Date') + ylab('N') + ggtitle('Screening and Recruitment across all Sites') +
                                                 theme
         }
     }
     ## Facet?
-    if(!is.null(facet)){
+    if(!is.null(facet.col)){
         if(!is.null(screening)){
             ## Metric : Screening
             ## Site   : Site
-            results$plot_screen_site <- results$plot_screen_site +
-                                        facet_wrap(~site, ncol = facet) +
-                                        guides(colour = FALSE) +
-                                        theme(axis.text.x = element_text(angle = 90))
+            results$plot_screened_site <- results$plot_screened_site +
+                                          facet_wrap(~site, ncol = facet.col) +
+                                          guides(colour = FALSE) +
+                                          theme(axis.text.x = element_text(angle = 90))
         }
         if(!is.null(enrolment)){
             ## Metric : Recruitment
             ## Site   : Site
-            results$plot_recruit_site <- results$plot_recruit_site +
-                                         facet_wrap(~site, ncol = facet) +
-                                         guides(colour = FALSE) +
-                                         theme(axis.text.x = element_text(angle = 90))
+            results$plot_recruited_site <- results$plot_recruited_site +
+                                           facet_wrap(~site, ncol = facet.col) +
+                                           guides(colour = FALSE) +
+                                           theme(axis.text.x = element_text(angle = 90))
         }
         if(!is.null(screening) & !is.null(enrolment)){
             ## Metric : Screened and Recruited
             ## Site   : All
-            results$plot_screen_recruit_site <- results$plot_screen_recruit_site +
-                                                facet_wrap(~site, ncol = facet) +
+            results$plot_screened_recruited_site <- results$plot_screened_recruited_site +
+                                                facet_wrap(~site, ncol = facet.col) +
                                                 guides(colour = FALSE) +
                                                 theme(axis.text.x = element_text(angle = 90))
         }
@@ -260,7 +268,7 @@ recruitment <- function(df              = master$screening_form,
         if(!is.null(screening) & !is.null(enrolment)){
             ## Metric : Screened and Recruited
             ## Site   : All
-            results$plot_screen_recruit_site <- ggplotly(results$plot_screen_recruit_site)
+            results$plot_screened_recruited_site <- ggplotly(results$plot_screened_recruited_site)
         }
     }
     return(results)
