@@ -190,6 +190,18 @@ my_df <- imd_lsoa(df            = my_df,
 				  lsoa_postcode = imd_lsoa_postcode)
 ```
 
+### Summarising Data
+
+You will *always* need to summarise data by treatment arm at at least on time point, more likely multiple time points such as Screening, Baseline, 1 Week, Six Week, Six Month or Twelve Month Follow-up depending on the study outcomes and design.  This has always been possible using an array of base functions such as `mean()`, `sd()` `min()` `quantile()` and so forth, and the [dplyr](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html) package has greatly facilitated performing such summaries via the verbs `filter()`, `select()`, `arrange()`, `mutate()` and `summarise()`.  But since the same summary statistics are always required i.e. the mean, standard deviation (SD), median, inter-quartile range (IQR)), minimum, maximum, number of observations and number of missing observations (and it is the authors view that there is no value in presenting say mean and standard deviation and omitting the median and IQR if data follows a [Gaussian distribution](https://en.wikipedia.org/wiki/Normal_distribution) or vice-versa if it is non-Gaussian since you need *both* sets of metrics to make such a judgement), then it is possible to abstract the task and make a function that summarises an arbitrary list of variables by treatmen group, time-point or centre or any combination thereof.  That is the purpose of the `table_summary()` function, which perhaps slightly mis-leadingly doesn't return a table, rather it returns a data frame which can be used as a basis for producing tables using functions such as `kable()` or `xtable()`.
+
+Assuming you have a data frame called `my_study_data` with repeated measurements at three time-points (`baseline`, `1 week` and `6 weeks`) defined by the variable `event_name` with three treatment arms defined in the variable `group`at multiple `sites` and the variables `age`, `height`, `weight`, `bmi` and `fev` (forced expiratory volume) have been recorded and are to be summarised by treatment group for each time point.  You could produce a data frame summarising this using `table_summary()` using...
+
+```
+summary_event_group <- table_summary(df = my_study_data,
+                                     id = individual_id,
+                                     select = c(age, height, weight, bmi, fev),
+                                     event_name, group)
+```
 
 
 ### Regression Modelling
