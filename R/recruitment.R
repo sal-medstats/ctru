@@ -264,19 +264,40 @@ recruitment <- function(df              = master$screening_form,
     ## Plotly?
     if(plotly == TRUE){
         if(!is.null(screening)){
-            ## Metric : Screening
-            ## Site   : Site
-            results$plot_screen_site <- ggplotly(results$plot_screen_site)
+            if(plot.by %in% c('all', 'both')){
+                ## Metric : Screening
+                ## Site   : All
+                results$plotly_screened_all <- ggplotly(results$plot_screened_site)
+            }
+            if(plot.by %in% c('site', 'both')){
+                ## Metric : Screening
+                ## Site   : Site
+                results$plotly_screened_site <- ggplotly(results$plot_screened_site)
+            }
         }
         if(!is.null(enrolment)){
-            ## Metric : Recruitment
-            ## Site   : Site
-            results$plot_recruit_site <- ggplotly(results$plot_recruit_site)
+            if(plot.by %in% c('all', 'both')){
+                ## Metric : Recruitment
+                ## All   : All
+                results$plotly_recruited_all <- ggplotly(results$plot_recruited_all)
+            }
+            if(plot.by %in% c('site', 'both')){
+                ## Metric : Recruitment
+                ## Site   : Site
+                results$plotly_recruited_site <- ggplotly(results$plot_recruited_site)
+            }
         }
         if(!is.null(screening) & !is.null(enrolment)){
-            ## Metric : Screened and Recruited
-            ## Site   : All
-            results$plot_screened_recruited_site <- ggplotly(results$plot_screened_recruited_site)
+            if(plot.by %in% c('all', 'both')){
+                ## Metric : Screened and Recruited
+                ## Site   : All
+                results$plotly_screened_recruited_all <- ggplotly(results$plot_screened_recruited_all)
+            }
+            if(plot.by %in% c('site', 'both')){
+                ## Metric : Screened and Recruited
+                ## Site   : Site
+                results$plotly_screened_recruited_site <- ggplotly(results$plot_screened_recruited_site)
+            }
         }
     }
     return(results)
