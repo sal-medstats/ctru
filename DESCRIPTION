@@ -16,21 +16,13 @@ Description: The functions contained within this package simplify some of the
     of time and effort spent working in isolation.
 Depends:
     R (>= 3.4.0),
-    dplyr(>= 0.6.0),
-    ggplot2 (>= 1.0.1),
-    haven (>= 0.2.0),
     Hmisc (>= 3.17-1),
-    knitr (>= 1.11),
-    lubridate (>= 1.5.0),
-    magrittr (>= 1.5),
     plotly (>= 4.7.0),
     readxl (>= 1.0.0),
     reshape2 (>= 1.4.1),
-    rlang (>= 0.1.1),
     stargazer(>= 5.1),
-    stringr (>= 1.0.0),
     texreg (>= 1.35),
-    tidyr (>= 0.3.1),
+    tidyverse (>= 1.1.1),
     xtable (>= 1.7-4)
 License: GPL-2
 LazyData: true
