@@ -139,7 +139,38 @@ master <- lapply(x = list.files("."),
 
 Every study screens and recruits individuals, often at multiple centers, to the study.  Details of screening and recruitment are recorded and it is useful to include plots and summaries of such information in the Statistical Analysis Report.  To this end the `recruitment()` function has been written which takes the `Screening_form.csv` that you should have read into an R data frame above and will produce tables by month across all sites and by site of the number of individuals screened and/or recruited and produce graphs of the same data (albeit at the daily level rather than monthly summaries).
 
-Assuming you have read the exported `Screening_Form.csv` into a data
+Assuming you have read the exported `Screening_Form.csv` into a data frame stored in the `master` list object then deriving summaries is as simple.  The returned list has a number of objects and the nomenclature has been designed to be straight-forward and intuitive so you know what each object is.
+
+```
+screening_recruitment <- ctru::recruitment(df = master$screening_form,
+                                           screening = 'screening_no',
+                                           enrolment = 'enrolment_no',
+                                           plot.by   = 'both',
+                                           facet.col = 3,
+                                           theme     = theme_bw(),
+                                           plotly    = TRUE)
+names(screening_recruitment)
+ [1] "screened"                       "recruited"                      "table_screened_all_month"
+ [4] "table_screened_site_month"      "table_screened_month"           "plot_screened_all"
+ [7] "plot_screened_site"             "table_recruited_all_month"      "table_recruited_site_month"
+[10] "table_recruited_month"          "plot_recruited_all"             "plot_recruited_site"
+[13] "screened_recruited"             "table_screened_recruited_month" "plot_screened_recruited_all"
+[16] "plot_screened_recruited_site"
+
+```
+
+If you only want to summarise screening across all sites then you can change the options and the returned list will be much shorter, only containing the items you wanted.
+
+
+```
+screening_recruitment <- ctru::recruitment(df = master$screening_form,
+                                           screening = 'screening_no',
+                                           enrolment = NULL,
+                                           plot.by   = 'all',
+                                           facet.col = NULL,
+                                           theme     = theme_bw(),
+                                           plotly    = FALSE)
+```
 
 
 ### Indices of Multiple Deprivation, Lower Super Output Area and Postcodes
@@ -160,7 +191,7 @@ The single best resource you can read to learn how to write R packages is Hadley
 
 ### Install requirements
 
-You need to install the `devtools` package which will make writing packages and documenting them a *lot* easier.
+You need to install the [`devtools`](https://cran.r-project.org/package=devtools) package which will make writing packages and documenting them a *lot* easier.  You should also install and use [`packrat`](https://cran.r-project.org/package=packrat) which simplifies the task of version controlling the package dependencies your package will rely on (this is useful because sometimes, newer versions of packages break existing code).
 
 ```
 install.packages('devtools')
