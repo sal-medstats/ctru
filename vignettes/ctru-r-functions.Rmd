@@ -203,6 +203,15 @@ summary_event_group <- table_summary(df = my_study_data,
                                      event_name, group)
 ```
 
+If you are using [RMarkdown](http://rmarkdown.rstudio.com/) then you could print such a table in-line by [pippin (`%>%`)](https://cran.r-project.org/package=devtools) the output to the `kable()` function and specifying a caption.  The table is then render perfectly in your resulting HTML/PDF/Word document...
+
+```
+table_summary(df = my_study_data,
+              id = individual_id,
+              select = c(age, height, weight, bmi, fev),
+              event_name, group) %>%
+    kable(caption = 'Summary of Age, Height, Weight, BMI and FEV by event and group')
+```
 
 ### Regression Modelling
 
@@ -215,7 +224,7 @@ A large number of studies assess the efficacy of an intervention by means of a r
 
 A useful approach to working on a given project is to write an R package which contains all functions specific to your study.  This makes the statistical analysis self-contained as the package should include the data itself, the functions written to manipulate and analyse them and a literate method of collating all results into a document such as a PDF (using [Knitr](http://yihui.name/knitr/)) or website (using [Shiny](http://shiny.rstudio.com/))
 
-The single best resource you can read to learn how to write R packages is Hadley Wickhams book *R packages* which is available [on-line for free](http://r-pkgs.had.co.nz/).
+The single best resource you can read to learn how to write R packages is Hadley Wickhams book *R packages* which is available [on-line for free](http://r-pkgs.had.co.nz/).  What follows is but a small selection of the information contained in Hadley's book and should not be relied upon in isolation.  Go and read the [R packages book](http://r-pkgs.had.co.nz/) and learn from it.
 
 ### Install requirements
 
