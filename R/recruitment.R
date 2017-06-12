@@ -107,11 +107,8 @@ recruitment <- function(df              = master$screening_form,
             names(results$table_screened_site_month) <- gsub('year_month', 'Date', names(results$table_screened_site_month))
         }
         if(plot.by %in% c('both')){
-            names(results$table_screened_all_month)  %>% print()
-            names(results$table_screened_site_month) %>% print()
             results$table_screened_month <- bind_rows(results$table_screened_all_month,
                                                       results$table_screened_site_month)
-            print('did it bind?')
         }
         ## Plot
         if(plot.by %in% c('all', 'both')){
