@@ -75,7 +75,7 @@ The export will also include the file `Lookups.csv` and it is this file along wi
 
 ### Database Specification
 
-Each database setup in Prospect has a matching *Data Specification* which is usually a Google Spreadsheet owned by a member of the Data Management Team and shared with the statistician.  Within these are two key worksheets `Fields` and `Forms` which describe all of the fields in the database and each of the tables (each table corresponds to a specific Case Report Form, hence the name `Forms`).
+Each database setup in Prospect has a matching *Data Specification* which is usually a Google Spreadsheet owned by a member of the Data Management Team and usually shared with the statistician early in the project. Within each study specific spreadsheet these are two key worksheets `Fields` and `Forms` which describe all of the fields in the database and each of the tables (each table corresponds to a specific Case Report Form, hence the name `Forms`).
 
 You should export both of these worksheets as ASCII CSV and save them in the same directory as the other files you have extracted from Prospect.  You may need to have *Edit* permission on the spreadsheet in order to be able to perform such an export.  If you do not have such permissions and encounter problems then request them from the document owner.
 
@@ -115,6 +115,20 @@ master$blood.sample <- read_prospect(file          = 'Blood sample.csv'
                                      sep           = ',',
 				     convert.dates = TRUE,
                                      dictionary    = master$lookups)
+## Read in Database Specification Fields worksheet
+master$fields <- read_prospect(file          = Fields.csv'
+                               header        = TRUE,
+                               sep           = ',',
+                               convert.dates = TRUE,
+                               dictionary    = master$lookups) %>%
+                 dplyr::select(Form, Subform, Identifier, Label)
+## Read in Database Specification Forms worksheet
+master$forms <- read_prospect(file          = Forms.csv'
+                              header        = TRUE,
+                              sep           = ',',
+                              convert.dates = TRUE,
+                              dictionary    = master$lookups)
+
 ```
 
 You can simplify this even further and reduce the time spent on reading your files in by utilising `lapply()` to work through a list of files in a given directory and have it apply `read_prospect()` to each file and return the results as a list...
