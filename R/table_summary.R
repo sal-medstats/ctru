@@ -28,7 +28,6 @@ table_summary <- function(df     = .,
     quo_select <- enquo(select)
     ## quo_group  <- quos(group)
     quo_group  <- quos(...)
-    UQS(quo_group) %>% print()
     ## Subset the data
     df <- df %>%
           dplyr::select(!!quo_id, !!quo_select, !!!quo_group) %>%
