@@ -21,18 +21,22 @@
 #' @param position Position adjustment for ggplot2, default \code{'dodge'} avoids overlapping histograms.
 #' @param individual Logical of whether to plot outcomes indvidually.
 #' @param plotly Logical of whether to make \code(ggplotly()) figures.  This is useful if outputing HTML since the embedded figures are zoomable.
+#' @param title.continuous Title for faceted histogram plots of continuous variables.
+#' @param title.factor TItle for faceted likert plots of factor variables.
 #'
 #' @export
-plot_summary <- function(df     = .,
-                         id     = individual_id,
-                         select = c(),
-                         lookup = master$lookups_fields,
-                         group  = group,
-                         events = event_name,
-                         theme  = theme_bw(),
-                         position   = 'dodge',
-                         individual = FALSE,
-                         plotly     = FALSE,
+plot_summary <- function(df               = .,
+                         id               = individual_id,
+                         select           = c(),
+                         lookup           = master$lookups_fields,
+                         group            = group,
+                         events           = event_name,
+                         theme            = theme_bw(),
+                         position         = 'dodge',
+                         individual       = FALSE,
+                         plotly           = FALSE,
+                         title.continuous = 'Continuous outcomes by treatment group.',
+                         title.factor     = 'Factor outcomes by treatment group',
                          ...){
     ## Results to return
     results <- list()
@@ -103,6 +107,6 @@ plot_summary <- function(df     = .,
                           left_join(.,
                                     lookup,
                                     by = c('variable' = 'identifier'))
-
+    ## ToDo : How to plot using Likert, might not need to gather, instead rename using the lookup
     return(results)
 }
