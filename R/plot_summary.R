@@ -16,25 +16,31 @@
 #' @param lookup Data frame with descriptions of variables.  If working with data from
 #'               Prospect this should be the imported \code{Fields} worksheet from the
 #'               database specification spreadsheet(/GoogleSheet).
-#' @param group Variables by which to summarise the data by.
-#' @param digits Number of decimal places to be used in proportion/percentages.
+#' @param group Variable by which to summarise the data by.
+#' @param events Variable defining repeated events.
+#' @param position Position adjustment for ggplot2, default \code{'dodge'} avoids overlapping histograms.
+#' @param individual Logical of whether to plot outcomes indvidually.
+#' @param plotly Logical of whether to make \code(ggplotly()) figures.  This is useful if outputing HTML since the embedded figures are zoomable.
 #'
 #' @export
 plot_summary <- function(df     = .,
                          id     = individual_id,
                          select = c(),
                          lookup = master$lookups_fields,
-                         ## group  = c(),
-                         ## digits = 3,
+                         group  = group,
+                         events = event_name,
                          theme  = theme_bw(),
+                         position   = 'dodge',
+                         individual = FALSE,
+                         plotly     = FALSE,
                          ...){
     ## Results to return
     results <- list()
     ## Quote all arguments (see http://dplyr.tidyverse.org/articles/programming.html)
     quo_id     <- enquo(id)
     quo_select <- enquo(select)
-    ## quo_group  <- quos(group)
-    quo_group  <- quos(...)
+    quo_group  <- enquo(group)
+    quo_events <- enquo(events)
     ## Subset the data and de-duplicate
     df <- df %>%
           dplyr::select(!!quo_id, !!quo_select, !!!quo_group) %>%
@@ -47,15 +53,14 @@ plot_summary <- function(df     = .,
                           gather(key = variable, value = value, numeric_vars) %>%
                           left_join(.,
                                     lookup,
-                                    by = c('variable' = 'identifier'))
-    quo_group[[1]] %>% print()
+                                    by = c('variable' = 'identifier')) %>%
+                          ## Ensure value is numberic otherwise nothing to plot
+                          mutate(value = as.numeric(value))
+    ## Facetted plot
     results$continuous <- results$df_numeric %>%
                           dplyr::filter(!is.na(!!!quo_group)) %>%
-                          ## ToDo : get colour() working
-                          ## ggplot(aes(x = value)) +
-                          ggplot(aes_(~value, colour = quo_group[[1]])) %>%
-                          ## ## ggplot(aes(value, colour = !!!quo_group)) %>%
-                          geom_histogram(stat = 'count') +
+                          ggplot(aes_(~value, fill = quo_group)) +
+                          geom_histogram(position = position) +
                           facet_wrap(~label,
                                      scales = 'free',
                                      strip.position = 'bottom') +
@@ -63,7 +68,41 @@ plot_summary <- function(df     = .,
                           theme +
                           theme(strip.background = element_blank(),
                                 strip.placement  = 'outside')
-
+    if(plotly == TRUE){
+        results$continuous <- results$continuous %>%
+                              ggplotly()
+    }
+    ## Plot individual figures if requested
+    if(individual == TRUE){
+        for(x in numeric_vars){
+            ## Extract the label
+            xlabel <- results$df_numeric %>%
+                      dplyr::filter(variable == x) %>%
+                      dplyr::select(label) %>%
+                      unique() %>%
+                      as.data.frame()
+            ## Plot current variable
+            results[[x]] <- results$df_numeric %>%
+                            dplyr::filter(!is.na(!!!quo_group) & variable == x) %>%
+                            ggplot(aes_(~value, fill = quo_group)) +
+                            geom_histogram(position = position) +
+                            xlab(xlabel[[1]]) +
+                            ylab('N') +
+                            theme
+            if(plotly == TRUE){
+                results[[x]] <- results[[x]] %>%
+                                ggplotly()
+            }
+        }
+    }
     ## Subset factor variables, gather() and plot these
+    factor_vars <- which(sapply(df, class) == 'factor') %>% names()
+    results$df_factor <- df %>%
+                          dplyr::select(which(sapply(., class) == 'factor'), !!quo_id, !!!quo_group) %>%
+                          gather(key = variable, value = value, factor_vars) %>%
+                          left_join(.,
+                                    lookup,
+                                    by = c('variable' = 'identifier'))
+
     return(results)
 }
