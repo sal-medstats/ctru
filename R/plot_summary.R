@@ -30,7 +30,7 @@ plot_summary <- function(df               = .,
                          select           = c(),
                          lookup           = master$lookups_fields,
                          group            = group,
-                         events           = event_name,
+                         events           = NULL,
                          theme            = theme_bw(),
                          position         = 'dodge',
                          individual       = FALSE,
@@ -60,18 +60,29 @@ plot_summary <- function(df               = .,
                                     by = c('variable' = 'identifier')) %>%
                           ## Ensure value is numberic otherwise nothing to plot
                           mutate(value = as.numeric(value))
-    ## Facetted plot
+    ## Generate plot
     results$continuous <- results$df_numeric %>%
                           dplyr::filter(!is.na(!!!quo_group)) %>%
                           ggplot(aes_(~value, fill = quo_group)) +
                           geom_histogram(position = position) +
-                          facet_wrap(~label,
-                                     scales = 'free',
-                                     strip.position = 'bottom') +
                           xlab('') + ylab('N') +
+                          ggtitle(title.continuous) +
                           theme +
                           theme(strip.background = element_blank(),
                                 strip.placement  = 'outside')
+    ## Facetted plot when no events specified
+    if(is.null(events)){
+        results$continuous <- results$continuous +
+                              facet_wrap(~label,
+                                         scales = 'free',
+                                         strip.position = 'bottom')
+    }
+    else if(!is.null(events)){
+        results$continuous <- results$continuous +
+                              facet_grid(label~event,
+                                         scales = 'free',
+                                         strip.position = 'bottom')
+    }
     if(plotly == TRUE){
         results$continuous <- results$continuous %>%
                               ggplotly()
