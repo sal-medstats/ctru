@@ -20,7 +20,8 @@
 #' @param events Variable defining repeated events.
 #' @param position Position adjustment for ggplot2, default \code{'dodge'} avoids overlapping histograms.
 #' @param individual Logical of whether to plot outcomes indvidually.
-#' @param plotly Logical of whether to make \code(ggplotly()) figures.  This is useful if outputing HTML since the embedded figures are zoomable.
+#' @param plotly Logical of whether to make \code{ggplotly()} figures.  This is useful if outputing HTML since the embedded figures are zoomable.
+#' @param remove.na Logical to remove NA from plotting (only affects factor variables since NA is excluded from continuous plots by default anyway).
 #' @param title.continuous Title for faceted histogram plots of continuous variables.
 #' @param title.factor TItle for faceted likert plots of factor variables.
 #'
@@ -35,6 +36,7 @@ plot_summary <- function(df               = .,
                          position         = 'dodge',
                          individual       = FALSE,
                          plotly           = FALSE,
+                         remove.na        = TRUE,
                          title.continuous = 'Continuous outcomes by treatment group.',
                          title.factor     = 'Factor outcomes by treatment group',
                          ...){
@@ -45,15 +47,23 @@ plot_summary <- function(df               = .,
     quo_select <- enquo(select)
     quo_group  <- enquo(group)
     quo_events <- enquo(events)
+    ## Since quo_events is used to control subsequent steps if its NULL select()
+    ## fails, therefore conditionally build the variables that are select on
+    to_select <- c(quo_id, quo_group)
+    if(!is.null(events)){
+        to_select <- c(to_select, quo_events)
+    }
     ## Subset the data and de-duplicate
     df <- df %>%
-          dplyr::select(!!quo_id, !!quo_select, !!!quo_group) %>%
+          ## dplyr::select(!!quo_id, !!quo_select, !!quo_events, !!quo_group) %>%
+          dplyr::select(!!!to_select, !!quo_select) %>%
           unique()
     ## Subset the continuous variables gather() and bind with the lookup descriptions
     ## so that when plotted the graphs have meaningful titles
     numeric_vars <- which(sapply(df, class) == 'numeric') %>% names()
     results$df_numeric <- df %>%
-                          dplyr::select(which(sapply(., class) == 'numeric'), !!quo_id, !!!quo_group) %>%
+                          dplyr::select(which(sapply(., class) == 'numeric'),
+                                        !!!to_select) %>%
                           gather(key = variable, value = value, numeric_vars) %>%
                           left_join(.,
                                     lookup,
@@ -62,7 +72,7 @@ plot_summary <- function(df               = .,
                           mutate(value = as.numeric(value))
     ## Generate plot
     results$continuous <- results$df_numeric %>%
-                          dplyr::filter(!is.na(!!!quo_group)) %>%
+                          dplyr::filter(!is.na(!!quo_group)) %>%
                           ggplot(aes_(~value, fill = quo_group)) +
                           geom_histogram(position = position) +
                           xlab('') + ylab('N') +
@@ -77,11 +87,10 @@ plot_summary <- function(df               = .,
                                          scales = 'free',
                                          strip.position = 'bottom')
     }
-    else if(!is.null(events)){
+    else{
         results$continuous <- results$continuous +
-                              facet_grid(label~event,
-                                         scales = 'free',
-                                         strip.position = 'bottom')
+                              facet_grid(label~quo_events,
+                                         scales = 'free')
     }
     if(plotly == TRUE){
         results$continuous <- results$continuous %>%
@@ -98,7 +107,7 @@ plot_summary <- function(df               = .,
                       as.data.frame()
             ## Plot current variable
             results[[x]] <- results$df_numeric %>%
-                            dplyr::filter(!is.na(!!!quo_group) & variable == x) %>%
+                            dplyr::filter(!is.na(!!quo_group) & variable == x) %>%
                             ggplot(aes_(~value, fill = quo_group)) +
                             geom_histogram(position = position) +
                             xlab(xlabel[[1]]) +
@@ -110,14 +119,65 @@ plot_summary <- function(df               = .,
             }
         }
     }
+    ##########################################################################
+    ## Factor Variables                                                     ##
+    ##########################################################################
+    ## Consider plotting using methods described at...                      ##
+    ## http://rnotr.com/likert/ggplot/barometer/likert-plots/               ##
+    ## http://rnotr.com/likert/ggplot/barometer/likert-plotly/              ##
+    ##########################################################################
     ## Subset factor variables, gather() and plot these
     factor_vars <- which(sapply(df, class) == 'factor') %>% names()
     results$df_factor <- df %>%
-                          dplyr::select(which(sapply(., class) == 'factor'), !!quo_id, !!!quo_group) %>%
-                          gather(key = variable, value = value, factor_vars) %>%
-                          left_join(.,
-                                    lookup,
-                                    by = c('variable' = 'identifier'))
+                         dplyr::select(which(sapply(., class) == 'factor'),
+                                       !!!to_select) %>%
+                         gather(key = variable, value = value, factor_vars) %>%
+                         left_join(.,
+                                   lookup,
+                                   by = c('variable' = 'identifier'))
+    ## Remove NAs
+    if(remove.na == TRUE){
+        results$df_factor <- results$df_factor %>%
+                             dplyr::filter(!is.na(value))
+    }
+    ## Plot
+    results$factor <- results$df_factor %>%
+                      ggplot(aes(x = label, fill = value),
+                                position = position_stack(reverse = TRUE)) +
+                      geom_bar(position = 'fill') +
+                      coord_flip() +
+                      xlab('') + ylab('N') +
+                      ggtitle(title.factor) +
+                      facet_wrap(~group, ncol = 2,
+                                 scales = 'free',
+                                 strip.position = 'bottom') +
+                      theme +
+                      theme(strip.background = element_blank(),
+                            strip.placement  = 'outside')
+    if(individual == TRUE){
+        print(factor_vars)
+        for(x in factor_vars){
+            print(x)
+            ## Extract the label
+            xlabel <- results$df_factor %>%
+                      dplyr::filter(variable == x) %>%
+                      dplyr::select(label) %>%
+                      unique() %>%
+                      as.data.frame()
+        }
+        ## Plot current variable
+        results[[x]] <- results$df_numeric %>%
+                        dplyr::filter(!is.na(!!quo_group) & variable == x) %>%
+                        ggplot(aes(x = label, fill = value)) +
+                        geom_bar(position = 'fill') +
+                        xlab(xlabel[[1]]) +
+                        ylab('N') +
+                        theme
+        if(plotly == TRUE){
+            results[[x]] <- results[[x]] %>%
+                ggplotly()
+        }
+    }
     ## ToDo : How to plot using Likert, might not need to gather, instead rename using the lookup
     return(results)
 }
