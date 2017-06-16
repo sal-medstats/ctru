@@ -144,6 +144,32 @@ plot_summary <- function(df               = .,
                              dplyr::filter(!is.na(value))
     }
     ## Plot
+    ## ToDo : group factor variables based on the form, plot each as 1 x group
+    ##        then use gridExtra() to arrange.
+    factor_sets <- results$df_factor %>%
+                   dplyr::select(form) %>%
+                   table() %>%
+                   names()
+    ## Plot groups of factors based on the Form they are collected on
+    for(x in factor_sets){
+        out <- gsub(' ', '_', x) %>%
+               gsub('(', '', .) %>%
+               gsub(')', '', .) %>%
+               tolower()
+        results[[paste0('factor_', out)]] <- results$df_factor %>%
+                                             dplyr::filter(form == x) %>%
+                                             ggplot(aes(x = label, fill = value),
+                                                    position = position_stack(reverse = TRUE)) +
+                                             geom_bar(position = 'fill') +
+                                             coord_flip() +
+                                             xlab('') + ylab('N') +
+                                             ggtitle(x) +
+                                             facet_grid(form~group,
+                                                        scales = 'free') +
+                                             theme +
+                                             theme(strip.background = element_blank(),
+                                                   strip.placement  = 'outside')
+    }
     results$factor <- results$df_factor %>%
                       ggplot(aes(x = label, fill = value),
                                 position = position_stack(reverse = TRUE)) +
@@ -151,9 +177,8 @@ plot_summary <- function(df               = .,
                       coord_flip() +
                       xlab('') + ylab('N') +
                       ggtitle(title.factor) +
-                      facet_wrap(~group, ncol = 2,
-                                 scales = 'free',
-                                 strip.position = 'bottom') +
+                      facet_grid(form~group,
+                                 scales = 'free') +
                       theme +
                       theme(strip.background = element_blank(),
                             strip.placement  = 'outside')
