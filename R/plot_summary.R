@@ -58,6 +58,9 @@ plot_summary <- function(df               = .,
           ## dplyr::select(!!quo_id, !!quo_select, !!quo_events, !!quo_group) %>%
           dplyr::select(!!!to_select, !!quo_select) %>%
           unique()
+    ##########################################################################
+    ## Factor Variables                                                     ##
+    ##########################################################################
     ## Subset the continuous variables gather() and bind with the lookup descriptions
     ## so that when plotted the graphs have meaningful titles
     numeric_vars <- which(sapply(df, class) == 'numeric') %>% names()
@@ -164,18 +167,19 @@ plot_summary <- function(df               = .,
                       dplyr::select(label) %>%
                       unique() %>%
                       as.data.frame()
-        }
-        ## Plot current variable
-        results[[x]] <- results$df_numeric %>%
-                        dplyr::filter(!is.na(!!quo_group) & variable == x) %>%
-                        ggplot(aes(x = label, fill = value)) +
-                        geom_bar(position = 'fill') +
-                        xlab(xlabel[[1]]) +
-                        ylab('N') +
-                        theme
-        if(plotly == TRUE){
-            results[[x]] <- results[[x]] %>%
-                ggplotly()
+            ## Plot current variable
+            results[[x]] <- results$df_factor %>%
+                            dplyr::filter(!is.na(!!quo_group) & variable == x) %>%
+                            ggplot(aes(x = label, fill = value)) +
+                            geom_bar(position = 'fill') +
+                            coord_flip() +
+                            xlab(xlabel[[1]]) +
+                            ylab('N') +
+                            theme
+            if(plotly == TRUE){
+                results[[x]] <- results[[x]] %>%
+                                ggplotly()
+            }
         }
     }
     ## ToDo : How to plot using Likert, might not need to gather, instead rename using the lookup
