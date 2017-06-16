@@ -158,9 +158,7 @@ plot_summary <- function(df               = .,
                       theme(strip.background = element_blank(),
                             strip.placement  = 'outside')
     if(individual == TRUE){
-        print(factor_vars)
         for(x in factor_vars){
-            print(x)
             ## Extract the label
             xlabel <- results$df_factor %>%
                       dplyr::filter(variable == x) %>%
