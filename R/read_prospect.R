@@ -123,5 +123,39 @@ read_prospect <- function(file               = 'Lookups.csv',
             }
         }
     }
+    ## If this is EQ5d data then recode variables
+    if(file == 'EQ5D.csv'){
+        new <- new %>%
+               mutate(mobility = recode_factor(mobility,
+                                               'I have no problem in walking about'        = 'None',
+                                               'I have slight problems walking about'      = 'Slight',
+                                               'I have moderate problems in walking about' = 'Moderate',
+                                               'I have severe problems in walking about'   = 'Severe',
+                                               'I am unable to walk'                       = 'Extreme'),
+                      self_care = recode_factor(self_care,
+                                                'I have no problem washing or dressing myself'        = 'None',
+                                                'I have slight problems washing or dressing myself'   = 'Slight',
+                                                'I have moderate problems washing or dressing myself' = 'Moderate',
+                                                'I have severe problems washing or dressing myself'   = 'Severe',
+                                                'I am unable to wash or dress myself'                 = 'Extreme'),
+                      usual_activity = recode_factor(usual_activity,
+                                                     'I have no problems doing my usual activities'       = 'None',
+                                                     'I have slight problems doing my usual activities'   = 'Slight',
+                                                     'I have moderate problems doing my usual activities' = 'Moderate',
+                                                     'I have severe problems doing my usual activities'   = 'Severe',
+                                                     'I am unable to do my usual activities'            = 'Extreme'),
+                      pain_discomfort = recode_factor(pain_discomfort,
+                                                      'I have no pain or discomfort'       = 'None',
+                                                      'I have slight pain or discomfort'   = 'Slight',
+                                                      'I have moderate pain or discomfort' = 'Moderate',
+                                                      'I have severe pain or discomfort'   = 'Severe',
+                                                      'I have extreme pain or discomfort'  = 'Extreme'),
+                      anxiety_depression = recode_factor(anxiety_depression,
+                                                         'I am not anxious or depressed'        = 'None',
+                                                         'I am slightly anxious or depressed'   = 'Slight',
+                                                         'I am moderately anxious or depressed' = 'Moderate',
+                                                         'I am severely anxious or depressed'   = 'Severe',
+                                                         'I am extremely anxious or depressed'  = 'Extreme'))
+    }
     return(new)
 }
