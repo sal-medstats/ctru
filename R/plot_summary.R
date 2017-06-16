@@ -153,8 +153,9 @@ plot_summary <- function(df               = .,
     ## Plot groups of factors based on the Form they are collected on
     for(x in factor_sets){
         out <- gsub(' ', '_', x) %>%
-               gsub('(', '', .) %>%
-               gsub(')', '', .) %>%
+               gsub('\\(', '', .) %>%
+               gsub('\\)', '', .) %>%
+               gsub('-', '_', .) %>%
                tolower()
         results[[paste0('factor_', out)]] <- results$df_factor %>%
                                              dplyr::filter(form == x) %>%
@@ -162,7 +163,7 @@ plot_summary <- function(df               = .,
                                                     position = position_stack(reverse = TRUE)) +
                                              geom_bar(position = 'fill') +
                                              coord_flip() +
-                                             xlab('') + ylab('N') +
+                                             xlab('') + ylab('Proportion') +
                                              ggtitle(x) +
                                              facet_grid(form~group,
                                                         scales = 'free') +
@@ -175,7 +176,7 @@ plot_summary <- function(df               = .,
                                 position = position_stack(reverse = TRUE)) +
                       geom_bar(position = 'fill') +
                       coord_flip() +
-                      xlab('') + ylab('N') +
+                      xlab('') + ylab('Proportion') +
                       ggtitle(title.factor) +
                       facet_grid(form~group,
                                  scales = 'free') +
