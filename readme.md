@@ -57,6 +57,19 @@ I would advocate using [SSH Keys](https://help.github.com/articles/generating-an
 
 * Full support for Non-Standard Evaluation when explicitly supplying grouing variables as an argument rather than `...`.
 
+### plot_summary()
+
+* Function to plot specified measurements by specified subset.
+* Produces histograms by specified treatment groups for continuous variables.
+* Produces bar charts by specified treatment groups for factor variables.
+* Pooled plots are produced and optionally individual plots for each variable can be produced.
+
+#### ToDo
+
+* For factor variables need to group responses into surveys and `facet_grid()` them with rows for surveys and columns for the specified groups.
+* Extend factor summaries to be performed by specified events.
+* Finish off plotting continuous variables by variable (rows) and event (columns).
+
 ### `idm_lsoa()`
 
 * Function to combine [Lower Super Output Area (LSOA) level Index of Multiple Deprivation](https://www.gov.uk/government/statistics/english-indices-of-deprivation-2015) statistics with an arbitrary user specified data frame based on 2011 postcode.  Provides the overall IMD score and each component as absolute numbers and deciles as well as the ranking of all scores and components across England.
