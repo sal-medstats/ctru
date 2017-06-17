@@ -151,6 +151,7 @@ plot_summary <- function(df               = .,
                    table() %>%
                    names()
     ## Plot groups of factors based on the Form they are collected on
+    results_length_pre <- length(results)
     for(x in factor_sets){
         out <- gsub(' ', '_', x) %>%
                gsub('\\(', '', .) %>%
@@ -171,6 +172,8 @@ plot_summary <- function(df               = .,
                                              theme(strip.background = element_blank(),
                                                    strip.placement  = 'outside')
     }
+    results_length_post <- length(results)
+
     results$factor <- results$df_factor %>%
                       ggplot(aes(x = label, fill = value),
                                 position = position_stack(reverse = TRUE)) +
