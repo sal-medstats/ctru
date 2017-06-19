@@ -21,17 +21,17 @@
 #'
 #' @export
 table_summary <- function(df     = .,
-                          lookup = master$lookup_fields,
+                          lookup = master$lookups_fields,
                           id     = individual_id,
                           select = c(),
-                          group  = c(),
+                          ## group  = c(),
                           ## digits = 3,
                           ...){
     ## Quote all arguments (see http://dplyr.tidyverse.org/articles/programming.html)
     quo_id     <- enquo(id)
     quo_select <- enquo(select)
-    quo_group  <- quos(group)
-    ## quo_group  <- quos(...)
+    ## quo_group  <- quos(group)
+    quo_group  <- quos(...)
     ## Subset the data
     df <- df %>%
           dplyr::select(!!quo_id, !!quo_select, !!!quo_group) %>%
@@ -55,10 +55,9 @@ table_summary <- function(df     = .,
                          p99     = quantile(value, probs = 0.99, na.rm = TRUE),
                          min     = min(value, na.rm = TRUE),
                          max     = max(value, na.rm = TRUE))
-    ## Get meaningful labels for variables that are being summarised
+    ## Obtain meaningful labels for the variables summarised
     results <- left_join(results,
                          lookup,
-                         by = c('variable' = 'identifier')) %>%
-               dplyr::select(!!!quo_group, label, n, missing, mean, sd, p01, p05, p25, p50, p75, p95, p99, min, max)
+                         by = c('variable' = 'identifier'))
     return(results)
 }
