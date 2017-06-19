@@ -21,7 +21,7 @@
 #'
 #' @export
 table_summary <- function(df     = .,
-                          lookup = master$lookup_fields
+                          lookup = master$lookup_fields,
                           id     = individual_id,
                           select = c(),
                           group  = c(),
@@ -59,6 +59,6 @@ table_summary <- function(df     = .,
     results <- left_join(results,
                          lookup,
                          by = c('variable' = 'identifier')) %>%
-               dplyr::select(!!!quo_group, label, n, missing, mean, sd, p01, p05, p25, p50, p75, p95, p99, min max)
+               dplyr::select(!!!quo_group, label, n, missing, mean, sd, p01, p05, p25, p50, p75, p95, p99, min, max)
     return(results)
 }
