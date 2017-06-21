@@ -11,7 +11,7 @@ vignette: >
 
 [Sheffield Clinical Trials Research Unit](https://www.sheffield.ac.uk/scharr/sections/dts/ctru) conducts clinical trials of different medical and therapeautic interventions.  The Standard Operating Procedures (SOPs) state that work should be conducted in a reproducible manner to which end software such as [R](https://www.r-project.org) or [Stata](https://www.stata.com/) are employed to conduct statistical analyses using the principles of [Reproducibility](https://en.wikipedia.org/wiki/Reproducibility) using scripts and dynamic reporting such as [Knitr](https://yihui.name/knitr/).  Many of the tasks involved in performing the statistical analysis are common across the studies conducted, for example the bespoke database system [Prospect](https://www.ctru-prospect.shef.ac.uk/) is used to store all data for which the CTRU has data management responsibilities and any subsequent data analysis will use the data exported from the tables of the database to ASCII text files.  It is very unfortunate that the relational nature of the Prospect database can not be used to output complete data sets as it means Statisticians have to recreate the relationships that exist within the database (i.e. duplication of work) and whilst it has been queried whether this can change but nothing has yet and is unlikely to in the foreseable future (there are several reasons which briefly are that access to the database is implemented at the WebUI level, meaning granting access to the database would allow access to all study data and to change this would require completely re-writing Prospect from the ground up, something which the CTRU can not afford as this work is out-sourced to [EpiGensys](https://www.epigenesys.org.uk/).
 
-Regardless, because study data always comes from Prospect it means there is scope for streamlining the work flow by writing generalised functions to perform the tasks that are common across studies such as reading in files exported from Prospect, and formatting factor variables, converting dates, summarising screening and recruitment, baseline and follow-up summaries etc. and that is the premise of the `ctru` package this vignette describes.
+Regardless, because study data always comes from Prospect it means there is scope for streamlining the work flow by writing generalised functions to perform the tasks that are common across studies such as reading in files exported from Prospect, and formatting factor variables, converting dates, summarising screening and recruitment, baseline and follow-up summaries etc. and that is the premise of the `ctru` package this vignette describes.  The functions are described below along with some pointers on the meaning of the often cryptic error messages that R throws up, what they mean in relation to these functions and how to correct them.
 
 ## Installation
 
@@ -116,18 +116,18 @@ master$blood.sample <- read_prospect(file          = 'Blood sample.csv'
 				     convert.dates = TRUE,
                                      dictionary    = master$lookups)
 ## Read in Database Specification Fields worksheet
-master$fields <- read_prospect(file          = Fields.csv'
-                               header        = TRUE,
-                               sep           = ',',
-                               convert.dates = TRUE,
-                               dictionary    = master$lookups) %>%
-                 dplyr::select(Form, Subform, Identifier, Label)
+master$lookups_fields <- read_prospect(file          = Fields.csv'
+                                       header        = TRUE,
+                                       sep           = ',',
+                                       convert.dates = TRUE,
+                                       dictionary    = master$lookups) %>%
+                         dplyr::select(Form, Subform, Identifier, Label)
 ## Read in Database Specification Forms worksheet
-master$forms <- read_prospect(file          = Forms.csv'
-                              header        = TRUE,
-                              sep           = ',',
-                              convert.dates = TRUE,
-                              dictionary    = master$lookups)
+master$lookups_forms <- read_prospect(file          = Forms.csv'
+                                      header        = TRUE,
+                                      sep           = ',',
+                                      convert.dates = TRUE,
+                                      dictionary    = master$lookups)
 
 ```
 
@@ -144,6 +144,12 @@ master <- lapply(x = list.files("."),
                                convert.dates = TRUE,
                                dictionary    = master$lookups))
 ```
+
+#### Common Errors
+
+| Error message              | Problem                     | Solution                 |
+|----------------------------|-----------------------------|--------------------------|
+| `Error in file(file, "rt") : cannot open the connection` | The specified file can not be found | You are eitehr in the wrong directory, or you mis-typed the filename. |
 
 
 ## Common Summaries & Analyses
@@ -226,6 +232,38 @@ table_summary(df = my_study_data,
               event_name, group) %>%
     kable(caption = 'Summary of Age, Height, Weight, BMI and FEV by event and group')
 ```
+
+#### Common Errors
+
+| Error message              | Problem                     | Solution                 |
+|----------------------------|-----------------------------|--------------------------|
+| `Error in summarise_impl(.data, dots) :`                       |  |  |
+|   `Evaluation error: non-numeric argument to binary operator.` |  |  |
+
+### Plotting Data
+
+Often tables such as those produced by `table_summary()` are augmented by graphical displays of the distribution of responses, for example histograms for continuous variables, or bar charts for categorical variables.  Graphs provide a quick near visual overview of the distribution of data and should be an important first step in the process of analysing data.  There are invariably always a lot of variables that need plotting and frequently responses at different time points will need plotting individually.  The `plot_summary()` function aims to make this task relatively simple, allowing the user to specify multiple variables and producing facetted plots of all numeric and factor variables and individual plots for each variable.
+
+```
+plot_summary(df = my_study_data,
+             id = individual_id,
+			 select = c(age, height, weight, bmi, fev),
+			 group  = group,
+			 events = NULL,
+			 lookup = master$lookups_field,
+			 theme  = theme_bw(),
+			 position = 'dodge'.
+			 individual = TRUE,
+			 title.continuous = 'Plot of continuous variables by Treatment group',
+			 title.factor     = 'Plot of responses to survey questions by Treatment group')
+```
+
+#### Common Errors
+
+| Error message              | Problem                     | Solution                 |
+|----------------------------|-----------------------------|--------------------------|
+| `Error in summarise_impl(.data, dots) :`                       |  |  |
+|   `Evaluation error: non-numeric argument to binary operator.` |  |  |
 
 ### Regression Modelling
 
