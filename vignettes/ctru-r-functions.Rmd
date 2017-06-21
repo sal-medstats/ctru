@@ -237,8 +237,7 @@ table_summary(df = my_study_data,
 
 | Error message              | Problem                     | Solution                 |
 |----------------------------|-----------------------------|--------------------------|
-| `Error in summarise_impl(.data, dots) :`                       |  |  |
-|   `Evaluation error: non-numeric argument to binary operator.` |  |  |
+| `Error in summarise_impl(.data, dots) : Evaluation error: non-numeric argument to binary operator.`  |  |  |
 
 ### Plotting Data
 
@@ -262,8 +261,7 @@ plot_summary(df = my_study_data,
 
 | Error message              | Problem                     | Solution                 |
 |----------------------------|-----------------------------|--------------------------|
-| `Error in summarise_impl(.data, dots) :`                       |  |  |
-|   `Evaluation error: non-numeric argument to binary operator.` |  |  |
+| `Error in summarise_impl(.data, dots) : Evaluation error: non-numeric argument to binary operator.`  |  |  |
 
 ### Regression Modelling
 
