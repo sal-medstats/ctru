@@ -237,7 +237,7 @@ table_summary(df = my_study_data,
 
 | Error message              | Problem                     | Solution                 |
 |----------------------------|-----------------------------|--------------------------|
-| `Error in summarise_impl(.data, dots) : Evaluation error: non-numeric argument to binary operator.`  |  |  |
+| `Error in summarise_impl(.data, dots) : Evaluation error: non-numeric argument to binary operator.`  | You have supplied a factor variable to be summarised. | Only supply variables/fields that have `class() == "numeric"` |
 
 ### Plotting Data
 
@@ -261,7 +261,7 @@ plot_summary(df = my_study_data,
 
 | Error message              | Problem                     | Solution                 |
 |----------------------------|-----------------------------|--------------------------|
-| `Error in summarise_impl(.data, dots) : Evaluation error: non-numeric argument to binary operator.`  |  |  |
+| `Error: `by` can't contain join column `variable` which is missing from LH`  |  |  |
 
 ### Regression Modelling
 
