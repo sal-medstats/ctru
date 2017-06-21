@@ -267,7 +267,7 @@ plot_summary(df = my_study_data,
 
 A large number of studies assess the efficacy of an intervention by means of a regression model that allows the estimation of the effect an intervention has on the desired outcome whilst adjusting for co-variates and clustering (if a clustered study design is being utilised).  Invariably most analyses will be repeated twice, once using an Intention To Treat (ITT) cohort and once using a Per-Protocol (PP) cohort and it is natural to present the results of both simultaneously.  the `regress_ctru()` function is a wrapper that achieves this allowing arbitrary regression equations to be specified for a range of regression modelling functions.  It saves and returns the results of each model fit as well as combining them into formatted tables (LaTeX/HTML/ASCII) using the [Stargazer]() package.
 
-** ToDo ** Write the function and how to use it.
+**ToDo** Write the function and how to use it.
 
 
 ## Writing Packages
