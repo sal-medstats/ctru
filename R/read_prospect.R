@@ -84,6 +84,12 @@ read_prospect <- function(file               = 'Lookups.csv',
         new <- mutate(new,
                       field = gsub("_", ".", field))
     }
+    ## Potential for duplicate variable names when removing '_o'  from 'oth_o' variables
+    ## correct this in the lookup
+    if(file == 'Lookups.csv'){
+        new <- mutate(new,
+                      field = gsub("oth_o$", "other", field))
+    }
     if(!is.null(dictionary)){
         ## Subset the dictionary, required because sometimes a field name
         ## is used multiple times across different forms
