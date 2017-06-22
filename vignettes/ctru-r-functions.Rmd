@@ -112,29 +112,18 @@ master$lookups_fields <- read_prospect(file          = Fields.csv'
 ## R01_003,1,0,0,1
 ## R01_004,0,1,1,0
 ##
-## Variables 'medication_a_o' and so on are therefore not listed and need adding.
+## Variables 'medication_a_o' and so on are not listed and need adding, but in the Lookups.csv
+## they are detailed but without the suffixed '_o' so they need adding along the lines of...
 master$lookups_fields <- rbind(master$lookups_fields,
-                               c('Meds','','A','medication_a_o','Taking medication A'),
-                               c('Meds','','A','medication_b_o','Taking medication B'),
-                               c('Meds','','A','medication_c_o','Taking medication C'),
-                               c('Meds','','A','medication_d_o','Taking medication D'))
+                               c('Meds','','A','medication_a','Taking medication A'),
+                               c('Meds','','A','medication_b','Taking medication B'),
+                               c('Meds','','A','medication_c','Taking medication C'),
+                               c('Meds','','A','medication_d','Taking medication D'))
 ## Read in the 'Lookups.csv' to this list
 master$lookups <- read_prospect(file       = 'Lookups.csv',
 	                            header     = TRUE,
                                 sep        = ',',
                                 dictionary = NULL)
-## Similarly the levels for the binary indicators that are recorded as Type = Flag are
-## NOT documented in the Lookups and therefore need adding.  These are always binary
-## so are straightforward to add in the following manner...
-master$lookups <- rbind(master$lookups,
-                        c('Meds','','medication_a_o',0,'No'),
-                        c('Meds','','medication_a_o',1,'Yes'),
-                        c('Meds','','medication_b_o',0,'No'),
-                        c('Meds','','medication_b_o',1,'Yes'),
-                        c('Meds','','medication_c_o',0,'No'),
-                        c('Meds','','medication_c_o',1,'Yes'),
-                        c('Meds','','medication_d_o',0,'No'),
-                        c('Meds','','medication_d_o',1,'Yes'))
 ```
 
 You now have the dictionary loaded into R and it can be used in subsequent calls to `read_prospect()` and factor variables will be automatically encoded and labelled.
