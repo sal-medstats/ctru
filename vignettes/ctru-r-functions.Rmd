@@ -86,11 +86,55 @@ You should now extract all files contained in the `.zip` that Prospect exported 
 ```
 ## Create a list to store all objects in
 master <- list()
+## Read in Database Specification Fields worksheet
+master$lookups_fields <- read_prospect(file          = Fields.csv'
+                                       header        = TRUE,
+                                       sep           = ',',
+                                       convert.dates = TRUE,
+                                       dictionary    = master$lookups) %>%
+                         dplyr::select(Form, Subform, Identifier, Label)
+## Database Specifications are not explicit as fields which are 'Flags' and can have
+## multiple responses are exported as multiple fields each with the option and '_o'
+## appended.  For example if there is a field that records which medications are being
+## taken called 'medication' with options for drugs 'A', 'B', 'C' and 'D' then the
+## database specifcation records this as...
+##
+## Form    | Subform     | Fieldset  | Identifier   | Type       | Options
+## --------|-------------|-----------|--------------|------------|------------------------
+## Meds    |             | A         | medication   | Flag       | a=A | b=B | c=C | d=D
+##
+## ...the data is then exported as four binary fields indicating if an option has
+## been selected...
+##
+## id,medication_a_o,medication_b_o,medication_c_o,medication_d_o,
+## R01_001,0,0,0,0
+## R01_002,0,1,0,0
+## R01_003,1,0,0,1
+## R01_004,0,1,1,0
+##
+## Variables 'medication_a_o' and so on are therefore not listed and need adding.
+master$lookups_fields <- rbind(master$lookups_fields,
+                               c('Meds','','A','medication_a_o','Taking medication A'),
+                               c('Meds','','A','medication_b_o','Taking medication B'),
+                               c('Meds','','A','medication_c_o','Taking medication C'),
+                               c('Meds','','A','medication_d_o','Taking medication D'))
 ## Read in the 'Lookups.csv' to this list
 master$lookups <- read_prospect(file       = 'Lookups.csv',
 	                            header     = TRUE,
                                 sep        = ',',
                                 dictionary = NULL)
+## Similarly the levels for the binary indicators that are recorded as Type = Flag are
+## NOT documented in the Lookups and therefore need adding.  These are always binary
+## so are straightforward to add in the following manner...
+master$lookups <- rbind(master$lookups,
+                        c('Meds','','medication_a_o',0,'No'),
+                        c('Meds','','medication_a_o',1,'Yes'),
+                        c('Meds','','medication_b_o',0,'No'),
+                        c('Meds','','medication_b_o',1,'Yes'),
+                        c('Meds','','medication_c_o',0,'No'),
+                        c('Meds','','medication_c_o',1,'Yes'),
+                        c('Meds','','medication_d_o',0,'No'),
+                        c('Meds','','medication_d_o',1,'Yes'))
 ```
 
 You now have the dictionary loaded into R and it can be used in subsequent calls to `read_prospect()` and factor variables will be automatically encoded and labelled.
@@ -115,13 +159,6 @@ master$blood.sample <- read_prospect(file          = 'Blood sample.csv'
                                      sep           = ',',
 				     convert.dates = TRUE,
                                      dictionary    = master$lookups)
-## Read in Database Specification Fields worksheet
-master$lookups_fields <- read_prospect(file          = Fields.csv'
-                                       header        = TRUE,
-                                       sep           = ',',
-                                       convert.dates = TRUE,
-                                       dictionary    = master$lookups) %>%
-                         dplyr::select(Form, Subform, Identifier, Label)
 ## Read in Database Specification Forms worksheet
 master$lookups_forms <- read_prospect(file          = Forms.csv'
                                       header        = TRUE,
