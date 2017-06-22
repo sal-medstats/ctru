@@ -68,6 +68,7 @@ read_prospect <- function(file               = 'Lookups.csv',
     names(new) <- names(new) %>% tolower()
     ## Remove '_o' that is appended to Flag variables when they are expanded
     ## to multiple binary variables, they are NOT used in the Lookups.csv
+    names(new) <- gsub('oth_o$', 'other', names(new))
     names(new) <- gsub('_o$', '', names(new))
     ## Optionally replace periods to underscore
     if(convert.underscore == TRUE){
