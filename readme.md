@@ -57,7 +57,7 @@ I would advocate using [SSH Keys](https://help.github.com/articles/generating-an
 
 * Full support for Non-Standard Evaluation when explicitly supplying grouing variables as an argument rather than `...`.
 
-### plot_summary()
+### `plot_summary()`
 
 * Function to plot specified measurements by specified subset.
 * Produces histograms by specified treatment groups for continuous variables.
@@ -90,6 +90,9 @@ I would advocate using [SSH Keys](https://help.github.com/articles/generating-an
 
 ### `regress_ctru()`
 
+#### ToDo
+
 * Include options to set the reference level (via `relevel()`)for each factor variable in a model (something akin to the way `texreg()` handles things).
+* Option (default) to exponentiate model coefficients and CIs when link function is `binomial`.
 * Include ability to bootstrap regression results, particularly important for mixed models where p-values are unreliable due to uncertainty in the degrees of freedom.  Some leverage to do this via `texreg()` but `stargazer()` is a more flexible tabulating option.
 * Include all results from ITT/PP models, coefficients and CIs, p-values as part fo the returned list which can then be parsed for inclusion in text.
