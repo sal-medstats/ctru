@@ -7,7 +7,8 @@
 #'
 #' People like to see the raw numbers but often think about them the summary
 #' statistics that describe them.  This wrapper function facilitates production
-#' of such tables.
+#' of such tables which can then be formatted easily using the \code{pixiedust}
+#' package which is highly recommended.
 #'
 #'
 #' @param df Data frame.
@@ -54,10 +55,11 @@ table_summary <- function(df     = .,
                          p95     = quantile(value, probs = 0.95, na.rm = TRUE),
                          p99     = quantile(value, probs = 0.99, na.rm = TRUE),
                          min     = min(value, na.rm = TRUE),
-                         max     = max(value, na.rm = TRUE))
-    ## Obtain meaningful labels for the variables summarised
-    results <- left_join(results,
+                         max     = max(value, na.rm = TRUE)) %>%
+               ungroup() %>%
+               left_join(.,
                          lookup,
-                         by = c('variable' = 'identifier'))
+                         by = c('variable' = 'identifier')) %>%
+               dplyr::select(!!!quo_group, label, n, missing, mean, sd, p01, p05, p25, p50, p75, p95, p99, min, max)
     return(results)
 }
