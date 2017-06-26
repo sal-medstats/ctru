@@ -17,6 +17,7 @@ Description: The functions contained within this package simplify some of the
 Depends:
     R (>= 3.4.0),
     Hmisc (>= 3.17-1),
+    pixiedust (>= 0.7.5),
     plotly (>= 4.7.0),
     readxl (>= 1.0.0),
     reshape2 (>= 1.4.1),
