@@ -88,7 +88,9 @@ read_prospect <- function(file               = 'Lookups.csv',
     ## correct this in the lookup
     if(file == 'Lookups.csv'){
         new <- mutate(new,
-                      field = gsub("oth_o$", "other", field))
+                      field = gsub('oth_o$', 'other', field),
+                      field = gsub('_oth$', '_other', field),
+                      field = gsub('_o$', '', field))
     }
     if(!is.null(dictionary)){
         ## Subset the dictionary, required because sometimes a field name
@@ -107,7 +109,7 @@ read_prospect <- function(file               = 'Lookups.csv',
     ## Convert specified dates
     if(convert.dates == TRUE){
         ## Convert 'dt' variables
-        for(x in grep('dt', colnames(new))){
+        for(x in grep('_dt', colnames(new))){
             new[[x]] <- ymd(new[[x]])
         }
         ## Convert 'date' variables
