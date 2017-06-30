@@ -74,6 +74,7 @@ plot_summary <- function(df               = .,
                           dplyr::select(which(sapply(., class) == 'numeric'),
                                         !!!to_select) %>%
                           gather(key = variable, value = value, numeric_vars)
+    ## Histogram
     if(histogram == TRUE & names(results$df_numeric) %in% c('variable')){
         results$df_numeric <- results$df_numeric %>%
                               left_join(.,
@@ -120,7 +121,65 @@ plot_summary <- function(df               = .,
                 results[[x]] <- results$df_numeric %>%
                                 dplyr::filter(!is.na(!!quo_group) & variable == x) %>%
                                 ggplot(aes_(~value, fill = quo_group)) +
-                                geom_histogram(position = position) +
+                                geom_histogram(alpah = 0.5, position = position) +
+                                xlab(xlabel[[1]]) +
+                                ylab('N') +
+                                theme
+                if(plotly == TRUE){
+                    results[[x]] <- results[[x]] %>%
+                                    ggplotly()
+                }
+            }
+        }
+    }
+    ## Boxplot
+    if(boxplot == TRUE & names(results$df_numeric) %in% c('variable')){
+        results$df_numeric <- results$df_numeric %>%
+                              left_join(.,
+                                        lookup,
+                                        by = c('variable' = 'identifier')) %>%
+                              ## Ensure value is numberic otherwise nothing to plot
+                              mutate(value = as.numeric(value))
+        ## Generate plot
+        results$continuous <- results$df_numeric %>%
+                              dplyr::filter(!is.na(!!quo_group)) %>%
+                              ggplot(aes_(~value, fill = quo_group)) +
+                              geom_boxplot() +
+                              xlab('') + ylab('N') +
+                              ggtitle(title.continuous) +
+                              theme +
+                              theme(strip.background = element_blank(),
+                                    strip.placement  = 'outside')
+        ## Facetted plot when no events specified
+        if(is.null(events)){
+            results$continuous <- results$continuous +
+                                  facet_wrap(~label,
+                                             scales = 'free',
+                                             strip.position = 'bottom')
+        }
+        else{
+            results$continuous <- results$continuous +
+                                  facet_grid(label~quo_events,
+                                             scales = 'free')
+        }
+        if(plotly == TRUE){
+            results$continuous <- results$continuous %>%
+                                  ggplotly()
+        }
+        ## Plot individual figures if requested
+        if(individual == TRUE){
+            for(x in numeric_vars){
+                ## Extract the label
+                xlabel <- results$df_numeric %>%
+                          dplyr::filter(variable == x) %>%
+                          dplyr::select(label) %>%
+                          unique() %>%
+                          as.data.frame()
+                ## Plot current variable
+                results[[x]] <- results$df_numeric %>%
+                                dplyr::filter(!is.na(!!quo_group) & variable == x) %>%
+                                ggplot(aes_(~value, fill = quo_group)) +
+                                geom_boxplot() +
                                 xlab(xlabel[[1]]) +
                                 ylab('N') +
                                 theme
