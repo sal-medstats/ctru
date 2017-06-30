@@ -19,6 +19,8 @@
 #' @param group Variable by which to summarise the data by.
 #' @param events Variable defining repeated events.
 #' @param position Position adjustment for ggplot2, default \code{'dodge'} avoids overlapping histograms.
+#' @param histogram Logical of whether to plot histogram of continuous variables.
+#' @param boxplot Logical of whether to plot box-plot of continuous variables.
 #' @param individual Logical of whether to plot outcomes indvidually.
 #' @param plotly Logical of whether to make \code{ggplotly()} figures.  This is useful if outputing HTML since the embedded figures are zoomable.
 #' @param remove.na Logical to remove NA from plotting (only affects factor variables since NA is excluded from continuous plots by default anyway).
@@ -33,7 +35,9 @@ plot_summary <- function(df               = .,
                          group            = group,
                          events           = NULL,
                          theme            = theme_bw(),
-                         position         = 'dodge',
+                         position         = 'identity',
+                         histogram        = TRUE,
+                         boxplot          = TRUE,
                          individual       = FALSE,
                          plotly           = FALSE,
                          remove.na        = TRUE,
@@ -70,19 +74,18 @@ plot_summary <- function(df               = .,
                           dplyr::select(which(sapply(., class) == 'numeric'),
                                         !!!to_select) %>%
                           gather(key = variable, value = value, numeric_vars)
-    if(names(results$df_numeric) %in% c('variable')){
+    if(histogram == TRUE & names(results$df_numeric) %in% c('variable')){
         results$df_numeric <- results$df_numeric %>%
                               left_join(.,
                                         lookup,
                                         by = c('variable' = 'identifier')) %>%
                               ## Ensure value is numberic otherwise nothing to plot
                               mutate(value = as.numeric(value))
-        print('Are we here?')
         ## Generate plot
         results$continuous <- results$df_numeric %>%
                               dplyr::filter(!is.na(!!quo_group)) %>%
                               ggplot(aes_(~value, fill = quo_group)) +
-                              geom_histogram(position = position) +
+                              geom_histogram(alpha = 0.5, position = position) +
                               xlab('') + ylab('N') +
                               ggtitle(title.continuous) +
                               theme +
