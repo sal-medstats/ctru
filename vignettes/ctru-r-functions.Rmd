@@ -143,7 +143,7 @@ master$eq5d <- read_prospect(file          = 'EQ-5D-5L.csv'
 			     convert.dates = TRUE,
                              dictionary    = master$lookups)
 ## Read in Blood sample data
-master$blood.sample <- read_prospect(file          = 'Blood sample.csv'
+master$blood_sample <- read_prospect(file          = 'Blood sample.csv'
                                      header        = TRUE,
                                      sep           = ',',
 				     convert.dates = TRUE,
@@ -171,11 +171,44 @@ master <- lapply(x = list.files("."),
                                dictionary    = master$lookups))
 ```
 
+
+## Combine data
+
+You have read in a number of tables, but ultimately want to combine them using the relationships that existed within the relational Prospect database.  To this end the base R function `merge()` can be used, but preferable and more flexible are the database join-like functions provided by [dplyr](http://dplyr.tidyverse.org/) such as `left_join()`, `full_join()`, `right_join()` and so forth (for reference see the [dplyr two-table verbs vignette](https://cran.r-project.org/web/packages/dplyr/vignettes/two-table.html)).  You should think carefully about how you want to combine data, should everything from one table or the other be kept, this will influence which of the verbs you use to do the merging.  For the most part it will be desirable to perform a `full_join()` so that if a participant is missing data for one form from one visit other data from that visit will not be excluded in the final data set.  The following joins the EQ5D and Blood sample data to the data frame object `study_data`...
+
+```
+## Combine EQ5D and blood sample data
+study_data <- full_join(master$eq5d,
+                        master$blood_sample,
+						by = c('individual_id', 'site', 'event_name'))
+```
+
+
+## Aligning Events
+
+Many studies have repeated contact with patients, whether thats physical attendance of a clinic, training course or evaluation centre, or phone/postal contact.  However very few studies recruit all patients simultaneously and further compounding this many participants 'slip' and don't attend appointments exactly on the desired follow-up date.  This means that whilst dates for attendance are available and may form the basis for exclusion of individuals under strict [Per-Protocol (PP)](https://en.wikipedia.org/wiki/Analysis_of_clinical_trials#Per_protocol) analyses for the most part [Intention To Treat (ITT)](https://en.wikipedia.org/wiki/Analysis_of_clinical_trials) analyses require aligning contacts.  Prospect helps a little with this as the `event_name` variable is included in all exported tables and should be used when subsequently merging the disparate tables into coherent data sets.  However it suffers from the drawback of being a string/character variable which means that when plotting using the `event_name` the ordering will be alphabetical rather than chronological.  It is unlikely that Prospect will be modified in any way to assist with this (e.g. exporting Lookups for event, or a numeric variable such as `event_order`) to which end after having merged data into a 'master' data frame the `event_name` variable should be converted to a factor variable so that events are correctly ordered and will plot as desired.  You can pipe the merge into a `mutate()` to achieve this, so following on from the previous step.
+
+```
+## Combine EQ5D and blood sample data and convert event_name to factor
+study_data <- full_join(master$eq5d,
+                        master$blood_sample,
+						by = c('individual_id', 'site', 'event_name')) %>%
+              mutate(event_name = factor(event_name,
+			                             levels = c('Screening',
+										            'Baseline'
+													'6 weeks'
+													'6 months'
+													'12 months')))
+```
+
+Ideally I would like to have the conversion of `event_name` to a factor performed internally by `read_prospect()` but currently there are an unknown number of possible names because each study has different follow-ups so its unclear how to implement this (likely it will be including details in the exported `Lookups.csv` that will achieve this, but that is beyond my control at present).
+
+
 #### Common Errors
 
 | Error message              | Problem                     | Solution                 |
 |----------------------------|-----------------------------|--------------------------|
-| `Error in file(file, "rt") : cannot open the connection` | The specified file can not be found | You are eitehr in the wrong directory, or you mis-typed the filename. |
+| `Error in file(file, "rt") : cannot open the connection` | The specified file can not be found | You are either in the wrong directory, or you mis-typed the filename. |
 
 
 ## Common Summaries & Analyses
