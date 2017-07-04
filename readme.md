@@ -38,6 +38,7 @@ I would advocate using [SSH Keys](https://help.github.com/articles/generating-an
 #### ToDo
 
 * Add functionality to download 'Fields' and 'Froms' tabs from DM Googlesheets using either [googlesheets](https://cran.r-project.org/web/packages/googlesheets/index.html).
+* Have `event_name` converted to factor internally (may require inclusion of `event_name` in `Lookups.csv` that is exported from Prospect).
 
 ### `recruitment()`
 
