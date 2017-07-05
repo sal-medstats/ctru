@@ -70,6 +70,7 @@ plot_summary <- function(df               = .,
     factor_vars <- which(sapply(df, class) == 'factor') %>%
                    names()
     ## Remove 'event_name' which should be a factor to assist plotting but on a different axis
+    ## ToDo : This is currently hard coded, need to make it flexible
     factor_vars <- factor_vars[factor_vars != 'event_name']
     ##########################################################################
     ## Continuous Variables                                                 ##
