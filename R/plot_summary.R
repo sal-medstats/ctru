@@ -26,6 +26,7 @@
 #' @param remove_na Logical to remove NA from plotting (only affects factor variables since NA is excluded from continuous plots by default anyway).
 #' @param title_continuous Title for faceted histogram plots of continuous variables.
 #' @param title_factor TItle for faceted likert plots of factor variables.
+#' @param legend Logical of whether to include legend in histogram and box-plots.
 #'
 #' @export
 plot_summary <- function(df               = .,
@@ -44,6 +45,7 @@ plot_summary <- function(df               = .,
                          remove_na        = TRUE,
                          title_continuous = 'Continuous outcomes by treatment group.',
                          title_factor     = 'Factor outcomes by treatment group',
+                         legend           = FALSE,
                          ...){
     ## Results to return
     results <- list()
@@ -107,26 +109,42 @@ plot_summary <- function(df               = .,
                               theme +
                               theme(strip.background = element_blank(),
                                     strip.placement  = 'outside')
+        if(legend == FALSE){
+            results$histogram <- results$histogram +
+                                 guides(fill = FALSE)
+        }
+        if(plotly == TRUE){
+            results$histogram <- results$histogram %>%
+                                 ggplotly()
+        }
         ## Facetted plot when no events specified
         if(is.null(quo_events)){
             ## names(results$df_numeric) %>% print()
             ## table(results$df_numeric$label) %>% print()
-            results$histogram_facet <- results$histogram +
-                                  facet_wrap(~label,
-                                             scales = 'free',
-                                             strip.position = 'bottom')
+            results$histogram_tiled <- results$histogram +
+                                       facet_wrap(~label,
+                                                  scales = 'free',
+                                                  strip.position = 'bottom')
         }
         else{
             ## print('Grid : ')
             ## table(results$df_numeric$label) %>% print()
             ## paste0('By    : ', quo_events) %>% print()
-            results$histogram_grid <- results$histogram +
-                                  facet_grid(label~quo_events,
-                                             scales = 'free')
+            results$histogram_tiled <- results$histogram +
+                                       facet_grid(label~quo_events,
+                                                  scales = 'free')
+        }
+        if(legend == FALSE){
+            results$histogram       <- results$histogram +
+                                       guides(fill = FALSE)
+            results$histogram_tiled <- results$histogram_tiled +
+                                       guides(fill = FALSE)
         }
         if(plotly == TRUE){
-            results$histogram <- results$histogram %>%
-                                  ggplotly()
+            results$histogram       <- results$histogram %>%
+                                       ggplotly()
+            results$histogram_tiled <- results$histogram_tiled %>%
+                                       ggplotly()
         }
         ## Plot individual figures if requested
         if(individual == TRUE){
@@ -145,6 +163,10 @@ plot_summary <- function(df               = .,
                                 xlab(xlabel[[1]]) +
                                 ylab('N') +
                                 theme
+                if(legend == FALSE){
+                    results[[paste0('histogram_', x)]] <- results[[paste0('histogram_', x)]] +
+                                                          guides(fill = FALSE)
+                }
                 if(plotly == TRUE){
                     results[[paste0('histogram_', x)]] <- results[[paste0('histogram_', x)]] %>%
                                                           ggplotly()
@@ -180,7 +202,7 @@ plot_summary <- function(df               = .,
         if(is.null(quo_events)){
             ## print('Facetting : ')
             ## table(results$df_numeric$label) %>% print()
-            results$boxplot_facet <- results$boxplot +
+            results$boxplot_tiled <- results$boxplot +
                                      facet_wrap(~label,
                                                 scales = 'free',
                                                 strip.position = 'bottom')
@@ -189,13 +211,22 @@ plot_summary <- function(df               = .,
             ## print('Grid : ')
             ## table(results$df_numeric$label) %>% print()
             ## paste0('By    : ', quo_events) %>% print()
-            results$boxplot_grid <- results$boxplot +
-                               facet_grid('label'~quo_events,
-                                          scales = 'free')
+            results$boxplot_tiled <- results$boxplot +
+                                     ## facet_grid('label'~quo_events,
+                                     facet_grid(label~event_name,
+                                                scales = 'free')
+        }
+        if(legend == FALSE){
+            results$boxplot       <- results$boxplot +
+                                     guides(fill = FALSE)
+            results$boxplot_tiled <- results$boxplot_tiled +
+                                     guides(fill = FALSE)
         }
         if(plotly == TRUE){
-            results$boxplot <- results$boxplot %>%
-                                  ggplotly()
+            results$boxplot       <- results$boxplot %>%
+                                     ggplotly()
+            results$boxplot_tiled <- results$boxplot %>%
+                                     ggplotly()
         }
         ## Plot individual figures if requested
         if(individual == TRUE){
@@ -214,6 +245,10 @@ plot_summary <- function(df               = .,
                                 xlab(xlabel[[1]]) +
                                 ylab('N') +
                                 theme
+                if(legend == FALSE){
+                    results[[paste0('boxplot_', x)]] <- results[[paste0('boxplot_', x)]] +
+                                                        guides(fill = FALSE)
+                }
                 if(plotly == TRUE){
                     results[[paste0('boxplot_', x)]] <- results[[paste0('boxplot_', x)]] %>%
                                                         ggplotly()
@@ -277,11 +312,10 @@ plot_summary <- function(df               = .,
                    gsub('\\)', '', .) %>%
                    gsub('-', '_', .) %>%
                 tolower()
-           results[[paste0('factor_', out)]] <- results$df_factor %>%
+            results[[paste0('factor_', out)]] <- results$df_factor %>%
                                                  dplyr::filter(form == x) %>%
                                                  ## ggplot(aes_string(x = !!!quo_events, fill = 'value'),
-                                                 ggplot(aes_string(x = 'event_name', fill = 'value'),
-                                                        position = position_stack(reverse = TRUE)) +
+                                                 ggplot(aes_string(x = 'event_name', fill = 'value')) +
                                                  geom_bar(position = 'fill') +
                                                  coord_flip() + scale_y_continuous(trans = 'reverse') +
                                                  xlab('') + ylab('Proportion') +
@@ -292,11 +326,18 @@ plot_summary <- function(df               = .,
                                                  theme +
                                                  theme(strip.background = element_blank(),
                                                        strip.placement  = 'outside')
+            if(legend == FALSE){
+                results[[paste0('factor_', out)]] <- results[[paste0('factor_', out)]] +
+                                                     guides(fill = FALSE)
+            }
+            if(plotly == TRUE){
+                results[[paste0('factor_', out)]] <- results[[paste0('factor_', out)]] %>%
+                                                     ggplotly()
+            }
         }
         results_length_post <- length(results)
         results$factor <- results$df_factor %>%
-                          ggplot(aes(x = label, fill = value),
-                                 position = position_stack(reverse = TRUE)) +
+                          ggplot(aes(x = label, fill = value)) +
                           geom_bar(position = 'fill') +
                           coord_flip() +
                           xlab('') + ylab('Proportion') +
@@ -306,6 +347,14 @@ plot_summary <- function(df               = .,
                           theme +
                           theme(strip.background = element_blank(),
                                 strip.placement  = 'outside')
+        if(legend == FALSE){
+            results$factor <- results$factor +
+                              guides(fill = FALSE)
+        }
+        if(plotly == TRUE){
+            results$factor <- results$factor %>%
+                              ggplotly()
+        }
         if(individual == TRUE){
             for(x in factor_vars){
                 ## Extract the label
@@ -323,6 +372,10 @@ plot_summary <- function(df               = .,
                                 xlab(xlabel[[1]]) +
                                 ylab('N') +
                                 theme
+                if(legend == FALSE){
+                    results[[paste0('factor_', x)]] <- results[[paste0('factor_', x)]] +
+                                                       guides(fill = FALSE)
+                }
                 if(plotly == TRUE){
                     results[[paste0('factor_', x)]] <- results[[paste0('factor_', x)]] %>%
                                                        ggplotly()
