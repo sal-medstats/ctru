@@ -243,6 +243,7 @@ plot_summary <- function(df               = .,
                                 dplyr::filter(!is.na(!!quo_group) & variable == x) %>%
                                 ggplot(aes_(quo_group, ~value, fill = quo_group)) +
                                 geom_boxplot() +
+                                ## facet_wrap(~event_name, ncol = 1) +
                                 ggtitle(xlabel[[1]]) +
                                 xlab('Site') + ylab(xlabel[[1]]) +
                                 theme +
