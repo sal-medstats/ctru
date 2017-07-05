@@ -53,30 +53,36 @@ plot_summary <- function(df               = .,
     quo_group  <- enquo(group)
     quo_events <- enquo(events)
     ## Since quo_events is used to control subsequent steps if its NULL select()
-    ## fails, therefore conditionally build the variables that are select on
-    to_select <- c(quo_id, quo_group)
-    if(!is.null(quo_events)) to_select <- c(to_select, quo_events)
-    ## if(!is.null(events)){
-    ##     to_select <- c(to_select, quo_events)
-    ## }
+    ## fails, therefore conditionally build the variables that are to be subset for
+    ## subsequent plotting
+    to_group <- c(quo_id, quo_group)
+    if(!is.null(quo_events)) to_group <- c(to_group, quo_events)
     ## Subset the data and de-duplicate
     df <- df %>%
           ## dplyr::select(!!quo_id, !!quo_select, !!quo_events, !!quo_group) %>%
-          dplyr::select(!!!to_select, !!quo_select) %>%
+          dplyr::select(!!!to_group, !!quo_select) %>%
           unique()
+    ## Obtain a list of the numeric variables and grouping variables
+    numeric_vars <- which(sapply(df, class) == 'numeric') %>% names()
+    ## Obtain a list of the factor variables
+    factor_vars <- which(sapply(df, class) == 'factor') %>%
+                   names()
+    ## Remove 'event_name' which should be a factor to assist plotting but on a different axis
+    factor_vars <- factor_vars[factor_vars != 'event_name']
     ##########################################################################
     ## Continuous Variables                                                 ##
     ##########################################################################
     ## Subset the continuous variables gather() and bind with the lookup descriptions
     ## so that when plotted the graphs have meaningful titles
-    numeric_vars <- which(sapply(df, class) == 'numeric') %>% names()
     ## Logical check required to determine if numeric variables are to be plotted.
     ## If none are specified then left_join() fails...
     df_numeric_names <- df %>%
                         dplyr::select(which(sapply(., class) == 'numeric'),
-                                      !!!to_select) %>%
+                                      !!!to_group) %>%
                         gather(key = variable, value = value, numeric_vars) %>%
                         names()
+    ## Need to save the the levels of the event_name
+    quo_events_levels <- levels(df$event_name)
     ## paste0('Histogram : ', histogram) %>% print()
     ## names(results$df_numeric) %>% print()
     ## Histogram
@@ -84,7 +90,7 @@ plot_summary <- function(df               = .,
         ## print('We are going to draw histograms')
         results$df_numeric <- df %>%
                               dplyr::select(which(sapply(., class) == 'numeric'),
-                                            !!!to_select) %>%
+                                            !!!to_group) %>%
                               gather(key = variable, value = value, numeric_vars) %>%
                               left_join(.,
                                         lookup_fields,
@@ -153,7 +159,7 @@ plot_summary <- function(df               = .,
         ## print('We are going to draw box-plots')
         results$df_numeric <- df %>%
                               dplyr::select(which(sapply(., class) == 'numeric'),
-                                            !!!to_select) %>%
+                                            !!!to_group) %>%
                               gather(key = variable, value = value, numeric_vars) %>%
                               left_join(.,
                                         lookup_fields,
@@ -223,23 +229,22 @@ plot_summary <- function(df               = .,
     ## http://rnotr.com/likert/ggplot/barometer/likert-plotly/              ##
     ##########################################################################
     ## Subset factor variables, gather() and plot these
-    factor_vars <- which(sapply(df, class) == 'factor') %>% names()
+    ## Add the event_name variable
     ## factor_vars %>% print()
     ## Filter the factor lookups based on the factor variables so we can re-encode them
     ## Logical check required to determine if numeric variables are to be plotted.
     ## If none are specified then left_join() fails...
     df_factor_names <- df %>%
                        dplyr::select(which(sapply(., class) == 'factor'),
-                                     !!!to_select) %>%
+                                     !!!to_group) %>%
                        gather(key = variable, value = value, factor_vars) %>%
                        names()
     ## paste0('Names     : ', names(results$df_factor) %in% c('variable')) %>% print()
     ## names(results$df_factor) %>% print()
     if(c('variable') %in% df_factor_names){
-        ## print('We are going to plot factors')
         results$df_factor <- df %>%
                              dplyr::select(which(sapply(., class) == 'factor'),
-                                           !!!to_select) %>%
+                                           !!!to_group) %>%
                              gather(key = variable, value = value, factor_vars, factor_key = TRUE) %>%
                              left_join(.,
                                        lookup_fields,
@@ -272,19 +277,18 @@ plot_summary <- function(df               = .,
                    gsub('\\)', '', .) %>%
                    gsub('-', '_', .) %>%
                 tolower()
-           ## results$df_factor %>%
-           ##     dplyr::filter(form == x) %>% head() %>% print()
-           ## quo_events %>% print()
            results[[paste0('factor_', out)]] <- results$df_factor %>%
                                                  dplyr::filter(form == x) %>%
-                                                 ggplot(aes_string(x = quo_events, fill = 'value'),
+                                                 ## ggplot(aes_string(x = !!!quo_events, fill = 'value'),
+                                                 ggplot(aes_string(x = 'event_name', fill = 'value'),
                                                         position = position_stack(reverse = TRUE)) +
                                                  geom_bar(position = 'fill') +
                                                  coord_flip() + scale_y_continuous(trans = 'reverse') +
                                                  xlab('') + ylab('Proportion') +
                                                  ggtitle(x) +
                                                  facet_wrap(~label,
-                                                            scales = 'free') +
+                                                            scales = 'free',
+                                                            ncol = 1) +
                                                  theme +
                                                  theme(strip.background = element_blank(),
                                                        strip.placement  = 'outside')
