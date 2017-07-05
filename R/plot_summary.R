@@ -160,7 +160,8 @@ plot_summary <- function(df               = .,
                                 dplyr::filter(!is.na(!!quo_group) & variable == x) %>%
                                 ggplot(aes_(~value, fill = quo_group)) +
                                 geom_histogram(alpha = 0.5, position = position) +
-                                xlab(xlabel[[1]]) +
+                                ggtitle(xlabel[[1]]) +
+                                xlab(xlabel[[1]]) + ylab('N') +
                                 ylab('N') +
                                 theme
                 if(legend == FALSE){
@@ -243,7 +244,7 @@ plot_summary <- function(df               = .,
                                 ggplot(aes_(quo_group, ~value, fill = quo_group)) +
                                 geom_boxplot() +
                                 ggtitle(xlabel[[1]]) +
-                                xlab('') + ylab('N') +
+                                xlab('Site') + ylab(xlabel[[1]]) +
                                 theme +
                                 theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
                 if(legend == FALSE){
@@ -385,5 +386,6 @@ plot_summary <- function(df               = .,
         }
     }
     ## ToDo : How to plot using Likert, might not need to gather, instead rename using the lookup
+    ## ToDo : Time-series like line plots of proportions (y) over time (x)
     return(results)
 }
