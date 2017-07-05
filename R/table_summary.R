@@ -91,7 +91,8 @@ table_summary <- function(df            = .,
                                             min, max)
         if(nomissing == TRUE){
             results$continuous <- results$continuous %>%
-                                  dplyr::filter(!is.na(mean) & !is.na(sd) & !is.na(min) & !is.na(max))
+                                  dplyr::filter(!is.na(mean) & !is.na(sd) & !is.na(min) & !is.na(max)) %>%
+                                  dplyr::filter(!is.na(!!!quo_group))
         }
     }
     ##################################################################################
@@ -123,6 +124,7 @@ table_summary <- function(df            = .,
                           left_join(.,
                                     lookup_fields,
                                     by = c('variable' = 'identifier')) %>%
+                          ungroup() %>%
                           dplyr::select(!!!quo_group, label, value, n, prop)
     }
     return(results)
