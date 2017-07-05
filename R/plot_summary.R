@@ -242,9 +242,10 @@ plot_summary <- function(df               = .,
                                 dplyr::filter(!is.na(!!quo_group) & variable == x) %>%
                                 ggplot(aes_(quo_group, ~value, fill = quo_group)) +
                                 geom_boxplot() +
-                                xlab(xlabel[[1]]) +
-                                ylab('N') +
-                                theme
+                                ggtitle(xlabel[[1]]) +
+                                xlab('') + ylab('N') +
+                                theme +
+                                theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
                 if(legend == FALSE){
                     results[[paste0('boxplot_', x)]] <- results[[paste0('boxplot_', x)]] +
                                                         guides(fill = FALSE)
