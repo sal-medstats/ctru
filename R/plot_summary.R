@@ -26,26 +26,28 @@
 #' @param remove_na Logical to remove NA from plotting (only affects factor variables since NA is excluded from continuous plots by default anyway).
 #' @param title_continuous Title for faceted histogram plots of continuous variables.
 #' @param title_factor TItle for faceted likert plots of factor variables.
-#' @param legend Logical of whether to include legend in histogram and box-plots.
+#' @param legend_continuous Logical of whether to include legend in histogram and box-plots.
+#' @param legend_factor Logical of whether to include legend in stacked bar charts.
 #'
 #' @export
-plot_summary <- function(df               = .,
-                         id               = individual_id,
-                         select           = c(),
-                         lookup_fields    = master$lookups_fields,
-                         levels_factor    = c(),
-                         group            = group,
-                         events           = NULL,
-                         theme            = theme_bw(),
-                         position         = 'identity',
-                         histogram        = TRUE,
-                         boxplot          = TRUE,
-                         individual       = FALSE,
-                         plotly           = FALSE,
-                         remove_na        = TRUE,
-                         title_continuous = 'Continuous outcomes by treatment group.',
-                         title_factor     = 'Factor outcomes by treatment group',
-                         legend           = FALSE,
+plot_summary <- function(df                = .,
+                         id                = individual_id,
+                         select            = c(),
+                         lookup_fields     = master$lookups_fields,
+                         levels_factor     = c(),
+                         group             = group,
+                         events            = NULL,
+                         theme             = theme_bw(),
+                         position          = 'identity',
+                         histogram         = TRUE,
+                         boxplot           = TRUE,
+                         individual        = FALSE,
+                         plotly            = FALSE,
+                         remove_na         = TRUE,
+                         title_continuous  = 'Continuous outcomes by treatment group.',
+                         title_factor      = 'Factor outcomes by treatment group',
+                         legend_continuous = FALSE,
+                         legend_factor     = FALSE,
                          ...){
     ## Results to return
     results <- list()
@@ -135,7 +137,7 @@ plot_summary <- function(df               = .,
                                        facet_grid(label~quo_events,
                                                   scales = 'free')
         }
-        if(legend == FALSE){
+        if(legend_continuous == FALSE){
             results$histogram       <- results$histogram +
                                        guides(fill = FALSE)
             results$histogram_tiled <- results$histogram_tiled +
@@ -165,7 +167,7 @@ plot_summary <- function(df               = .,
                                 xlab(xlabel[[1]]) + ylab('N') +
                                 ylab('N') +
                                 theme
-                if(legend == FALSE){
+                if(legend_continuous == FALSE){
                     results[[paste0('histogram_', x)]] <- results[[paste0('histogram_', x)]] +
                                                           guides(fill = FALSE)
                 }
@@ -218,7 +220,7 @@ plot_summary <- function(df               = .,
                                      facet_grid(label~event_name,
                                                 scales = 'free')
         }
-        if(legend == FALSE){
+        if(legend_continuous == FALSE){
             results$boxplot       <- results$boxplot +
                                      guides(fill = FALSE)
             results$boxplot_tiled <- results$boxplot_tiled +
@@ -249,7 +251,7 @@ plot_summary <- function(df               = .,
                                 xlab('Site') + ylab(xlabel[[1]]) +
                                 theme +
                                 theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
-                if(legend == FALSE){
+                if(legend_continuous == FALSE){
                     results[[paste0('boxplot_', x)]] <- results[[paste0('boxplot_', x)]] +
                                                         guides(fill = FALSE)
                 }
@@ -330,7 +332,7 @@ plot_summary <- function(df               = .,
                                                  theme +
                                                  theme(strip.background = element_blank(),
                                                        strip.placement  = 'outside')
-            if(legend == FALSE){
+            if(legend_factor == FALSE){
                 results[[paste0('factor_', out)]] <- results[[paste0('factor_', out)]] +
                                                      guides(fill = FALSE)
             }
@@ -351,7 +353,7 @@ plot_summary <- function(df               = .,
                           theme +
                           theme(strip.background = element_blank(),
                                 strip.placement  = 'outside')
-        if(legend == FALSE){
+        if(legend_factor == FALSE){
             results$factor <- results$factor +
                               guides(fill = FALSE)
         }
@@ -376,7 +378,7 @@ plot_summary <- function(df               = .,
                                 xlab(xlabel[[1]]) +
                                 ylab('N') +
                                 theme
-                if(legend == FALSE){
+                if(legend_factor == FALSE){
                     results[[paste0('factor_', x)]] <- results[[paste0('factor_', x)]] +
                                                        guides(fill = FALSE)
                 }
