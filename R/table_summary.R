@@ -66,7 +66,7 @@ table_summary <- function(df            = .,
                               gather(key = variable, value = value, numeric_vars)
         ## Summarise selected variables by specified groups
         results$continuous <- results$df_numeric %>%
-                              group_by(!!!quo_group, variable) %>%
+                              group_by(variable, !!!quo_group) %>%
                               summarise(n       = n(),
                                         missing = sum(is.na(value)),
                                         mean    = mean(value, na.rm = TRUE),
@@ -96,7 +96,7 @@ table_summary <- function(df            = .,
         }
     }
     ##################################################################################
-    ## Summarise continuous variables                                               ##
+    ## Summarise Factor variables                                                   ##
     ##################################################################################
     factor_vars <- df %>%
                    dplyr::select(which(sapply(., class) == 'factor'),
