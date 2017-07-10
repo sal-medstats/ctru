@@ -42,11 +42,11 @@ recruitment <- function(df              = master$screening_form,
     ## Summarise screend and recruited regardless of what has been requested and then
     ## conditionally use what is requested
     screen_all <- df %>%
-        group_by(event_date) %>%
-        summarise(n = n()) %>%
-        mutate(sum  = cumsum(n),
-               site      = 'All') %>%
-        as.data.frame()
+                  group_by(event_date) %>%
+                  summarise(n = n()) %>%
+                  mutate(sum  = cumsum(n),
+                         site      = 'All') %>%
+                  as.data.frame()
     ## Screening by site
     screen_site <- df %>%
                    group_by(site, event_date) %>%
