@@ -131,22 +131,22 @@ You now have the dictionary loaded into R and it can be used in subsequent calls
 ```
 ## Read in Screening and Recruitment data
 master$screening_form <- read_prospect(file =  'Screening Form.csv',
-                         header              = TRUE,
-                         sep                 = ',',
-                         convert.dates       = TRUE,
-                         convert.underscores = TRUE,
-                         dictionary          = master$lookups)
+                                       header              = TRUE,
+                                       sep                 = ',',
+                                       convert.dates       = TRUE,
+                                       convert.underscores = TRUE,
+                                       dictionary          = master$lookups)
 ## Read in EQ5D data
 master$eq5d <- read_prospect(file          = 'EQ-5D-5L.csv'
                              header        = TRUE,
                              sep           = ',',
-			     convert.dates = TRUE,
+                             convert.dates = TRUE,
                              dictionary    = master$lookups)
 ## Read in Blood sample data
 master$blood_sample <- read_prospect(file          = 'Blood sample.csv'
                                      header        = TRUE,
-                                     sep           = ',',
-				     convert.dates = TRUE,
+                                     sep           = ',
+                                     convert.dates = TRUE,
                                      dictionary    = master$lookups)
 ## Read in Database Specification Forms worksheet
 master$lookups_forms <- read_prospect(file          = Forms.csv'
@@ -165,7 +165,7 @@ You can simplify this even further and reduce the time spent on reading your fil
 ## Read in all files in the current directory
 master <- lapply(x = list.files("."),
                  read_prospect(file          = x,
-		                       header        = TRUE,
+                               header        = TRUE,
                                sep           = ',',
                                convert.dates = TRUE,
                                dictionary    = master$lookups))
@@ -180,7 +180,7 @@ You have read in a number of tables, but ultimately want to combine them using t
 ## Combine EQ5D and blood sample data
 study_data <- full_join(master$eq5d,
                         master$blood_sample,
-						by = c('individual_id', 'site', 'event_name'))
+                        by = c('individual_id', 'site', 'event_name'))
 ```
 
 
@@ -192,13 +192,13 @@ Many studies have repeated contact with patients, whether thats physical attenda
 ## Combine EQ5D and blood sample data and convert event_name to factor
 study_data <- full_join(master$eq5d,
                         master$blood_sample,
-						by = c('individual_id', 'site', 'event_name')) %>%
+                        by = c('individual_id', 'site', 'event_name')) %>%
               mutate(event_name = factor(event_name,
-			                             levels = c('Screening',
-										            'Baseline'
-													'6 weeks'
-													'6 months'
-													'12 months')))
+                                         levels = c('Screening',
+                                                    'Baseline'
+                                                    '6 weeks'
+                                                    '6 months'
+                                                    '12 months')))
 ```
 
 Ideally I would like to have the conversion of `event_name` to a factor performed internally by `read_prospect()` but currently there are an unknown number of possible names because each study has different follow-ups so its unclear how to implement this (likely it will be including details in the exported `Lookups.csv` that will achieve this, but that is beyond my control at present).
@@ -218,7 +218,7 @@ Ideally I would like to have the conversion of `event_name` to a factor performe
 
 Every study screens and recruits individuals, often at multiple centers, to the study.  Details of screening and recruitment are recorded and it is useful to include plots and summaries of such information in the Statistical Analysis Report.  To this end the `recruitment()` function has been written which takes the `Screening_form.csv` that you should have read into an R data frame above and will produce tables by month across all sites and by site of the number of individuals screened and/or recruited and produce graphs of the same data (albeit at the daily level rather than monthly summaries).
 
-Assuming you have read the exported `Screening_Form.csv` into a data frame stored in the `master` list object then deriving summaries is as simple.  The returned list has a number of objects and the nomenclature has been designed to be straight-forward and intuitive so you know what each object is.
+Assuming you have read the exported `Screening_Form.csv` into a data frame stored in the `master` list object then deriving summaries is simple.  The returned list has a number of objects and the nomenclature has been designed to be straight-forward and intuitive so you know what each object is.
 
 ```
 screening_recruitment <- ctru::recruitment(df = master$screening_form,
@@ -271,7 +271,7 @@ my_df <- imd_lsoa(df            = my_df,
 
 ### Summarising Data
 
-You will *always* need to summarise data by treatment arm at at least on time point, more likely multiple time points such as Screening, Baseline, 1 Week, Six Week, Six Month or Twelve Month Follow-up depending on the study outcomes and design.  This has always been possible using an array of base functions such as `mean()`, `sd()` `min()` `quantile()` and so forth, and the [dplyr](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html) package has greatly facilitated performing such summaries via the verbs `filter()`, `select()`, `arrange()`, `mutate()` and `summarise()`.  But since the same summary statistics are always required i.e. the mean, standard deviation (SD), median, inter-quartile range (IQR)), minimum, maximum, number of observations and number of missing observations (and it is the authors view that there is no value in presenting say mean and standard deviation and omitting the median and IQR if data follows a [Gaussian distribution](https://en.wikipedia.org/wiki/Normal_distribution) or vice-versa if it is non-Gaussian since you need *both* sets of metrics to make such a judgement), then it is possible to abstract the task and make a function that summarises an arbitrary list of variables by treatmen group, time-point or centre or any combination thereof.  That is the purpose of the `table_summary()` function, which perhaps slightly mis-leadingly doesn't return a table, rather it returns a data frame which can be used as a basis for producing tables using functions such as `kable()` or `xtable()`.
+You will *always* need to summarise data by treatment arm and at least on time point, more likely multiple time points such as Screening, Baseline, 1 Week, Six Week, Six Month or Twelve Month Follow-up depending on the study outcomes and design.  This has always been possible using an array of base functions such as `mean()`, `sd()` `min()` `quantile()` and so forth, and the [dplyr](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html) package has greatly facilitated performing such summaries via the verbs `filter()`, `select()`, `arrange()`, `mutate()` and `summarise()`.  But since the same summary statistics are always required i.e. the mean, standard deviation (SD), median, inter-quartile range (IQR), minimum, maximum, number of observations and number of missing observations (and it is the authors view that there is no value in presenting say mean and standard deviation and omitting the median and IQR if data follows a [Gaussian distribution](https://en.wikipedia.org/wiki/Normal_distribution) or vice-versa if it is non-Gaussian since you need *both* sets of metrics to make such a judgement), then it is possible to abstract the task and make a function that summarises an arbitrary list of variables by treatment group, time-point or centre or any combination thereof.  That is the purpose of the `table_summary()` and `plot_summary()` functions, which perhaps slightly mis-leadingly doesn't return a table, rather it returns a data frame which can be used as a basis for producing tables using functions such as `kable()` or `xtable()`.
 
 Assuming you have a data frame called `my_study_data` with repeated measurements at three time-points (`baseline`, `1 week` and `6 weeks`) defined by the variable `event_name` with three treatment arms defined in the variable `group`at multiple `sites` and the variables `age`, `height`, `weight`, `bmi` and `fev` (forced expiratory volume) have been recorded and are to be summarised by treatment group for each time point.  You could produce a data frame summarising this using `table_summary()` using...
 
