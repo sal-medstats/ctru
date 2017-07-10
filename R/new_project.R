@@ -7,7 +7,7 @@
 #' Creates a default project directory.
 #'
 #'
-#' @param path Absolute or relative path to be created.
+#' @param path Absolute or relative path to create the directory structure.
 #'
 #' @export
 new_project<- function(path = '',
@@ -29,4 +29,7 @@ new_project<- function(path = '',
     system(paste0(mkdir, path, 'tmp'))
     system(paste0(mkdir, path, 'ref'))
     system(paste0(mkdir, path, 'doc'))
+    ## Create/copy template files
+    system(paste0('touch ', path, ' README.md'))
+    system(paste0('touch ', path, ' lib/DESCRIPTION'))
 }
