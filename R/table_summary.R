@@ -42,16 +42,29 @@ table_summary <- function(df            = .,
     df <- df %>%
           dplyr::select(!!quo_id, !!quo_select, !!!quo_group) %>%
           unique()
+    ## Subset the select variables and assess which are numeric and which are factors
+    t <- df %>%
+         dplyr::select(!!quo_select)
+    numeric_vars <- t %>%
+                    dplyr::select(which(sapply(., class) == 'numeric'),
+                                  which(sapply(., class) == 'integer')) %>%
+                    names()
+    factor_vars <- t %>%
+                    dplyr::select(which(sapply(., class) == 'factor')) %>%
+                    names()
+    ## Convert grouping variables to character as leaving as factors causes headaches
     ##################################################################################
     ## Summarise continuous variables                                               ##
     ##################################################################################
     ## Of the provided list of variables to select (quo_select) need to remove those
     ## that are factors.
     ## Have already removed all but id, select and group vars so
-    numeric_vars <- df %>%
-                    dplyr::select(which(sapply(., class) == 'numeric'),
-                                  which(sapply(., class) == 'integer')) %>%
-                    names()
+    ## numeric_vars <- df %>%
+    ##                 dplyr::select(which(sapply(., class) == 'numeric'),
+    ##                               which(sapply(., class) == 'integer')) %>%
+    ##                 names()
+    ## Remove missing levels of specified groupings
+
     ## Remove event_name and site from the numeric_vars list (they are actually factors)
     ## ToDo :  Generalise this rather than having it hard coded
     numeric_vars <- numeric_vars[numeric_vars != 'individual_id']
@@ -88,32 +101,26 @@ table_summary <- function(df            = .,
                                             n, missing,
                                             mean, sd,
                                             p01, p05, p25, p50, p75, p95, p99,
-                                            min, max)
+                                            min, max) %>%
+                              arrange(label, !!!quo_group)
         if(nomissing == TRUE){
             results$continuous <- results$continuous %>%
-                                  dplyr::filter(!is.na(mean) & !is.na(sd) & !is.na(min) & !is.na(max)) %>%
-                                  dplyr::filter(!is.na(!!!quo_group))
+                                  dplyr::filter(!is.na(mean) & !is.na(sd) & !is.na(min) & !is.na(max))
         }
     }
     ##################################################################################
     ## Summarise Factor variables                                                   ##
     ##################################################################################
-    factor_vars <- df %>%
-                   dplyr::select(which(sapply(., class) == 'factor'),
-                                 !!!quo_group) %>%
-                    names()
-    ## Remove 'event_name' which should be a factor to assist plotting but on a different axis
-    ## ToDo : This is currently hard coded, need to make it flexible
-    factor_vars <- factor_vars[factor_vars != 'event_name']
-    factor_vars <- factor_vars[factor_vars != 'site']
     if(length(factor_vars) >= 1){
         results$df_factor <- df %>%
                              dplyr::select(which(sapply(., class) == 'factor'),
                                            !!!quo_group, !!quo_id)
+        ## print('Selecting works...')
         results$df_factor <- df %>%
                              dplyr::select(which(sapply(., class) == 'factor'),
                                            !!!quo_group, !!quo_id) %>%
                              gather(key = variable, value = value, factor_vars)
+        ## print('Gathering works...')
         results$factor <- results$df_factor %>%
                           group_by(!!!quo_group, variable, value) %>%
                           summarise(n = n()) %>%
