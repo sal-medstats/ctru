@@ -56,18 +56,6 @@ table_summary <- function(df            = .,
     ##################################################################################
     ## Summarise continuous variables                                               ##
     ##################################################################################
-    ## Of the provided list of variables to select (quo_select) need to remove those
-    ## that are factors.
-    ## Have already removed all but id, select and group vars so
-    ## numeric_vars <- df %>%
-    ##                 dplyr::select(which(sapply(., class) == 'numeric'),
-    ##                               which(sapply(., class) == 'integer')) %>%
-    ##                 names()
-    ## Remove missing levels of specified groupings
-
-    ## Remove event_name and site from the numeric_vars list (they are actually factors)
-    ## ToDo :  Generalise this rather than having it hard coded
-    numeric_vars <- numeric_vars[numeric_vars != 'individual_id']
     if(length(numeric_vars) >= 1){
         ## gather() data, just in case there is > 1 variable selected to be summarised
         results$df_numeric <- df %>%
@@ -114,13 +102,9 @@ table_summary <- function(df            = .,
     if(length(factor_vars) >= 1){
         results$df_factor <- df %>%
                              dplyr::select(which(sapply(., class) == 'factor'),
-                                           !!!quo_group, !!quo_id)
-        ## print('Selecting works...')
-        results$df_factor <- df %>%
-                             dplyr::select(which(sapply(., class) == 'factor'),
                                            !!!quo_group, !!quo_id) %>%
                              gather(key = variable, value = value, factor_vars)
-        ## print('Gathering works...')
+        ## print('Selecting and gathering works.')
         results$factor <- results$df_factor %>%
                           group_by(!!!quo_group, variable, value) %>%
                           summarise(n = n()) %>%
@@ -132,7 +116,12 @@ table_summary <- function(df            = .,
                                     lookup_fields,
                                     by = c('variable' = 'identifier')) %>%
                           ungroup() %>%
-                          dplyr::select(!!!quo_group, label, value, n, prop)
+            dplyr::select(!!!quo_group, label, value, n, prop)
+        ## ToDo : How to filter out NA?  Perhaps do so before gather()?
+        ## if(nomissing == TRUE){
+        ##     results$factor <- results$factor %>%
+        ##                       dplyr::filter(!is.na(f))
+        ## }
     }
     return(results)
 }
