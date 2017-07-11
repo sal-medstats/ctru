@@ -19,6 +19,7 @@
 #' @param plot.by Plot overall (\code{all}) or by site (\code{site}).
 #' @param facet.col Number of columns to facet a plot by, if \code{NULL} then no faceting is applied.
 #' @param facet.scales \code{free} or \code{fixed} axis scales.
+#' @param strip.position Position of titles when faceting passed to ggplot, see \code{?facet_wrap} for options.
 #' @param theme ggplot2 theme to apply.
 #' @param plotly Logical, to return ggplot2 graphs as plotly objects (default \code{FALSE}).
 #'
@@ -29,6 +30,7 @@ recruitment <- function(df              = master$screening_form,
                         plot.by         = 'both',
                         facet.col       = NULL,
                         facet.scales    = 'free',
+                        strip.position  = NULL,
                         theme           = theme_bw(),
                         plotly          = FALSE,
                         ...){
@@ -242,7 +244,10 @@ recruitment <- function(df              = master$screening_form,
             ## Metric : Screening
             ## Site   : Site
             results$plot_screened_site <- results$plot_screened_site +
-                                          facet_wrap(~site, ncol = facet.col, scales = facet.scales) +
+                                          facet_wrap(~site,
+                                                     ncol = facet.col,
+                                                     scales = facet.scales,
+                                                     strip.position = strip.position) +
                                           guides(colour = FALSE) +
                                           theme(axis.text.x = element_text(angle = 90))
         }
@@ -250,7 +255,10 @@ recruitment <- function(df              = master$screening_form,
             ## Metric : Recruitment
             ## Site   : Site
             results$plot_recruited_site <- results$plot_recruited_site +
-                                           facet_wrap(~site, ncol = facet.col, scales = facet.scales) +
+                                           facet_wrap(~site,
+                                                      ncol = facet.col,
+                                                      scales = facet.scales,
+                                                      strip.position = strip.position) +
                                            guides(colour = FALSE) +
                                            theme(axis.text.x = element_text(angle = 90))
         }
@@ -258,7 +266,10 @@ recruitment <- function(df              = master$screening_form,
             ## Metric : Screened and Recruited
             ## Site   : All
             results$plot_screened_recruited_site <- results$plot_screened_recruited_site +
-                                                facet_wrap(~site, ncol = facet.col, scales = facet.scales) +
+                                                    facet_wrap(~site,
+                                                               ncol = facet.col,
+                                                               scales = facet.scales,
+                                                               strip.position = strip.position) +
                                                 guides(colour = FALSE) +
                                                 theme(axis.text.x = element_text(angle = 90))
         }
