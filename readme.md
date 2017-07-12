@@ -47,6 +47,7 @@ I would advocate using [SSH Keys](https://help.github.com/articles/generating-an
 
 #### ToDo
 
+* Generate plots by site (don't need to do tables, since they can be subsetted from the master)
 * Possibly add option to summarise by treatment arm too.
 
 ### `table_summary()`
