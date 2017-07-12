@@ -1,4 +1,4 @@
-[![ORCiD](https://img.shields.io/badge/ORCiD-0000--0001--8301--6857-green.svg)](https://orcid.org/0000-0001-8301-6857)
+[![minimal R version](https://img.shields.io/badge/R%3E%3D-3.4.0-brightgreen.svg)](https://cran.r-project.org/)[![ORCiD](https://img.shields.io/badge/ORCiD-0000--0001--8301--6857-green.svg)](https://orcid.org/0000-0001-8301-6857)
 
 # CTRU R Functions
 
@@ -88,6 +88,13 @@ I would advocate using [SSH Keys](https://help.github.com/articles/generating-an
 
 * Very much a work in progress, need to fully understand [Non-Standard Evaluation](http://dplyr.tidyverse.org/articles/programming.html) to get the function working and fully flexible.
 
+
+### `consort()`
+
+* Function for producing [CONSORT flow-diagrams](http://www.consort-statement.org/consort-statement/flow-diagram)
+#### ToDo
+
+* Everything, most likely useing [`diagram`](https://cran.r-project.org/web/packages/diagram/index.html) package (further examples [here](https://stackoverflow.com/questions/4722689/creating-tree-diagram-for-showing-case-count-using-r)).
 
 ### `regress_ctru()`
 
