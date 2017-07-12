@@ -95,6 +95,7 @@ I would advocate using [SSH Keys](https://help.github.com/articles/generating-an
 #### ToDo
 
 * Everything, most likely useing [`diagram`](https://cran.r-project.org/web/packages/diagram/index.html) package (further examples [here](https://stackoverflow.com/questions/4722689/creating-tree-diagram-for-showing-case-count-using-r)).
+* This may not be that straight-forward to abstract in light of the way CTRU data is (un)structured as there is no single file that defines who was seen at what stage, all numbers need extracting from the available data.  Kind of the thing that databases are geared towards really.
 
 ### `regress_ctru()`
 
