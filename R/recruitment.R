@@ -241,6 +241,12 @@ recruitment <- function(df              = master$screening_form,
         results$screened_recruited <- results$screened_recruited %>%
                                       dplyr::select(-n) %>%
                                       spread(key = status, value = sum)
+        print('Screened')
+        results$screened %>% names() %>% print()
+        print('Recruited')
+        results$recruited %>% names() %>% print()
+        print('Screened_Recruited')
+        results$screened_recruited %>% names() %>% print()
         ## Plot
         if(plot.by %in% c('all', 'both')){
             ## Metric : Screened and Recruited
@@ -287,6 +293,29 @@ recruitment <- function(df              = master$screening_form,
                                                      strip.position = strip.position) +
                                           guides(colour = FALSE) +
                                           theme(axis.text.x = element_text(angle = 90))
+            sites <- results$screened$site %>% unique()
+            results$plot_screened_each_site <- vector('list', length(sites))
+            for(x in sites){
+                out <- gsub(' $', '', x) %>%
+                       gsub(' ', '_', .) %>%
+                       gsub('\\. ', '', .) %>%
+                       gsub("'", '', .) %>%
+                       gsub('__', '_', .) %>%
+                    tolower()
+                results$plot_screened_each_site[[out]] <- dplyr::filter(results$screened,
+                                                                         site == x) %>%
+                                                           ggplot() +
+                                                           geom_line(aes(x = event_date,
+                                                                         y = sum, color = site),
+                                                                     linetype = 'dashed') +
+                                                           xlab('Date') + ylab('N') +
+                                                           ggtitle(paste0('Screening at ', x)) +
+                                                           theme +
+                                                           theme(legend.position = 'none')
+                if(plotly == TRUE){
+                    results$plot_screened_each_site[[out]] <- ggplotly(results$plot_screened_each_site[[out]])
+                }
+            }
         }
         if(!is.null(enrolment)){
             ## Metric : Recruitment
@@ -298,6 +327,29 @@ recruitment <- function(df              = master$screening_form,
                                                       strip.position = strip.position) +
                                            guides(colour = FALSE) +
                                            theme(axis.text.x = element_text(angle = 90))
+            sites <- results$recruited$site %>% unique()
+            results$plot_recruited_each_site <- vector('list', length(sites))
+            for(x in sites){
+                out <- gsub(' $', '', x) %>%
+                       gsub(' ', '_', .) %>%
+                       gsub('\\. ', '', .) %>%
+                       gsub("'", '', .) %>%
+                       gsub('__', '_', .) %>%
+                       tolower()
+                results$plot_recruited_each_site[[out]] <- dplyr::filter(results$recruited,
+                                                                         site == x) %>%
+                                                           ggplot() +
+                                                           geom_line(aes(x = event_date,
+                                                                         y = sum, color = site),
+                                                                     linetype = 'dashed') +
+                                                           xlab('Date') + ylab('N') +
+                                                           ggtitle(paste0('Screening at ', x)) +
+                                                           theme +
+                                                           theme(legend.position = 'none')
+                if(plotly == TRUE){
+                    results$plot_recruited_each_site[[out]] <- ggplotly(results$plot_recruited_each_site[[out]])
+                }
+            }
         }
         if(!is.null(screening) & !is.null(enrolment)){
             ## Metric : Screened and Recruited
@@ -309,6 +361,32 @@ recruitment <- function(df              = master$screening_form,
                                                                strip.position = strip.position) +
                                                 guides(colour = FALSE) +
                                                 theme(axis.text.x = element_text(angle = 90))
+            sites <- results$screened_recruited$site %>% unique()
+            results$plot_screened_recruited_each_site <- vector('list', length(sites))
+            for(x in sites){
+                out <- gsub(' $', '', x) %>%
+                       gsub(' ', '_', .) %>%
+                       gsub('\\. ', '', .) %>%
+                       gsub("'", '', .) %>%
+                       gsub('__', '_', .) %>%
+                       tolower()
+                results$plot_screened_recruited_each_site[[out]] <- dplyr::filter(results$screened_recruited,
+                                                                         site == x) %>%
+                                                           ggplot() +
+                                                           geom_line(aes(x = event_date,
+                                                                         y = Screened, color = site),
+                                                                     linetype = 'dashed') +
+                                                           geom_line(aes(x = event_date,
+                                                                         y = Recruited, color = site),
+                                                                     linetype = 'solid') +
+                                                           xlab('Date') + ylab('N') +
+                                                           ggtitle(paste0('Screening and Recruitment at ', x)) +
+                                                           theme +
+                                                           theme(legend.position = 'none')
+                if(plotly == TRUE){
+                    results$plot_screened_recruited_each_site[[out]] <- ggplotly(results$plot_screened_recruited_each_site[[out]])
+                }
+            }
         }
     }
     ## Plotly?
