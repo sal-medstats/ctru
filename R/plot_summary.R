@@ -66,14 +66,17 @@ plot_summary <- function(df                = .,
           ## dplyr::select(!!quo_id, !!quo_select, !!quo_events, !!quo_group) %>%
           dplyr::select(!!!to_group, !!quo_select) %>%
           unique()
+    print('First Filter, is group there?')
+    df %>% names() %>% print()
+    ## Obtain a list of numeric and factor variables, first select out
+    ## the variables that are to be summarised, otherwise grouping variables
+    ## which can often be factors, are included
+    t <- dplyr::select(df, !!quo_select)
     ## Obtain a list of the numeric variables and grouping variables
-    numeric_vars <- which(sapply(df, class) == 'numeric') %>% names()
+    numeric_vars <- which(sapply(t, class) == 'numeric') %>% names()
     ## Obtain a list of the factor variables
-    factor_vars <- which(sapply(df, class) == 'factor') %>%
+    factor_vars <- which(sapply(t, class) == 'factor') %>%
                    names()
-    ## Remove 'event_name' which should be a factor to assist plotting but on a different axis
-    ## ToDo : This is currently hard coded, need to make it flexible
-    factor_vars <- factor_vars[factor_vars != 'event_name']
     ##########################################################################
     ## Continuous Variables                                                 ##
     ##########################################################################
@@ -112,7 +115,7 @@ plot_summary <- function(df                = .,
                               theme +
                               theme(strip.background = element_blank(),
                                     strip.placement  = 'outside')
-        if(legend == FALSE){
+        if(legend_continuous == FALSE){
             results$histogram <- results$histogram +
                                  guides(fill = FALSE)
         }
@@ -271,7 +274,8 @@ plot_summary <- function(df                = .,
     ##########################################################################
     ## Subset factor variables, gather() and plot these
     ## Add the event_name variable
-    ## factor_vars %>% print()
+    print('The factor variables are as follows (should NOT include group)')
+    factor_vars %>% print()
     ## Filter the factor lookups based on the factor variables so we can re-encode them
     ## Logical check required to determine if numeric variables are to be plotted.
     ## If none are specified then left_join() fails...
@@ -370,6 +374,11 @@ plot_summary <- function(df                = .,
                           unique() %>%
                           as.data.frame()
                 ## Plot current variable
+                results$df_factor %>% head() %>% print()
+                print('Is it filtering that is the problem?')
+                results$df_factor %>%
+                    dplyr::filter(!is.na(!!quo_group) & variable == x) %>% head() %>% print()
+                print('Seems not')
                 results[[paste0('factor_', x)]] <- results$df_factor %>%
                                 dplyr::filter(!is.na(!!quo_group) & variable == x) %>%
                                 ggplot(aes(x = label, fill = value)) +
