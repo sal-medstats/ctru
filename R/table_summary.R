@@ -52,7 +52,6 @@ table_summary <- function(df            = .,
     factor_vars <- t %>%
                     dplyr::select(which(sapply(., class) == 'factor')) %>%
                     names()
-    ## Convert grouping variables to character as leaving as factors causes headaches
     ##################################################################################
     ## Summarise continuous variables                                               ##
     ##################################################################################
