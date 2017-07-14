@@ -66,17 +66,16 @@ plot_summary <- function(df                = .,
           ## dplyr::select(!!quo_id, !!quo_select, !!quo_events, !!quo_group) %>%
           dplyr::select(!!!to_group, !!quo_select) %>%
           unique()
-    print('First Filter, is group there?')
-    df %>% names() %>% print()
-    ## Obtain a list of numeric and factor variables, first select out
-    ## the variables that are to be summarised, otherwise grouping variables
-    ## which can often be factors, are included
-    t <- dplyr::select(df, !!quo_select)
-    ## Obtain a list of the numeric variables and grouping variables
-    numeric_vars <- which(sapply(t, class) == 'numeric') %>% names()
-    ## Obtain a list of the factor variables
-    factor_vars <- which(sapply(t, class) == 'factor') %>%
-                   names()
+    ## Subset the select variables and assess which are numeric and which are factors
+    t <- df %>%
+         dplyr::select(!!quo_select)
+    numeric_vars <- t %>%
+                    dplyr::select(which(sapply(., class) == 'numeric'),
+                                  which(sapply(., class) == 'integer')) %>%
+                    names()
+    factor_vars <- t %>%
+                    dplyr::select(which(sapply(., class) == 'factor')) %>%
+                    names()
     ##########################################################################
     ## Continuous Variables                                                 ##
     ##########################################################################
@@ -274,8 +273,6 @@ plot_summary <- function(df                = .,
     ##########################################################################
     ## Subset factor variables, gather() and plot these
     ## Add the event_name variable
-    print('The factor variables are as follows (should NOT include group)')
-    factor_vars %>% print()
     ## Filter the factor lookups based on the factor variables so we can re-encode them
     ## Logical check required to determine if numeric variables are to be plotted.
     ## If none are specified then left_join() fails...
@@ -375,9 +372,6 @@ plot_summary <- function(df                = .,
                           as.data.frame()
                 ## Plot current variable
                 results$df_factor %>% head() %>% print()
-                print('Is it filtering that is the problem?')
-                results$df_factor %>%
-                    dplyr::filter(!is.na(!!quo_group) & variable == x) %>% head() %>% print()
                 print('Seems not')
                 results[[paste0('factor_', x)]] <- results$df_factor %>%
                                 dplyr::filter(!is.na(!!quo_group) & variable == x) %>%
