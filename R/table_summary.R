@@ -26,7 +26,7 @@ table_summary <- function(df            = .,
                           select        = c(),
                           nomissing     = TRUE,
                           ## group      = c(),
-                          ## digits     = 3,
+                          digits        = NULL,
                           ...){
     ## Results list
     results <- list()
@@ -103,7 +103,14 @@ table_summary <- function(df            = .,
                              dplyr::select(which(sapply(., class) == 'factor'),
                                            !!!quo_group, !!quo_id) %>%
                              gather(key = variable, value = value, factor_vars)
+
         ## print('Selecting and gathering works.')
+        ## Filter out data with missing grouping variables then group and summarise
+        ## in terms of N and propotion
+        if(nomissing == TRUE){
+            results$df_factor <- results$df_factor %>%
+                                 dplyr::filter(!is.na(!!!quo_group), !is.na(variable))
+        }
         results$factor <- results$df_factor %>%
                           group_by(!!!quo_group, variable, value) %>%
                           summarise(n = n()) %>%
@@ -115,7 +122,16 @@ table_summary <- function(df            = .,
                                     lookup_fields,
                                     by = c('variable' = 'identifier')) %>%
                           ungroup() %>%
-            dplyr::select(!!!quo_group, label, value, n, prop)
+                          dplyr::select(!!!quo_group, label, value, n, prop)
+        ## Optionally combine N and Prop
+        if(!is.null(digits)){
+            results$factor <- results$factor %>%
+                              mutate(n_prop = paste0(n,
+                                                     ' (',
+                                                     formatC(prop, digits = digits, format = 'f'),
+                                                     ')')) %>%
+                              dplyr::select(-n, -prop)
+        }
         ## ToDo : How to filter out NA?  Perhaps do so before gather()?
         ## if(nomissing == TRUE){
         ##     results$factor <- results$factor %>%
