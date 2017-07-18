@@ -130,7 +130,7 @@ table_summary <- function(df            = .,
                                                              formatC(max,
                                                                      digits = digits,
                                                                      format = 'f'))) %>%
-                dplyr::select(-mean, -sd, -p01, -p05, -p25, -p50, -p75, -p95, -p99, min, max)
+                dplyr::select(-mean, -sd, -p01, -p05, -p25, -p50, -p75, -p95, -p99, -min, -max)
             if(!is.null(reshape)){
                 results$continuous <- results$continuous %>%
                                       melt(id.vars      = c(quo_group, 'label', 'value'),
