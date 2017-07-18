@@ -16,8 +16,12 @@
 #' @param id Unique identifier for individuals.
 #' @param select Variables to be summarised.
 #' @param group Variables by which to summarise the data by.
-#' @param digits Number of decimal places to be used in proportion/percentages.
+#' @param digits Number of decimal places to be used in tidied and formatted output.  By default this is \code{NULL} and a pain data frame is returned without combining columns.  For continuous variables the following statistics are combined \code{mean (sd)}, \code{median (IQR)}, \code{min-max}, whilst for
 #' @param nomissing Logical of whether to remove from summary of continuous variables instances where all observations are missing.
+#'
+#' @seealso
+#'
+#' \url{https://ropensci.org/blog/blog/2017/07/11/skimr}
 #'
 #' @export
 table_summary <- function(df            = .,
@@ -93,6 +97,37 @@ table_summary <- function(df            = .,
         if(nomissing == TRUE){
             results$continuous <- results$continuous %>%
                                   dplyr::filter(!is.na(mean) & !is.na(sd) & !is.na(min) & !is.na(max))
+        }
+        if(!is.null(digits)){
+            results$continuous <- results$continuous %>%
+                                  mutate(mean_sd    = paste0(formatC(mean,
+                                                                     digits = digits,
+                                                                     format = 'f'),
+                                                             ' (',
+                                                             formatC(sd,
+                                                                     digits = digits,
+                                                                     format = 'f'),
+                                                             ')'),
+                                         median_iqr = paste0(formatC(p50,
+                                                                     digits = digits,
+                                                                     format = 'f'),
+                                                             ' (',
+                                                             formatC(p25,
+                                                                     digits = digits,
+                                                   format = 'f'),
+                                                   ' - '
+                                                   formatC(p75,
+                                                           digits = digits,
+                                                           format = 'f'),
+                                                   ')'),
+                                         range      = paste0(formatC(min,
+                                                                     digits = digits,
+                                                                     format = 'f'),
+                                                             ' - ',
+                                                             formatC(max,
+                                                                     digits = digits,
+                                                                     format = 'f'))) %>%
+                                 dplyr::select(-mean, -sd, -p01, -p05, -p25, -p50, -p75, -p95, -p99, min, max)
         }
     }
     ##################################################################################
