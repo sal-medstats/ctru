@@ -24,6 +24,7 @@
 #' @seealso
 #'
 #' \url{https://ropensci.org/blog/blog/2017/07/11/skimr}
+#' \url{https://github.com/MaximeWack/desctable}
 #'
 #' @export
 table_summary <- function(df            = .,
@@ -33,7 +34,6 @@ table_summary <- function(df            = .,
                           time          = event_name,
                           group         = group,
                           nomissing     = TRUE,
-                          ## group      = c(),
                           digits        = NULL,
                           reshape       = NULL,
                           ...){
@@ -135,10 +135,10 @@ table_summary <- function(df            = .,
                 results$continuous <- results$continuous %>%
                                       melt(id.vars      = c(quo_group, 'label', 'value'),
                                            measure.vars = c('n_prop'),
-                                           value.name   = 'val') ## %>%
+                                           value.name   = 'val') %>%
                     ## ToDo - How to split quo_group, most likely have to change
                     ##        the way grouping variables are specified
-                                      ## dcast(event_name + )
+                                      dcast(reshape, value.var = 'val')
             }
         }
     }
@@ -178,14 +178,18 @@ table_summary <- function(df            = .,
                                                      formatC(prop, digits = digits, format = 'f'),
                                                      ')')) %>%
                               dplyr::select(-n, -prop)
-            if(reshape == TRUE){
+            if(!is.null(reshape)){
+                results$factor %>%
+                    melt(id.vars      = c(!!quo_group, !!quo_time, 'label', 'value'),
+                         measure.vars = c('n_prop'),
+                         value.name   = 'val') %>% names() %>% print()
                 results$factor <- results$factor %>%
                                   melt(id.vars      = c(!!quo_group, !!quo_time, 'label', 'value'),
                                        measure.vars = c('n_prop'),
-                                       value.name   = 'val') ## %>%
+                                       value.name   = 'val') %>%
                     ## ToDo - How to split quo_group, most likely have to change
                     ##        the way grouping variables are specified
-                                  ## dcast(event_name + )
+                                  dcast(reshape, value.var = 'val')
             }
         }
     }
