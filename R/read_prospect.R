@@ -98,12 +98,7 @@ read_prospect <- function(file               = 'Lookups.csv',
         ## TODO - Work out how to handle subforms?
         current_form    <- strsplit(file, ' - ', fixed = TRUE) %>%
                            unlist() %>%
-            data.frame()
-        print('current_form : ')
-        current_form %>% print()
-        nrow(current_form) %>% print()
-        print('file : ')
-        file %>% print()
+                           data.frame()
         if(nrow(current_form) == 1){
             dictionary <- dplyr::filter(dictionary,
                                         form    == gsub('\\.csv', '', file))
