@@ -96,8 +96,18 @@ read_prospect <- function(file               = 'Lookups.csv',
         ## Subset the dictionary, required because sometimes a field name
         ## is used multiple times across different forms
         ## TODO - Work out how to handle subforms?
-        dictionary <- dplyr::filter(dictionary,
-                                    form == gsub('\\.csv', '', file))
+        current_form    <- strsplit(file, ' - ', fixed = TRUE) %>%
+                           unlist() %>%
+                           data.frame()
+        if(nrow(current_form) == 1){
+            dictionary <- dplyr::filter(dictionary,
+                                        subform == gsub('\\.csv', '', file))
+        }
+        else{
+            dictionary <- dplyr::filter(dictionary,
+                                        form    == current_form[1,1]  &
+                                        subform == gsub('\\.csv', '', current_form[2,1]))
+        }
     }
     ## Check for duplicates
     if(check.duplicates == TRUE){
