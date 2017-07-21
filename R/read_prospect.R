@@ -131,6 +131,11 @@ read_prospect <- function(file               = 'Lookups.csv',
             new[[x]] <- ymd(new[[x]])
         }
     }
+    ## Convert 'event_name' to factor if present
+    ## if('event_name' %in% names(new)){
+    ##     new <- new %>%
+    ##            mutate(event_name = factor(event_name))
+    ## }
     ## Convert factors
     if(!is.null(dictionary)){
         ## Loop over all variables
