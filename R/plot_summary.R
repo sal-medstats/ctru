@@ -216,7 +216,7 @@ plot_summary <- function(df                = .,
                                 geom_boxplot() +
                                 ## facet_wrap(~event_name, ncol = 1) +
                                 ggtitle(xlabel[[1]]) +
-                                xlab('Site') + ylab(xlabel[[1]]) +
+                                xlab('Event') + ylab(xlabel[[1]]) +
                                 theme +
                                 theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
                 if(legend_continuous == FALSE){
