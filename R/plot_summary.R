@@ -176,7 +176,7 @@ plot_summary <- function(df                = .,
                               dplyr::filter(!is.na(!!quo_group)) %>%
                               ggplot(aes_(quo_events, ~value, fill = quo_events)) +
                               geom_boxplot() +
-                              xlab('') + ylab('N') +
+                              xlab('') + ylab('Score') +
                               ggtitle(title_continuous) +
                               theme +
                               theme(strip.background = element_blank(),
