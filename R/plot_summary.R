@@ -63,7 +63,6 @@ plot_summary <- function(df                = .,
     if(!is.null(quo_events)) to_group <- c(to_group, quo_events)
     ## Subset the data and de-duplicate
     df <- df %>%
-          ## dplyr::select(!!quo_id, !!quo_select, !!quo_events, !!quo_group) %>%
           dplyr::select(!!!to_group, !!quo_select) %>%
           unique()
     ## Subset the select variables and assess which are numeric and which are factors
@@ -73,7 +72,7 @@ plot_summary <- function(df                = .,
                     dplyr::select(which(sapply(., class) == 'numeric'),
                                   which(sapply(., class) == 'integer')) %>%
                     names()
-    factor_vars <- t %>%
+    factor_vars  <- t %>%
                     dplyr::select(which(sapply(., class) == 'factor')) %>%
                     names()
     ##########################################################################
@@ -107,7 +106,7 @@ plot_summary <- function(df                = .,
         ## Generate plot
         results$histogram <- results$df_numeric %>%
                               dplyr::filter(!is.na(!!quo_group)) %>%
-                              ggplot(aes_(~value, fill = quo_group)) +
+                              ggplot(aes_(~value, fill = quo_events)) +
                               geom_histogram(alpha = 0.5, position = position) +
                               xlab('') + ylab('N') +
                               ggtitle(title_continuous) +
@@ -118,37 +117,17 @@ plot_summary <- function(df                = .,
             results$histogram <- results$histogram +
                                  guides(fill = FALSE)
         }
+        ## Facetted plot : events (alwas specified even if there is only one) by group if specified
+        if(!is.null(quo_group)){
+            results$histogram_group <- results$histogram +
+                                       ## facet_grid(quo_events~quo_group,
+                                       facet_grid(event_name~.,
+                                                  scales = 'free')
+        }
         if(plotly == TRUE){
             results$histogram <- results$histogram %>%
                                  ggplotly()
-        }
-        ## Facetted plot when no events specified
-        if(is.null(quo_events)){
-            ## names(results$df_numeric) %>% print()
-            ## table(results$df_numeric$label) %>% print()
-            results$histogram_tiled <- results$histogram +
-                                       facet_wrap(~label,
-                                                  scales = 'free',
-                                                  strip.position = 'bottom')
-        }
-        else{
-            ## print('Grid : ')
-            ## table(results$df_numeric$label) %>% print()
-            ## paste0('By    : ', quo_events) %>% print()
-            results$histogram_tiled <- results$histogram +
-                                       facet_grid(label~quo_events,
-                                                  scales = 'free')
-        }
-        if(legend_continuous == FALSE){
-            results$histogram       <- results$histogram +
-                                       guides(fill = FALSE)
-            results$histogram_tiled <- results$histogram_tiled +
-                                       guides(fill = FALSE)
-        }
-        if(plotly == TRUE){
-            results$histogram       <- results$histogram %>%
-                                       ggplotly()
-            results$histogram_tiled <- results$histogram_tiled %>%
+            results$histogram_group <- results$histogram_group %>%
                                        ggplotly()
         }
         ## Plot individual figures if requested
@@ -163,7 +142,7 @@ plot_summary <- function(df                = .,
                 ## Plot current variable
                 results[[paste0('histogram_', x)]] <- results$df_numeric %>%
                                 dplyr::filter(!is.na(!!quo_group) & variable == x) %>%
-                                ggplot(aes_(~value, fill = quo_group)) +
+                                ggplot(aes_(~value, fill = quo_events)) +
                                 geom_histogram(alpha = 0.5, position = position) +
                                 ggtitle(xlabel[[1]]) +
                                 xlab(xlabel[[1]]) + ylab('N') +
@@ -181,8 +160,6 @@ plot_summary <- function(df                = .,
         }
     }
     ## Boxplot
-    ## paste0('Boxplot : ', boxplot) %>% print()
-    ## names(results$df_numeric) %>% print()
     if(boxplot == TRUE & c('variable') %in% df_numeric_names){
         ## print('We are going to draw box-plots')
         results$df_numeric <- df %>%
@@ -197,42 +174,31 @@ plot_summary <- function(df                = .,
         ## Generate plot
         results$boxplot <- results$df_numeric %>%
                               dplyr::filter(!is.na(!!quo_group)) %>%
-                              ggplot(aes_(quo_group, ~value, fill = quo_group)) +
+                              ggplot(aes_(quo_events, ~value, fill = quo_events)) +
                               geom_boxplot() +
                               xlab('') + ylab('N') +
                               ggtitle(title_continuous) +
                               theme +
                               theme(strip.background = element_blank(),
-                                    strip.placement  = 'outside')
-        ## Facetted plot when no events specified
-        if(is.null(quo_events)){
-            ## print('Facetting : ')
-            ## table(results$df_numeric$label) %>% print()
-            results$boxplot_tiled <- results$boxplot +
-                                     facet_wrap(~label,
-                                                scales = 'free',
-                                                strip.position = 'bottom')
-        }
-        else{
-            ## print('Grid : ')
-            ## table(results$df_numeric$label) %>% print()
-            ## paste0('By    : ', quo_events) %>% print()
-            results$boxplot_tiled <- results$boxplot +
-                                     ## facet_grid('label'~quo_events,
-                                     facet_grid(label~event_name,
-                                                scales = 'free')
-        }
+                                    strip.placement  = 'outside',
+                                    axis.text.x = element_text(angle = 90, vjust = 0.5))
         if(legend_continuous == FALSE){
             results$boxplot       <- results$boxplot +
                                      guides(fill = FALSE)
-            results$boxplot_tiled <- results$boxplot_tiled +
-                                     guides(fill = FALSE)
+        }
+        ## Facetted plot : events (alwas specified even if there is only one) by group if specified
+        if(!is.null(quo_group)){
+            results$boxplot_group <- results$boxplot +
+                                      ## facet_grid('label'~quo_events,
+                ## facet_grid(quo_events~quo_group,
+                facet_grid(event_name~.,
+                                                 scales = 'free')
         }
         if(plotly == TRUE){
-            results$boxplot       <- results$boxplot %>%
-                                     ggplotly()
-            results$boxplot_tiled <- results$boxplot %>%
-                                     ggplotly()
+            results$boxplot <- results$boxplot %>%
+                               ggplotly()
+            results$boxplot_group <- results$boxplot_group %>%
+                                      ggplotly()
         }
         ## Plot individual figures if requested
         if(individual == TRUE){
@@ -246,7 +212,7 @@ plot_summary <- function(df                = .,
                 ## Plot current variable
                 results[[paste0('boxplot_', x)]] <- results$df_numeric %>%
                                 dplyr::filter(!is.na(!!quo_group) & variable == x) %>%
-                                ggplot(aes_(quo_group, ~value, fill = quo_group)) +
+                                ggplot(aes_(quo_events, ~value, fill = quo_events)) +
                                 geom_boxplot() +
                                 ## facet_wrap(~event_name, ncol = 1) +
                                 ggtitle(xlabel[[1]]) +
@@ -271,18 +237,11 @@ plot_summary <- function(df                = .,
     ## http://rnotr.com/likert/ggplot/barometer/likert-plots/               ##
     ## http://rnotr.com/likert/ggplot/barometer/likert-plotly/              ##
     ##########################################################################
-    ## Subset factor variables, gather() and plot these
-    ## Add the event_name variable
-    ## Filter the factor lookups based on the factor variables so we can re-encode them
-    ## Logical check required to determine if numeric variables are to be plotted.
-    ## If none are specified then left_join() fails...
     df_factor_names <- df %>%
                        dplyr::select(which(sapply(., class) == 'factor'),
                                      !!!to_group) %>%
                        gather(key = variable, value = value, factor_vars) %>%
                        names()
-    ## paste0('Names     : ', names(results$df_factor) %in% c('variable')) %>% print()
-    ## names(results$df_factor) %>% print()
     if(c('variable') %in% df_factor_names){
         results$df_factor <- df %>%
                              dplyr::select(which(sapply(., class) == 'factor'),
@@ -294,8 +253,8 @@ plot_summary <- function(df                = .,
         ## Convert factors
         if(!is.null(levels_factor)){
             results$df_factor <- results$df_factor %>%
-                mutate(value = factor(value,
-                                      levels = levels_factor))
+                                 mutate(value = factor(value,
+                                                       levels = levels_factor))
         }
         ## Remove NAs
         if(remove_na == TRUE){
@@ -318,7 +277,7 @@ plot_summary <- function(df                = .,
                    gsub('\\(', '', .) %>%
                    gsub('\\)', '', .) %>%
                    gsub('-', '_', .) %>%
-                tolower()
+                   tolower()
             results[[paste0('factor_', out)]] <- results$df_factor %>%
                                                  dplyr::filter(form == x) %>%
                                                  ## ggplot(aes_string(x = !!!quo_events, fill = 'value'),
@@ -349,7 +308,7 @@ plot_summary <- function(df                = .,
                           coord_flip() +
                           xlab('') + ylab('Proportion') +
                           ggtitle(title_factor) +
-                          facet_grid(form~group,
+                          facet_grid(form~quo_group,
                                      scales = 'free') +
                           theme +
                           theme(strip.background = element_blank(),
@@ -371,8 +330,6 @@ plot_summary <- function(df                = .,
                           unique() %>%
                           as.data.frame()
                 ## Plot current variable
-                results$df_factor %>% head() %>% print()
-                print('Seems not')
                 results[[paste0('factor_', x)]] <- results$df_factor %>%
                                 dplyr::filter(!is.na(!!quo_group) & variable == x) %>%
                                 ggplot(aes(x = label, fill = value)) +
