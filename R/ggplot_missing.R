@@ -26,7 +26,7 @@
 #' https://njtierney.github.io/r/missing%20data/rbloggers/2015/12/01/ggplot-missing-data/
 #'
 #' @export
-ggplot_missing <- function(df = ,
+ggplot_missing <- function(df = .,
                            exclude = NULL,
                            theme   = theme_bw(),
                            ...){
