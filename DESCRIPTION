@@ -1,7 +1,10 @@
 Package: ctru
 Title: Working with data at Sheffield Clinical Trials Research Unit
 Version: 0.20170821
-Authors@R: person("Neil", "Shephard", email = "n.shephard@sheffield.ac.uk", role = c("aut", "cre"))
+Authors@R: person("Neil", "Shephard",
+                  email = "n.shephard@sheffield.ac.uk",
+		  role = c("aut", "cre"),
+		  comment = c(ORCID = "0000-0001-8301-6857"))
 Description: The functions contained within this package simplify some of the
     repetitive tasks common to most studies carried out in the Clinical Trials
     Research Unit in the School of Health and Related Research (ScHARR) at the
