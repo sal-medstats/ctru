@@ -21,7 +21,7 @@ In R the package `[blockrand](https://cran.r-project.org/web/packages/blockrand/
 
 Usage is described in the [packages reference manual](s://cran.r-project.org/web/packages/blockrand/blockrand.pdf), to aid working through this a worked example is provided.
 
-A cluster randomsied study is being initiated with two arms (`case` and `control`).  There are to be three stratum based on the size of the institution (`small`, `medium` or `large`) and it is expected that there will be plenty of `small` and `medium` but very few `large` so the block sizes for this group will be kept small to ensure balance.  The overall aim is to recruit 130 centres in total.  The parameters are summarised in the table below...
+A cluster randomsied study is being initiated with two arms (`case` and `control`).  The centers are hospitals and there are to be three stratum based on the size of the institution (`small`, `medium` or `large`) and it is expected that there will be plenty of `small` and `medium` but very few `large` so the block sizes for this group will be kept small to ensure balance.  The overall aim is to recruit 130 centres in total.  The parameters are summarised in the table below...
 
 
 The following code generates the randomisation list...
@@ -78,7 +78,7 @@ randomisation <- randomisation %>%
 You may wish to plot the distribution of allocations within each stratum to ensure equipoise (balance) within each, the following code achieves this...
 
 
-```{r results_schedule_plot, cache = FALSE, echo = FALSE, warnings = FALSE, results = 'hide', eval = TRUE}
+```{r results_schedule_plot, cache = FALSE, echo = TRUE, warnings = FALSE, results = 'hide', eval = TRUE}
 ## Plot the distribution of randomisation by stratum
 ggplot(randomisation,
         aes(x    = stratum,
@@ -92,9 +92,19 @@ ggplot(randomisation,
 
 ```
 
-Once the list has been generated it can be sent to whomever is to use it.  A useful feature though is to upload it to Google Sheets for others to use and this can be acheived using the `[googlesheets](https://cran.r-project.org/web/packages/googlesheets/)` packages.
+Once the list has been generated it can be sent to whomever is to use it.  A useful feature though is to upload it to Google Sheets for others to use and this can be acheived using the `[googlesheets](https://cran.r-project.org/web/packages/googlesheets/)` packages.  The first time you run this you will be asked to authorise and permit R/`googlesheets` to your Google Drive.  For more information on this please refer to the [googlesheets Basic Usage vignette](https://rawgit.com/jennybc/googlesheets/master/vignettes/basic-usage.html)
 
 ```{r upload_to_googlesheets, cache = FALSE, echo = TRUE, warnings = FALSE, results = 'hide', eval = TRUE}
+## Write the randomisation file to CSV and upload to GoogleSheets
+## First add in an extra blank column for hospital name to be recorded in
+randomisation$hospital <- ""
+file <- 'randomisation.csv'
+write.csv(randomisation,
+          file = file,
+          row.names = FALSE)
+gs_upload(file = file,
+          sheet_title = 'iSocialise Randomisation Schedule',
+          overwrite   = TRUE)
 
 
 ```
