@@ -1,0 +1,387 @@
+---
+title: "CTRU R Functions"
+author: "n.shephard@sheffield.ac.uk"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{CTRU R Functions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+[Sheffield Clinical Trials Research Unit](https://www.sheffield.ac.uk/scharr/sections/dts/ctru) conducts clinical trials of different medical and therapeautic interventions.  The Standard Operating Procedures (SOPs) state that work should be conducted in a reproducible manner to which end software such as [R](https://www.r-project.org) or [Stata](https://www.stata.com/) are employed to conduct statistical analyses using the principles of [Reproducibility](https://en.wikipedia.org/wiki/Reproducibility) using scripts and dynamic reporting such as [RMarkdown](http://rmarkdown.rstudio.com/).  Many of the tasks involved in performing the statistical analysis are common across the studies conducted, for example the bespoke database system [Prospect](https://www.ctru-prospect.shef.ac.uk/) is used to store all data for which the CTRU has data management responsibilities and any subsequent data analysis will use the data exported from the tables of the database to ASCII text files.  It is very unfortunate that the relational nature of the Prospect database can not be used to output complete data sets as it means Statisticians have to recreate the relationships that exist within the database (i.e. duplication of work) and whilst it has been queried whether this can change but nothing has yet and is unlikely to in the foreseable future (there are several reasons which briefly are that access to the database is implemented at the WebUI level, meaning granting access to the database would allow access to all study data and to change this would require completely re-writing Prospect from the ground up, something which the CTRU can not afford as this work is out-sourced to [EpiGensys](https://www.epigenesys.org.uk/).
+
+Regardless, because study data always comes from Prospect it means there is scope for streamlining the work flow by writing generalised functions to perform the tasks that are common across studies such as reading in files exported from Prospect, and formatting factor variables, converting dates, summarising screening and recruitment, baseline and follow-up summaries etc. and that is the premise of the `ctru` package this vignette describes.  The functions are described below along with some pointers on the meaning of the often cryptic error messages that R throws up, what they mean in relation to these functions and how to correct them.
+
+## Installation
+
+The `ctru` package is hosted on [GitHub](https://github.com) at [`ns-ctru/ctru`](https://github.com/ns-ctru/ctru) and can be installed on any computer running [R](https://www.r-project.org/).  This requires that you install the `devtools` package which is available on [CRAN](https://cran.r-project.org/).  If you don't already have `devtools` installed do so...
+
+```
+install.packages(devtools)
+```
+
+...you can then install the [`ctru`](https://github.com/ns-ctru/ctru) by typing...
+
+```
+install_github(repo = 'ns-ctru/ctru')
+```
+
+...which will download and install this package and all of its dependencies, along with the associated datasets which are included.  If you want to use the library you will have to load it...
+
+```
+library(ctru)
+```
+
+...although if you are going to use it regularly you may wish to load it every time you start R(/RStudio) in which case you should add the following to your `~/.Rprofile`...
+
+```
+if(interactive()){
+	options(warn = -1, quietly = TRUE)
+    suppressMessages(library(ctru, quietly = TRUE))
+}
+```
+
+...which will load the package and all its dependencies (which will have been installed when you installed the `ctru` package).
+
+## Data Import
+
+The starting point of any statistical analysis involves exporting the data from [Prospect](https://www.ctru-prospect.shef.ac.uk/) and importing it into R.
+
+### Exporting from Prospect
+
+Prospect provides some flexibility/options when exporting data such as whether numerical values should be exported for factor variables, including row numbers and formats for Boolean operators.  Whilst you are free to choose these options the following are suggested...
+
+| Option                                                | Choice                      | Explanation                                |
+|:------------------------------------------------------|:---------------------------:|:-------------------------------------------|
+| Use numerical values for lookup lists                 | Yes                         | Export factor variables as numbers         |
+| Include time/user stamps                              | No                          | Irrelevant to statistical analysis         |
+| Include site column in events/forms/subforms          | Yes                         | Useful to have site information in all files|
+| Include group column in events/forms/subforms         | Yes                         | Useful to have allocation in all files     |
+| Include the row number of the subform                 | No                          | Irrelevant to statistical analysis         |
+| Include verified column in forms/subforms             | No                          | Irrelevant to statistical analysis         |
+| Remove line breaks                                    | Yes                         |                                            |
+| Convert numeric string fields to Excel-friendly format| No                          | Not using Excel so irrelevant              |
+| Include database IDs                                  | No                          | Irrelevant to statistical analysis         |
+| Export blank strings as ""                            | Yes                         | Ensures blank strings are blank            |
+| Date format						| yyyy-mm-dd                  | Conforms to ISO8601                        |
+| Boolean format                                        | 1 = Ticked; 0 = Not ticked  | Ensures missing are blank                  |
+| File format                                           | CSV                         | Output to ASCII text                       |
+| Newline character                                     | CR+LF (\n\r)                | Universal carriage returns                 |
+| Sites                                                 | All                         | Ensures data from all sites                |
+| Study Data                                            | All                         | Exports all data                           |
+
+The export will also include the file `Lookups.csv` and it is this file along with two other files extracted from the database specification that are used to facilitate importing and labelling data.
+
+### Database Specification
+
+Each database setup in Prospect has a matching *Data Specification* which is usually a Google Spreadsheet owned by a member of the Data Management Team and usually shared with the statistician early in the project. Within each study specific spreadsheet these are two key worksheets `Fields` and `Forms` which describe all of the fields in the database and each of the tables (each table corresponds to a specific Case Report Form, hence the name `Forms`).
+
+You should export both of these worksheets as ASCII CSV and save them in the same directory as the other files you have extracted from Prospect.  You may need to have *Edit* permission on the spreadsheet in order to be able to perform such an export.  If you do not have such permissions and encounter problems then request them from the document owner.
+
+### Importing to R
+
+You should now extract all files contained in the `.zip` that Prospect exported as well as `Fields.csv` and `Forms.csv` you saved from the Database Specification Googlesheet into the same directory.  This will include `Lookups.csv` which is the first file to be processed since it contains the dictionary for mapping encoded, numeric factor variables to their text description.  Start by processing it with `read_prospect()`
+
+```
+## Create a list to store all objects in
+master <- list()
+## Read in Database Specification Fields worksheet
+master$lookups_fields <- read_prospect(file          = Fields.csv'
+                                       header        = TRUE,
+                                       sep           = ',',
+                                       convert.dates = TRUE,
+                                       dictionary    = master$lookups) %>%
+                         dplyr::select(Form, Subform, Identifier, Label)
+## Database Specifications are not explicit as fields which are 'Flags' and can have
+## multiple responses are exported as multiple fields each with the option and '_o'
+## appended.  For example if there is a field that records which medications are being
+## taken called 'medication' with options for drugs 'A', 'B', 'C' and 'D' then the
+## database specifcation records this as...
+##
+## Form    | Subform     | Fieldset  | Identifier   | Type       | Options
+## --------|-------------|-----------|--------------|------------|------------------------
+## Meds    |             | A         | medication   | Flag       | a=A | b=B | c=C | d=D
+##
+## ...the data is then exported as four binary fields indicating if an option has
+## been selected...
+##
+## id,medication_a_o,medication_b_o,medication_c_o,medication_d_o,
+## R01_001,0,0,0,0
+## R01_002,0,1,0,0
+## R01_003,1,0,0,1
+## R01_004,0,1,1,0
+##
+## Variables 'medication_a_o' and so on are not listed and need adding, but in the Lookups.csv
+## they are detailed but without the suffixed '_o' so they need adding along the lines of...
+master$lookups_fields <- rbind(master$lookups_fields,
+                               c('Meds','','A','medication_a','Taking medication A'),
+                               c('Meds','','A','medication_b','Taking medication B'),
+                               c('Meds','','A','medication_c','Taking medication C'),
+                               c('Meds','','A','medication_d','Taking medication D'))
+## Read in the 'Lookups.csv' to this list
+master$lookups <- read_prospect(file       = 'Lookups.csv',
+	                            header     = TRUE,
+                                sep        = ',',
+                                dictionary = NULL)
+```
+
+You now have the dictionary loaded into R and it can be used in subsequent calls to `read_prospect()` and factor variables will be automatically encoded and labelled.
+
+```
+## Read in Screening and Recruitment data
+master$screening_form <- read_prospect(file =  'Screening Form.csv',
+                                       header              = TRUE,
+                                       sep                 = ',',
+                                       convert.dates       = TRUE,
+                                       convert.underscores = TRUE,
+                                       dictionary          = master$lookups)
+## Read in EQ5D data
+master$eq5d <- read_prospect(file          = 'EQ-5D-5L.csv'
+                             header        = TRUE,
+                             sep           = ',',
+                             convert.dates = TRUE,
+                             dictionary    = master$lookups)
+## Read in Blood sample data
+master$blood_sample <- read_prospect(file          = 'Blood sample.csv'
+                                     header        = TRUE,
+                                     sep           = ',
+                                     convert.dates = TRUE,
+                                     dictionary    = master$lookups)
+## Read in Database Specification Forms worksheet
+master$lookups_forms <- read_prospect(file          = Forms.csv'
+                                      header        = TRUE,
+                                      sep           = ',',
+                                      convert.dates = TRUE,
+                                      dictionary    = master$lookups)
+
+```
+
+You can simplify this even further and reduce the time spent on reading your files in by utilising `lapply()` to work through a list of files in a given directory and have it apply `read_prospect()` to each file and return the results as a list...
+
+**NB** The following has not been tested.
+
+```
+## Read in all files in the current directory
+master <- lapply(x = list.files("."),
+                 read_prospect(file          = x,
+                               header        = TRUE,
+                               sep           = ',',
+                               convert.dates = TRUE,
+                               dictionary    = master$lookups))
+```
+
+
+## Combine data
+
+You have read in a number of tables, but ultimately want to combine them using the relationships that existed within the relational Prospect database.  To this end the base R function `merge()` can be used, but preferable and more flexible are the database join-like functions provided by [dplyr](http://dplyr.tidyverse.org/) such as `left_join()`, `full_join()`, `right_join()` and so forth (for reference see the [dplyr two-table verbs vignette](https://cran.r-project.org/web/packages/dplyr/vignettes/two-table.html)).  You should think carefully about how you want to combine data, should everything from one table or the other be kept, this will influence which of the verbs you use to do the merging.  For the most part it will be desirable to perform a `full_join()` so that if a participant is missing data for one form from one visit other data from that visit will not be excluded in the final data set.  The following joins the EQ5D and Blood sample data to the data frame object `study_data`...
+
+```
+## Combine EQ5D and blood sample data
+study_data <- full_join(master$eq5d,
+                        master$blood_sample,
+                        by = c('individual_id', 'site', 'event_name'))
+```
+
+
+## Aligning Events
+
+Many studies have repeated contact with patients, whether thats physical attendance of a clinic, training course or evaluation centre, or phone/postal contact.  However very few studies recruit all patients simultaneously and further compounding this many participants 'slip' and don't attend appointments exactly on the desired follow-up date.  This means that whilst dates for attendance are available and may form the basis for exclusion of individuals under strict [Per-Protocol (PP)](https://en.wikipedia.org/wiki/Analysis_of_clinical_trials#Per_protocol) analyses for the most part [Intention To Treat (ITT)](https://en.wikipedia.org/wiki/Analysis_of_clinical_trials) analyses require aligning contacts.  Prospect helps a little with this as the `event_name` variable is included in all exported tables and should be used when subsequently merging the disparate tables into coherent data sets.  However it suffers from the drawback of being a string/character variable which means that when plotting using the `event_name` the ordering will be alphabetical rather than chronological.  It is unlikely that Prospect will be modified in any way to assist with this (e.g. exporting Lookups for event, or a numeric variable such as `event_order`) to which end after having merged data into a 'master' data frame the `event_name` variable should be converted to a factor variable so that events are correctly ordered and will plot as desired.  You can pipe the merge into a `mutate()` to achieve this, so following on from the previous step.
+
+```
+## Combine EQ5D and blood sample data and convert event_name to factor
+study_data <- full_join(master$eq5d,
+                        master$blood_sample,
+                        by = c('individual_id', 'site', 'event_name')) %>%
+              mutate(event_name = factor(event_name,
+                                         levels = c('Screening',
+                                                    'Baseline'
+                                                    '6 weeks'
+                                                    '6 months'
+                                                    '12 months')))
+```
+
+Ideally I would like to have the conversion of `event_name` to a factor performed internally by `read_prospect()` but currently there are an unknown number of possible names because each study has different follow-ups so its unclear how to implement this (likely it will be including details in the exported `Lookups.csv` that will achieve this, but that is beyond my control at present).
+
+
+#### Common Errors
+
+| Error message              | Problem                     | Solution                 |
+|----------------------------|-----------------------------|--------------------------|
+| `Error in file(file, "rt") : cannot open the connection` | The specified file can not be found | You are either in the wrong directory, or you mis-typed the filename. |
+
+
+## Common Summaries & Analyses
+
+
+### Screening and Randomisation
+
+Every study screens and recruits individuals, often at multiple centers, to the study.  Details of screening and recruitment are recorded and it is useful to include plots and summaries of such information in the Statistical Analysis Report.  To this end the `recruitment()` function has been written which takes the `Screening_form.csv` that you should have read into an R data frame above and will produce tables by month across all sites and by site of the number of individuals screened and/or recruited and produce graphs of the same data (albeit at the daily level rather than monthly summaries).
+
+Assuming you have read the exported `Screening_Form.csv` into a data frame stored in the `master` list object then deriving summaries is simple.  The returned list has a number of objects and the nomenclature has been designed to be straight-forward and intuitive so you know what each object is.
+
+```
+screening_recruitment <- ctru::recruitment(df = master$screening_form,
+                                           screening = 'screening_no',
+                                           enrolment = 'enrolment_no',
+                                           plot.by   = 'both',
+                                           facet.col = 3,
+                                           theme     = theme_bw(),
+                                           plotly    = TRUE)
+names(screening_recruitment)
+ [1] "screened"                       "recruited"                      "table_screened_all_month"
+ [4] "table_screened_site_month"      "table_screened_month"           "plot_screened_all"
+ [7] "plot_screened_site"             "table_recruited_all_month"      "table_recruited_site_month"
+[10] "table_recruited_month"          "plot_recruited_all"             "plot_recruited_site"
+[13] "screened_recruited"             "table_screened_recruited_month" "plot_screened_recruited_all"
+[16] "plot_screened_recruited_site"
+
+```
+
+If you only want to summarise screening across all sites then you can change the options and the returned list will be much shorter, only containing the items you wanted.
+
+
+```
+screening_recruitment <- ctru::recruitment(df = master$screening_form,
+                                           screening = 'screening_no',
+                                           enrolment = NULL,
+                                           plot.by   = 'all',
+                                           facet.col = NULL,
+                                           theme     = theme_bw(),
+                                           plotly    = FALSE)
+```
+
+
+### Indices of Multiple Deprivation, Lower Super Output Area and Postcodes
+
+Many studies wish to use an indicator of deprivation as a predictor variable in their analyses, yet they have not explicitly assessed this as part of the data captured on participants.  Instead the aim is to use the geographical location where individuals reside as a proxy for their socio-economic status using the [Index of Multiple Deprivation](https://en.wikipedia.org/wiki/Multiple_deprivation_index) a set of metrics produced by the Office for National Statistics that quantifies deprivation using seven domains, *Income*, *Employment*, *Health and Disability*, *Education Skills and Training*, *Barriers to Housing and Services*, *Crime* and *Living Environment*.  These are calculated for small geogrphical areas known as [Lower Super Output Areas (LSOAs)]() which have roughly 1500 inhabitants.
+
+A common problem that frequently arises is mapping study participants address' to Lower Super Output Areas so that the indices of deprivation can be assigned and utilised.  Rather than reinventing the wheel for each individual study the function `imd_lsoa()` has been written to perform the task using the included `imd_lsoa_postcode` data frame that is part of the `ctru` package.
+
+#### Usage
+
+Assuming you have a data frame (`my_df`) that contains the postcode of individuals in your study (and a unique study identifier so the data can be linked to all other components) then it is simple to merge in the indices of multiple deprivation using the supplied data frame (`imd_lsoa_postcode`).
+
+```
+my_df <- imd_lsoa(df            = my_df,
+                  postcode      = 'postcode',
+				  imd_year      = 2015,
+				  lsoa_postcode = imd_lsoa_postcode)
+```
+
+### Summarising Data
+
+You will *always* need to summarise data by treatment arm and at least on time point, more likely multiple time points such as Screening, Baseline, 1 Week, Six Week, Six Month or Twelve Month Follow-up depending on the study outcomes and design.  This has always been possible using an array of base functions such as `mean()`, `sd()` `min()` `quantile()` and so forth, and the [dplyr](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html) package has greatly facilitated performing such summaries via the verbs `filter()`, `select()`, `arrange()`, `mutate()` and `summarise()`.  But since the same summary statistics are always required i.e. the mean, standard deviation (SD), median, inter-quartile range (IQR), minimum, maximum, number of observations and number of missing observations (and it is the authors view that there is no value in presenting say mean and standard deviation and omitting the median and IQR if data follows a [Gaussian distribution](https://en.wikipedia.org/wiki/Normal_distribution) or vice-versa if it is non-Gaussian since you need *both* sets of metrics to make such a judgement), then it is possible to abstract the task and make a function that summarises an arbitrary list of variables by treatment group, time-point or centre or any combination thereof.  That is the purpose of the `table_summary()` and `plot_summary()` functions, which perhaps slightly mis-leadingly doesn't return a table, rather it returns a data frame which can be used as a basis for producing tables using functions such as `kable()` or `xtable()`.
+
+Assuming you have a data frame called `my_study_data` with repeated measurements at three time-points (`baseline`, `1 week` and `6 weeks`) defined by the variable `event_name` with three treatment arms defined in the variable `group`at multiple `sites` and the variables `age`, `height`, `weight`, `bmi` and `fev` (forced expiratory volume) have been recorded and are to be summarised by treatment group for each time point.  You could produce a data frame summarising this using `table_summary()` using...
+
+```
+summary_event_group <- table_summary(df = my_study_data,
+                                     id = individual_id,
+                                     select = c(age, height, weight, bmi, fev),
+                                     event_name, group)
+```
+
+If you are using [RMarkdown](http://rmarkdown.rstudio.com/) then you could print such a table in-line by [pippin (`%>%`)](https://cran.r-project.org/package=devtools) the output to the `kable()` function and specifying a caption.  The table is then render perfectly in your resulting HTML/PDF/Word document...
+
+```
+table_summary(df = my_study_data,
+              id = individual_id,
+              select = c(age, height, weight, bmi, fev),
+              event_name, group) %>%
+    kable(caption = 'Summary of Age, Height, Weight, BMI and FEV by event and group')
+```
+
+#### Common Errors
+
+| Error message              | Problem                     | Solution                 |
+|----------------------------|-----------------------------|--------------------------|
+| `Error in summarise_impl(.data, dots) : Evaluation error: non-numeric argument to binary operator.`  | You have supplied a factor variable to be summarised. | Only supply variables/fields that have `class() == "numeric"` |
+
+### Plotting Data
+
+Often tables such as those produced by `table_summary()` are augmented by graphical displays of the distribution of responses, for example histograms for continuous variables, or bar charts for categorical variables.  Graphs provide a quick near visual overview of the distribution of data and should be an important first step in the process of analysing data.  There are invariably always a lot of variables that need plotting and frequently responses at different time points will need plotting individually.  The `plot_summary()` function aims to make this task relatively simple, allowing the user to specify multiple variables and producing facetted plots of all numeric and factor variables and individual plots for each variable.
+
+```
+plot_summary(df = my_study_data,
+             id = individual_id,
+			 select = c(age, height, weight, bmi, fev),
+			 group  = group,
+			 events = NULL,
+			 lookup = master$lookups_field,
+			 theme  = theme_bw(),
+			 position = 'dodge'.
+			 individual = TRUE,
+			 title.continuous = 'Plot of continuous variables by Treatment group',
+			 title.factor     = 'Plot of responses to survey questions by Treatment group')
+```
+
+#### Common Errors
+
+| Error message              | Problem                     | Solution                 |
+|----------------------------|-----------------------------|--------------------------|
+| `Error: `by` can't contain join column `variable` which is missing from LH`  |  |  |
+
+### Regression Modelling
+
+A large number of studies assess the efficacy of an intervention by means of a regression model that allows the estimation of the effect an intervention has on the desired outcome whilst adjusting for co-variates and clustering (if a clustered study design is being utilised).  Invariably most analyses will be repeated twice, once using an Intention To Treat (ITT) cohort and once using a Per-Protocol (PP) cohort and it is natural to present the results of both simultaneously.  the `regress_ctru()` function is a wrapper that achieves this allowing arbitrary regression equations to be specified for a range of regression modelling functions.  It saves and returns the results of each model fit as well as combining them into formatted tables (LaTeX/HTML/ASCII) using the [Stargazer]() package.
+
+**ToDo** Write the function and how to use it.
+
+
+## Writing Packages
+
+A useful approach to working on a given project is to write an R package which contains all functions specific to your study.  This makes the statistical analysis self-contained as the package should include the data itself, the functions written to manipulate and analyse them and a literate method of collating all results into a document such as a PDF (using [Knitr](http://yihui.name/knitr/)) or website (using [Shiny](http://shiny.rstudio.com/))
+
+The single best resource you can read to learn how to write R packages is Hadley Wickhams book *R packages* which is available [on-line for free](http://r-pkgs.had.co.nz/).  What follows is but a small selection of the information contained in Hadley's book and should not be relied upon in isolation.  Go and read the [R packages book](http://r-pkgs.had.co.nz/) and learn from it.
+
+### Install requirements
+
+You need to install the [`devtools`](https://cran.r-project.org/package=devtools) package which will make writing packages and documenting them a *lot* easier.  You should also install and use [`packrat`](https://cran.r-project.org/package=packrat) which simplifies the task of version controlling the package dependencies your package will rely on (this is useful because sometimes, newer versions of packages break existing code).
+
+```
+install.packages('devtools')
+```
+
+
+### Initialise a package
+
+`devtools` has a number of functions to facilitate making a package, the first you will use is `devtools::create()` which takes one simple argument, the name of the package.
+
+```
+devtools::create('my_package')
+system('ls -l my_package')
+-rw-r--r-- 1 you you  123 Mar  3 16:45 DESCRIPTION
+drwxr-xr-x 1 you you 4096 Mar  3 16:45 man
+drwxr-xr-x 1 you you 4096 Mar  3 16:45 R
+```
+
+You should now edit `DESCRIPTION` filling in the fields with the appropriate values and writing an informative description.  Its recommended to lazy load the data, and it is recommended to apply a copy-left license such as the [GPL-2](http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html) or [GPL-3](http://www.gnu.org/licenses/gpl-3.0.en.html) to your work so that others may freely use it (that is the intention of this work, to share it with others).
+
+#### Include `ctru` and other packages as dependencies
+
+Traditionally you might be used to writing R-scripts that at the start have a series of libraries loaded using `library()` this works for scripts but not for packages.  Instead you should list any package that yours depends on in the `DESCRIPTION` file under the `Depends:` section.  This means that when someone installs your package if a dependency is not present it will also be installed (similarly if you install this `ctru` package and do not have its dependencies installed they will be installed for you automatically).
+
+At a bare minimum your Depends should read...
+
+```
+Depends:
+    R (>= 3.2.3),
+    ctru (>= 0.20170612)
+```
+
+...but there are a large number of useful packages that you might commonly use so its worth including them.
+
+```
+Depends:
+    R (>= 3.2.3),
+    ctru (>= 0.0.0.9),
+    tidyverse (>= 1.1.1),
+License: GPL-2
+LazyData: true
+Suggests:
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+RoxygenNote: 6.0.1
+```

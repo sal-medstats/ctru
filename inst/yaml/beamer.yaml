@@ -1,0 +1,4 @@
+beamer_presentation:
+  theme: Goettingen
+  fig_width: 6
+  fig_height: 4

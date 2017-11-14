@@ -1,0 +1,378 @@
+---
+title: "CTRU Cluster Randomisation"
+author: "n.shephard@sheffield.ac.uk"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{CTRU Cluster Randomisation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+[Sheffield Clinical Trials Research Unit](https://www.sheffield.ac.uk/scharr/sections/dts/ctru) conducts clinical trials of different medical and therapeautic interventions.  The Standard Operating Procedures (SOPs) state that work should be conducted in a reproducible manner to which end software such as [R](https://www.r-project.org) or [Stata](https://www.stata.com/) are employed to conduct statistical analyses using the principles of [Reproducibility](https://en.wikipedia.org/wiki/Reproducibility) using scripts and dynamic reporting such as [RMarkdown](http://rmarkdown.rstudio.com/).  Many of the tasks involve randomisation of participants to treatment interventions, and whilst a 'bespoke' system for individual randomisation has been purchased from  [EpiGensys](https://www.epigenesys.org.uk/) cluster randomisation, whereby the unit of randomisation is not individuals, but instead one of therapist, institution or some other form of grouping is not covered by the system and this is instead performed manually.
+
+This document details the procedures used in deriving a cluster randomisation list for use in studies that are not individually randomised.
+
+## Packages
+
+In R the package `[blockrand](https://cran.r-project.org/web/packages/blockrand/index.html)` provides functionality for deriving randomisation lists and these can be applied to clustered study designs.  The main function provided by the package is `blockrand()` and it has a wide range of options that users may choose from (these are not repeated here and readers are instead directed to the [packages reference manual](s://cran.r-project.org/web/packages/blockrand/blockrand.pdf)).
+
+### `blockrand()` Usage
+
+Usage is described in the [packages reference manual](s://cran.r-project.org/web/packages/blockrand/blockrand.pdf), to aid working through this a worked example is provided.
+
+A cluster randomsied study is being initiated with two arms (`case` and `control`).  The centers are hospitals and there are to be three stratum based on the size of the institution (`small`, `medium` or `large`) and it is expected that there will be plenty of `small` and `medium` but very few `large` so the block sizes for this group will be kept small to ensure balance.  The overall aim is to recruit 130 centres in total.  The parameters are summarised in the table below...
+
+
+The following code generates the randomisation list...
+
+```{r randomisation, cache = FALSE, echo = TRUE, warnings = FALSE, results = 'hide', eval = TRUE}
+## Load librarys
+library(blockrand)
+library(tidyverse)
+## Set a seed for pseudo-random number generation to ensure the list can be regenerated
+##
+## If you struggle to come up with a seed take a bank note out of your pocket and use the
+## numbers from the serial code on it
+set.seed(55468732)
+## Set parameters
+n           <- 80  ## Purposefully large
+num_levels  <- 2   ## Case and Control stratum
+## Generate randomisation for small stratum
+block_sizes <- 4   ## Blocks of random size up to 4
+small       <- blockrand(n            = n,
+                         num.levels   = num_levels,
+                         levels       = c('Case', 'Control'),
+                         id.prefix    = 'HOSP',
+                         stratum      = 'Small',
+                         block.sizes  = block_sizes)
+## Generate randomisation for medium stratum
+block_sizes <- 4   ## Blocks of random size up to 4
+medium      <- blockrand(n          = n,
+                         num.levels = num_levels,
+                         levels     = c('Case', 'Control'),
+                         id.prefix = 'HOSP',
+                         stratum    = 'Medium',
+                         block.sizes = block_sizes)
+## Generate randomsiation for large stratum
+block_sizes <- 1  ## Blocks of size 1 as few large centres are expected and could cause imbalance
+large       <- blockrand(n          = n,
+                         num.levels = num_levels,
+                         levels     = c('Case', 'Control'),
+                         id.prefix = 'HOSP',
+                         stratum    = 'Large',
+                         block.sizes = block_sizes)
+## Bind the three lists together
+randomisation <- rbind(small,
+                       medium,
+                       large)
+## Derive a unique identifier across all stratum
+randomisation <- randomisation %>%
+                 mutate(row = rownames(.),
+                        id = case_when(nchar(row) == 1 ~ paste0('HOSP', '00', row),
+                                       nchar(row) == 2 ~ paste0('HOSP', '0', row),
+                                       nchar(row) == 3 ~ paste0('HOSP', row))) %>%
+                 dplyr::select(-row)
+
+```
+You may wish to plot the distribution of allocations within each stratum to ensure equipoise (balance) within each, the following code achieves this...
+
+
+```{r results_schedule_plot, cache = FALSE, echo = TRUE, warnings = FALSE, results = 'hide', eval = TRUE}
+## Plot the distribution of randomisation by stratum
+ggplot(randomisation,
+        aes(x    = stratum,
+            fill = treatment)) +
+    geom_histogram(stat     = "count",
+                   position = "dodge") +
+    xlab('Stratum') +
+    ylab('Number allocated') +
+    labs(fill = 'Treatment Allocation') +
+    theme_bw()
+
+```
+
+Once the list has been generated it can be sent to whomever is to use it.  A useful feature though is to upload it to Google Sheets for others to use and this can be acheived using the `[googlesheets](https://cran.r-project.org/web/packages/googlesheets/)` packages.  The first time you run this you will be asked to authorise and permit R/`googlesheets` to your Google Drive.  For more information on this please refer to the [googlesheets Basic Usage vignette](https://rawgit.com/jennybc/googlesheets/master/vignettes/basic-usage.html)
+
+```{r upload_to_googlesheets, cache = FALSE, echo = TRUE, warnings = FALSE, results = 'hide', eval = TRUE}
+## Write the randomisation file to CSV and upload to GoogleSheets
+## First add in an extra blank column for hospital name to be recorded in
+randomisation$hospital <- ""
+file <- 'randomisation.csv'
+write.csv(randomisation,
+          file = file,
+          row.names = FALSE)
+gs_upload(file = file,
+          sheet_title = 'Sample Randomisation Schedule',
+          overwrite   = TRUE)
+
+
+```
+
+## Genesis
+
+This example is based on work done by other members of staff in the CTRU who have since left (namely Oscar Bortolami who derived a randomisation schedule for the [Bridging The Age Gap study](https://github.com/ns-ctru/age-gap)).  For transparency his code is included below (the original file is located at `../xdrive/PR_Age_Gap/Restricted/Randomisation/Randomisation\ list/Randomisation\ list.R`).
+
+    ## set working directory to load stratification lists
+    setwd("N:/projects/Age Gap Restricted/Randomisation/Stratification")
+    ## load stratification lists
+    load("stratification_lists.RData")
+
+    ## load libraries
+    library(blockrand) # for block randomisation
+    library(xlsx) # for exporting to excel
+    library(rowr) # to combine data frames of differing lengths
+    library(plyr)
+
+    ##-------------------------------------------------------------##
+    ## Create randomisation list for high PET and high chemo group ##
+    ##-------------------------------------------------------------##
+    set.seed(265135)
+
+    hp_hc <- blockrand(n=20,
+                       num.levels=2,
+                       levels=c("Intervention - DESI", "Usual care"),
+                       id.prefix="HPHC",
+                       block.prefix="HPHC",
+                       stratum="High PET/High chemo",
+                       block.sizes=1:2)
+
+    ## merge randomisation list and sites
+    ## sites listed in alphabetical order and then assigned intervention group
+    ## NB: additional sites should be assigned from the 15th group onwards
+    hp_hc_list <- cbind.fill(hp_hc, strata_hp_hc, fill=NA)
+
+    ##------------------------------------------------------------##
+    ## Create randomisation list for high PET and low chemo group ##
+    ##------------------------------------------------------------##
+    set.seed(678096)
+
+    hp_lc <- blockrand(n=20,
+                       num.levels=2,
+                       levels=c("Intervention - DESI", "Usual care"),
+                       id.prefix="HPLC",
+                       block.prefix="HPLC",
+                       stratum="High PET/Low chemo",
+                       block.sizes=1:2)
+
+    ## merge randomisation list and sites
+    ## sites listed in alphabetical order and then assigned intervention group
+    ## NB: additional sites should be assigned from the 11th group onwards
+    hp_lc_list <- cbind.fill(hp_lc, strata_hp_lc, fill=NA)
+
+    ##------------------------------------------------------------##
+    ## Create randomisation list for low PET and high chemo group ##
+    ##------------------------------------------------------------##
+    set.seed(345987)
+
+    lp_hc <- blockrand(n=20,
+                       num.levels=2,
+                       levels=c("Intervention - DESI", "Usual care"),
+                       id.prefix="LPHC",
+                       block.prefix="LPHC",
+                       stratum="Low PET/High chemo",
+                       block.sizes=1:2)
+
+    ## merge randomisation list and sites
+    ## sites listed in alphabetical order and then assigned intervention group
+    ## NB: additional sites should be assigned from the 11th group onwards
+    lp_hc_list <- cbind.fill(lp_hc, strata_lp_hc, fill=NA)
+
+    ##-----------------------------------------------------------##
+    ## Create randomisation list for low PET and low chemo group ##
+    ##-----------------------------------------------------------##
+    set.seed(750290)
+
+    lp_lc <- blockrand(n=20, num.levels=2,
+                       levels=c("Intervention - DESI", "Usual care"),
+                       id.prefix="LPLC",
+                       block.prefix="LPLC",
+                       stratum="Low PET/Low chemo",
+                       block.sizes=1:2)
+
+    ## merge randomisation list and sites
+    ## sites listed in alphabetical order and then assigned intervention group
+    ## NB: additional sites should be assigned from the 15th group onwards
+    lp_lc_list <- cbind.fill(lp_lc, strata_lp_lc, fill=NA)
+
+    ##-------------------------------------##
+    ## Export randomisation lists to excel ##
+    ##-------------------------------------##
+    setwd("N:/projects/Age Gap Restricted/Randomisation/Randomisation list")
+
+    write.xlsx(hp_hc_list[, c(1, 5:6)],
+               file="randomisation_list_by_strata.xlsx",
+               sheetName="High PET - High chemo",
+               row.names=F)
+
+    write.xlsx(hp_lc_list[, c(1, 5:6)],
+               file="randomisation_list_by_strata.xlsx",
+               sheetName="High PET - Low chemo",
+               row.names=F,
+               append=T)
+
+    write.xlsx(lp_hc_list[, c(1, 5:6)],
+               file="randomisation_list_by_strata.xlsx",
+               sheetName="Low PET - High chemo",
+               row.names=F,
+               append=T)
+
+    write.xlsx(lp_lc_list[, c(1, 5:6)],
+               file="randomisation_list_by_strata.xlsx",
+               sheetName="Low PET - Low chemo",
+               row.names=F,
+               append=T)
+
+    ##----------------------------------------------##
+    ## Merge randomisation list into one and export ##
+    ## to excel to send to Lynda                    ##
+    ##----------------------------------------------##
+    merged_lists <- rbind(hp_hc_list[, 5:6],
+                          hp_lc_list[, 5:6],
+                          lp_hc_list[, 5:6],
+                          lp_lc_list[, 5:6])
+
+    ## remove missing values
+    merged_lists      <- data.frame(na.omit(merged_lists))
+    merged_lists$site <- as.character(merged_lists$site)
+    merged_lists      <- merged_lists[order(merged_lists$treatment, merged_lists$site), ]
+
+    write.xlsx(merged_lists,
+               file="randomisation_list_all.xlsx",
+               row.names=F)
+
+The file that is loaded at the start `stratification_lists.RData` is generated by the code in `../xdrive/PR_Age_Gap/Restricted/Randomisation/Randomisation\ list/Stratification/Baseline\ rates\ and\ stratification.R ` which is also included below.  This file takes the recruited participants and determines the rates of treatment at different study sites so that stratification can be appropriately performed, akin to the stratification employed within the iSOCIALISE study for school type and number of elligible participants.
+
+    ## Set working directory
+    setwd("N:/projects/Age Gap/Data Management/Database/Data exports/Age Gap_data_20150811_1218")
+
+    ## Load data
+    consent.data <- read.csv("Consent Form.csv")
+    pet.data     <- read.csv("Endocrine therapy.csv")
+    surgery.data <- read.csv("Surgery and Post Operative Pathology.csv")
+    chemo.data   <- read.csv("Chemotherapy.csv")
+    therapy.data <- read.csv("Therapy Assessment.csv")
+
+    ## Load required libraries
+    library(plyr)
+    library(DataCombine)
+    library(gdata)
+    library(xlsx)
+
+    ##--------------##
+    ## Consent data ##
+    ##--------------##
+
+    ## Filter consent data by written_consent = 1 (yes)
+    consent.data2 <- subset(consent.data,
+                            consent.data$written_consent == 1,
+                            c(individual_id, site, site_code))
+
+    ## Calculate number with written consent by site
+    consent_totals <- ddply(consent.data2,
+                            .(site),
+                            summarise,
+                            N.consented=length(individual_id))
+
+    ##----------##
+    ## PET data ##
+    ##----------##
+
+    ## Filter PET data by event_name="6 weeks" and primary_adjuvant=1
+    pet.data2 <- subset(pet.data,
+                        pet.data$event_name == "6 weeks" &
+                        pet.data$primary_adjuvant == 1,
+                        c(individual_id, site, site_code))
+
+    ## Check PET patients have written consent
+    ## Should return TRUE
+    all(pet.data2$individual_id %in% consent.data2$individual_id)
+
+    ## Calculate number that are on PET by site
+    pet_totals <- ddply(pet.data2,
+                        .(site),
+                        summarise,
+                        N.pet=length(individual_id))
+
+    ##-------------------##
+    ## Chemotherapy data ##
+    ##-------------------##
+
+    ## Filter chemotherapy data by event_name="6 months"
+    ## NB: 108 patients had chemo at 6 months
+    chemo.data2 <- subset(chemo.data,
+                          chemo.data$event_name == "6 months",
+                          c(individual_id, site, site_code))
+
+    ## Check chemotherapy patients have written consent
+    ## Should return TRUE
+    all(chemo.data2$individual_id %in% consent.data2$individual_id)
+
+    ## Calculate number that have undergone chemotherapy by site
+    chemo_totals <- ddply(chemo.data2,
+                          .(site),
+                          summarise,
+                          N.chemo=length(individual_id))
+
+    ##-----------------##
+    ## Calculate rates ##
+    ##-----------------##
+
+    ## Merge datasets
+    all_totals <- join_all(list(consent_totals,
+                                pet_totals,
+                                chemo_totals),
+                           by="site")
+
+    ## Recode missing pet and chemotherapy totals as zero
+    ## (i.e. no pet/chemotherapy patients at some sites at 6 weeks/6 months)
+    all_totals$N.pet[which(is.na(all_totals$N.pet) == T)]     <- 0
+    all_totals$N.chemo[which(is.na(all_totals$N.chemo) == T)] <- 0
+
+    ## Calculate rates
+    all_rates <- ddply(all_totals,
+                       .(site),
+                       mutate,
+                       rate.pet=N.pet / N.consented,
+                       rate.chemo=N.chemo / N.consented)
+
+    ## Median PET and chemotherapy rates
+    median_pet_rate   <- median(all_rates$rate.pet)
+    median_chemo_rate <- median(all_rates$rate.chemo)
+
+    ## Number of sites
+    N.sites <- length(all_rates$site)
+
+    ## Number of sites with pet patients
+    N.sites.pet <- N.sites - length(which(all_totals$N.pet == 0))
+
+    ## Number of sites with chemotherapy patients
+    N.sites.chemo <- N.sites - length(which(all_totals$N.chemo == 0))
+
+    ## Stratify by high/low PET at 6 weeks/chemo at 6 months
+    strata_hp_hc <- subset(all_rates,
+                           rate.pet > median_pet_rate &
+                           rate.chemo > median_chemo_rate,
+                           select=c(site, rate.pet, rate.chemo))
+
+    strata_hp_lc <- subset(all_rates,
+                           rate.pet > median_pet_rate &
+                           rate.chemo <= median_chemo_rate,
+                           select=c(site, rate.pet, rate.chemo))
+
+    strata_lp_hc <- subset(all_rates,
+                           rate.pet <= median_pet_rate &
+                           rate.chemo > median_chemo_rate,
+                           select=c(site, rate.pet, rate.chemo))
+
+    strata_lp_lc <- subset(all_rates,
+                           rate.pet <= median_pet_rate &
+                           rate.chemo <= median_chemo_rate,
+                           select=c(site, rate.pet, rate.chemo))
+
+    ## save stratification lists
+    setwd("N:/projects/Age Gap Restricted/Randomisation/Stratification")
+    save(median_pet_rate, median_chemo_rate,
+         strata_hp_hc, strata_hp_lc,
+         strata_lp_hc, strata_lp_lc,
+         file="stratification_lists.RData")
