@@ -1,0 +1,1 @@
+This Statistical Analysis Plan (SAP) details the data manipulations, derivations and statistical analyses that are to be performed for the `r study$name`.  Its is based on the Study Protocol (`r study$protocol_version`) and as such large portions of text have been copied verbatim as they do not require modification.
