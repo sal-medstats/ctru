@@ -1,0 +1,123 @@
+---
+title: Statistical Analysis Plan
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+bibliography: sections/bibliography.bib
+---
+
+```{r setup, echo = FALSE, warning = FALSE, message = FALSE, results = 'hide', cache = FALSE, eval = TRUE}
+library(lme4)
+library(influence.ME)
+library(sjPlot)
+##opts_chunk$set(dev = 'pdf')
+opts_chunk$set(cache.path = 'cache/',
+               width    = 200,
+               fig.height = 8,
+               fig.width  = 8,
+               warning = FALSE,
+               message = FALSE)
+options(digits = 3)
+## Ensure anchors are assessed first
+## opts_knit$set(eval.after = 'echo')
+## Hooks
+## knit_hooks$set(anchor = hook_anchor)
+## Set a seed
+set.seed(69027181)
+## Set sensible defaults
+ggplot2.opts <- list()
+ggplot2.opts$binwidth <- 30
+## sjPlot defaults
+## sjPlot::theme_sjplot(base.theme = theme_bw())
+## Exclusions
+##
+## The following 'non-recruited' need excluding from all analyses
+## exclusions <- c()
+
+```
+
+```{r backup, echo = FALSE, eval = TRUE}
+## Make a backup of current output based on time stamp by obtaining the
+## modified time of the existing file and constructing a command to
+## copy this to the sub-directory 'arch/' modifying the filename to include
+## the timestamp.  This is done on a daily basis (otherwise './arch/'
+## directory can become very large!)
+##
+## Get the current date
+mtime <- file.info('isocalise_sap.docx')$mtime %>% as.Date()
+## Remove existing archives  from today
+cmd <- paste0('rm arch/isocalise_sap-', mtime, '.docx.bz2')
+system(cmd)
+## Copy the existing .docx to arch, adding todays date and compress
+cmd <- paste0('cp isocalise_sap.docx arch/isocalise_sap-', mtime, '.docx && bzip2 arch/isocalise_sap-', mtime, '.docx')
+system(cmd)
+## Get the current date
+mtime <- file.info('isocalise_sap.html')$mtime %>% as.Date()
+## Remove existing archives  from today
+cmd <- paste0('rm arch/isocalise_sap-', mtime, '.html.bz2')
+system(cmd)
+## Copy the existing .html to arch, adding todays date and compress
+cmd <- paste0('cp isocalise_sap.html arch/isocalise_sap-', mtime, '.html && bzip2 arch/isocalise_sap-', mtime, '.html')
+system(cmd)
+
+```
+**ToDO** Create a frontispiece.
+
+**NB** A large portion of text in this document is lifted directly from the Study Protocol (v2) which should be read in conjunction with this document.
+
+<!--- Page Break? --->
+-----
+
+# Summary
+```{r child = 'sections/summary.Rmd', eval = TRUE}
+```
+<!-- If generating this document as HTML then tabs can be added by uncommenting the options -->
+<!-- that follow each section header                                                        -->
+# Introduction, study design and key objectives <!-- {.tabset .tabset-fade .tabset-pills} -->
+```{r child = 'sections/overview.Rmd', eval = TRUE}
+```
+
+# Outcome Measures <!-- {.tabset .tabset-fade .tabset-pills} -->
+```{r child = 'sections/outcome_measures.Rmd', eval = TRUE}
+```
+
+# Sample Size <!-- {.tabset .tabset-fade .tabset-pills} -->
+```{r child = 'sections/sample_size.Rmd', eval = TRUE}
+```
+
+# Randomisation and Blinding <!-- {.tabset .tabset-fade .tabset-pills} -->
+```{r child = 'sections/randomisation_blinding.Rmd', eval = TRUE}
+```
+
+# Interim Analyses and Data Monitoring Committees <!-- {.tabset .tabset-fade .tabset-pills} -->
+```{r child = 'sections/interim_analyses.Rmd', eval = TRUE}
+```
+
+# Data Sources, data evaluability and analysis populations <!-- {.tabset .tabset-fade .tabset-pills} -->
+```{r child = 'sections/data_sources.Rmd', eval = TRUE}
+```
+
+# Outline of Analyses <!-- {.tabset .tabset-fade .tabset-pills} -->
+```{r child = 'sections/outline.Rmd', eval = TRUE}
+```
+
+# Detailed statistical methods and calculations <!-- {.tabset .tabset-fade .tabset-pills} -->
+```{r child = 'sections/detailed_statistical_methods.Rmd', eval = TRUE}
+```
+
+# Data manipulation and definitions <!-- {.tabset .tabset-fade .tabset-pills} -->
+```{r child = 'sections/data_manipulations.Rmd', eval = TRUE}
+```
+
+# Implementation <!-- {.tabset .tabset-fade .tabset-pills} -->
+```{r child = 'sections/implementation.Rmd', eval = TRUE}
+```
+
+# Appendix   <!-- {.tabset .tabset-fade .tabset-pills} -->
+```{r child = 'sections/appendix.Rmd', eval = TRUE}
+```
+
+# References
+
+<!-- # References -->
