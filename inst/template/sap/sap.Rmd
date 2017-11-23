@@ -35,6 +35,11 @@ ggplot2.opts$binwidth <- 30
 ## The following 'non-recruited' need excluding from all analyses
 ## exclusions <- c()
 
+## Set the study name and procotol versions
+study <- list()
+study$name             <- ''
+study$protocol_version <- 'vX YYYY-MM-DD'
+
 ```
 
 ```{r backup, echo = FALSE, eval = TRUE}
