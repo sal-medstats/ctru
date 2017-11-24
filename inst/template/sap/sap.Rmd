@@ -37,8 +37,9 @@ ggplot2.opts$binwidth <- 30
 
 ## Set the study name and procotol versions
 study <- list()
-study$name             <- 'XXX'
-study$protocol_version <- 'vX YYYY-MM-DD'
+study$name               <- 'XXX'
+study$protocol_version   <- 'vX YYYY-MM-DD'
+study$randomisation_unit <- 'individuals'
 
 ```
 
