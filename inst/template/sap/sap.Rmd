@@ -50,20 +50,20 @@ study$protocol_version <- 'vX YYYY-MM-DD'
 ## directory can become very large!)
 ##
 ## Get the current date
-mtime <- file.info('isocalise_sap.docx')$mtime %>% as.Date()
+mtime <- file.info('sap.docx')$mtime %>% as.Date()
 ## Remove existing archives  from today
-cmd <- paste0('rm arch/isocalise_sap-', mtime, '.docx.bz2')
+cmd <- paste0('rm arch/sap-', mtime, '.docx.bz2')
 system(cmd)
 ## Copy the existing .docx to arch, adding todays date and compress
-cmd <- paste0('cp isocalise_sap.docx arch/isocalise_sap-', mtime, '.docx && bzip2 arch/isocalise_sap-', mtime, '.docx')
+cmd <- paste0('cp sap.docx arch/sap-', mtime, '.docx && bzip2 arch/sap-', mtime, '.docx')
 system(cmd)
 ## Get the current date
-mtime <- file.info('isocalise_sap.html')$mtime %>% as.Date()
+mtime <- file.info('sap.html')$mtime %>% as.Date()
 ## Remove existing archives  from today
-cmd <- paste0('rm arch/isocalise_sap-', mtime, '.html.bz2')
+cmd <- paste0('rm arch/sap-', mtime, '.html.bz2')
 system(cmd)
 ## Copy the existing .html to arch, adding todays date and compress
-cmd <- paste0('cp isocalise_sap.html arch/isocalise_sap-', mtime, '.html && bzip2 arch/isocalise_sap-', mtime, '.html')
+cmd <- paste0('cp sap.html arch/sap-', mtime, '.html && bzip2 arch/sap-', mtime, '.html')
 system(cmd)
 
 ```
