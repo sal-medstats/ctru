@@ -22,6 +22,7 @@
 #' @param convert.underscore Optionally convert underscores (\code{_}) in filenames to periods (\code{.}.)
 #' @param dictionary Dictionary object.
 #' @param check.duplicates Optionally check for duplicate rows across all variables.
+#' @param purge.special Remove special characters from the \code(form) field of \code(Lookups.csv) so that they match exported file names which do not include them (currently only removes \code{/}).
 #'
 #' @return Data frame containing the specified file with dates converted to POSIX and factors
 #'         converted to with labels applied to them.
@@ -59,6 +60,7 @@ read_prospect <- function(file               = 'Lookups.csv',
                           convert.underscore = FALSE,
                           dictionary         = data.dictionary,
                           check.duplicates   = TRUE,
+                          purge.special      = TRUE,
                           ...){
     # Read in the file
     new <- read.csv(file     = file,
@@ -91,6 +93,11 @@ read_prospect <- function(file               = 'Lookups.csv',
                       field = gsub('oth_o$', 'other', field),
                       field = gsub('_oth$', '_other', field),
                       field = gsub('_o$', '', field))
+    }
+    ## Remove special characters from the 'form' field if asked to do so
+    if(file == 'Lookups.csv' & purge.special == TRUE){
+        new <- mutate(new,
+                      form = gsub('/', '', form))
     }
     if(!is.null(dictionary)){
         ## Subset the dictionary, required because sometimes a field name
