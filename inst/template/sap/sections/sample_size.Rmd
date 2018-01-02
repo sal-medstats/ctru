@@ -1,0 +1,7 @@
+**NB** The following section is copied verbatim from the study protocol  (`r study$protocol_version`) and whilst it it has little bearing on the statsitical analyses themselves it is included for reference.
+
+<!-- Copy and paste the sample size paragraph from the Protocol below use the -->
+<!-- [R]Markdown syntax to make it a quote and preceed the first lines with   -->
+<!-- '> '                                                                     -->
+
+> The sample size...

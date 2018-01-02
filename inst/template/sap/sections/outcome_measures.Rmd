@@ -1,0 +1,25 @@
+## Pilot Endpoint
+<!-- This section is optional and only required if there is a pilot phase to the study -->
+<!-- Delete if not required                                                            -->
+
+## Primary Outcome
+
+<!-- State the single primary outcome here, include citations                          -->
+
+## Secondary Outcomes
+
+<!-- State the secondary outcomes here, include citations                              -->
+
+A table of all assessment tools, who they are assessing and administered by and the time-points at which they are used are detailed in the table below which combines Tables 1-4 from the Study Protocol (`r protocol_version`).
+
+<!-- Complete the table below showing what is recorded when, by whom and who           -->
+<!-- administers it.                                                                   -->
+
+| Completed by...  | Measure                | Time points completed | Administered by... |
+|------------------|------------------------|-----------------------|--------------------|
+| Participant      | EQ5D                   | Baseline              | Research assistant |
+|                  |                        | 16 weeks              | Research assistant |
+|                  |                        | 52 weeks              | Research assistant |
+|                  | SF36                   | Baseline              | Research assistant |
+|                  |                        | 16 weeks              | Research assistant |
+|                  |                        | 52 weeks              | Research assistant |
