@@ -22,7 +22,7 @@
 #' @param convert.underscore Optionally convert underscores (\code{_}) in filenames to periods (\code{.}.)
 #' @param dictionary Dictionary object.
 #' @param check.duplicates Optionally check for duplicate rows across all variables.
-#' @param purge.special Remove special characters from the \code(form) field of \code(Lookups.csv) so that they match exported file names which do not include them (currently only removes \code{/}).
+#' @param purge.special Remove special characters from the \code{form} field of \code{Lookups.csv} so that they match exported file names which do not include them (currently only removes \code{/}).
 #'
 #' @return Data frame containing the specified file with dates converted to POSIX and factors
 #'         converted to with labels applied to them.
