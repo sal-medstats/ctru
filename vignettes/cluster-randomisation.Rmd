@@ -29,6 +29,7 @@ The following code generates the randomisation list...
 ```{r randomisation, cache = FALSE, echo = TRUE, warnings = FALSE, results = 'hide', eval = TRUE}
 ## Load librarys
 library(blockrand)
+library(googlesheets)
 library(tidyverse)
 ## Set a seed for pseudo-random number generation to ensure the list can be regenerated
 ##
