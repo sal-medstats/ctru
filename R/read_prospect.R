@@ -127,15 +127,15 @@ read_prospect <- function(file               = 'Lookups.csv',
     if(convert.dates == TRUE){
         ## Convert 'dt' variables
         for(x in grep('_dt', colnames(new))){
-            new[[x]] <- ymd(new[[x]])
+            new[[x]] <- lubridate::ymd(new[[x]])
         }
         ## Convert 'date' variables
         for(x in grep('date', colnames(new))){
-            new[[x]] <- ymd(new[[x]])
+            new[[x]] <- lubridate::ymd(new[[x]])
         }
         ## Convert 'date' variables
         for(x in grep('dob', colnames(new))){
-            new[[x]] <- ymd(new[[x]])
+            new[[x]] <- lubridate::ymd(new[[x]])
         }
     }
     ## Convert 'event_name' to factor if present
