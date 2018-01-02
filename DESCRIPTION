@@ -19,6 +19,7 @@ Description: The functions contained within this package simplify some of the
     of time and effort spent working in isolation.
 Depends:
     R (>= 3.4.0),
+    googlesheets (>= 0.2.2),
     Hmisc (>= 3.17-1),
     pixiedust (>= 0.7.5),
     plotly (>= 4.7.0),
