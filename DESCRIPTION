@@ -1,6 +1,6 @@
 Package: ctru
 Title: Working with data at Sheffield Clinical Trials Research Unit
-Version: 0.20180102
+Version: 0.20180108
 Authors@R: person("Neil", "Shephard",
                   email = "n.shephard@sheffield.ac.uk",
 		  role = c("aut", "cre"),
@@ -22,6 +22,7 @@ Depends:
     googlesheets (>= 0.2.2),
     Hmisc (>= 3.17-1),
     lubridate (>= 1.7.1),
+    magrittr (>= 1.5),
     pixiedust (>= 0.7.5),
     plotly (>= 4.7.0),
     readxl (>= 1.0.0),
