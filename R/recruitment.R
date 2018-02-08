@@ -94,10 +94,6 @@ recruitment <- function(df              = master$screening_form,
                              n      = 'N',
                              total  = 'Total',
                              status = FALSE){
-        ## print('Before summarising')
-        ## df %>% dim() %>% print()
-        ## df %>% head() %>% print()
-        ## df %$% table(event_date, site) %>% print()
         if(status == FALSE)      group <- quos(site, year_month)
         else if(status == TRUE)  group <- quos(site, year_month, status)
         results <- df %>%
@@ -110,19 +106,11 @@ recruitment <- function(df              = master$screening_form,
                    summarise(n = sum(n, na.rm = TRUE)) %>%
                    ungroup() %>%
                    mutate(sum = cumsum(n))
-        ## print('Before renaming')
-        ## results %>% dim() %>% print()
-        ## results %>% head() %>% print()
-        ## results %$% table(site) %>% print()
-        ## results %$% table(year_month) %>% print()
         names(results) <- gsub('site',       site,  names(results))
         names(results) <- gsub('year_month', date,  names(results))
         names(results) <- gsub('n',          n,     names(results))
         names(results) <- gsub('sum',        total, names(results))
         return(results)
-        ## print('After renaming')
-        ## results %>% dim() %>% print()
-        ## results %>% head() %>% print()
     }
     ## Tabulate and plot Screening
     if(!is.null(screening)){
