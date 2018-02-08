@@ -15,7 +15,7 @@
 #'
 #' @param df Data frame to summarise, default is \code{master$screening_form}
 #' @param screening Variable that uniquely identifies screening (default \code{screening_no}).
-#' @param enrolment Variable that uniquely identifies enrolment (default \code{enrolment_no}).
+#' @param enrolment Variable that uniquely identifies enrolment (default \code{randomisation}).
 #' @param plot.by Plot overall (\code{all}) or by site (\code{site}).
 #' @param facet.col Number of columns to facet a plot by, if \code{NULL} then no faceting is applied.
 #' @param facet.scales \code{free} or \code{fixed} axis scales.
@@ -26,7 +26,7 @@
 #' @export
 recruitment <- function(df              = master$screening_form,
                         screening       = screening_no,
-                        enrolment       = enrolment_no,
+                        enrolment       = randomisation,
                         plot.by         = 'both',
                         facet.col       = NULL,
                         facet.scales    = 'free',
@@ -60,15 +60,15 @@ recruitment <- function(df              = master$screening_form,
                                   screen_site) %>%
                         mutate(status = 'Screened') %>%
                         as.data.frame()
-    ## Empty strings imported for default 'enrolment_no' ensure these are
+    ## Empty strings imported for default 'randomisation' ensure these are
     ## NA
     df <- df %>%
-          mutate(enrolment_no = ifelse(enrolment_no == '',
+          mutate(randomisation = ifelse(randomisation == '',
                                        yes = NA,
-                                       no  = enrolment_no))
+                                       no  = randomisation))
     ## Recruitment overall
     recruit_all <- df %>%
-                   dplyr::filter(!is.na(enrolment_no)) %>%
+                   dplyr::filter(!is.na(randomisation)) %>%
                    group_by(event_date) %>%
                    summarise(n = n()) %>%
                    mutate(sum  = cumsum(n),
@@ -76,7 +76,7 @@ recruitment <- function(df              = master$screening_form,
                    as.data.frame()
     ## Recruitment by site
     recruit_site <- df %>%
-                    dplyr::filter(!is.na(enrolment_no)) %>%
+                    dplyr::filter(!is.na(randomisation)) %>%
                     group_by(site, event_date) %>%
                     summarise(n = n()) %>%
                     mutate(sum  = cumsum(n)) %>%
