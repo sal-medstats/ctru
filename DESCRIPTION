@@ -1,6 +1,6 @@
 Package: ctru
 Title: Working with data at Sheffield Clinical Trials Research Unit
-Version: 0.20180108
+Version: 0.20180208
 Authors@R: person("Neil", "Shephard",
                   email = "n.shephard@sheffield.ac.uk",
 		  role = c("aut", "cre"),
