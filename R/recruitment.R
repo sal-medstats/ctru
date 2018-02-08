@@ -122,10 +122,6 @@ recruitment <- function(df              = master$screening_form,
                                                              n      = 'Screened',
                                                              total  = 'Total Screened',
                                                              status = FALSE)
-            ## print('All Screened by Month')
-            ## results$table_screened_all_month %>% dim() %>% print()
-            ## results$table_screened_all_month %$% table(Site) %>% print()
-            ## results$table_screened_all_month %$% table(Date) %>% print()
         }
         if(plot.by %in% c('site', 'both')){
             results$table_screened_site_month <- dplyr::filter(results$screened, site != 'All') %>%
@@ -134,10 +130,6 @@ recruitment <- function(df              = master$screening_form,
                                                               n     = 'Screened',
                                                               total = 'Total Screened',
                                                               status = FALSE)
-            ## print('By Site Screened by Month')
-            ## results$table_screened_site_month %>% dim() %>% print()
-            ## results$table_screened_site_month %$% table(Site) %>% print()
-            ## results$table_screened_site_month %$% table(Date) %>% print()
         }
         if(plot.by %in% c('both')){
             results$table_screened_month <- bind_rows(results$table_screened_all_month,
@@ -174,10 +166,6 @@ recruitment <- function(df              = master$screening_form,
                                                               n     = 'Recruited',
                                                               total = 'Total Recruited',
                                                               status = FALSE)
-            ## print('All Recruited by Month')
-            ## results$table_recruited_all_month %>% dim() %>% print()
-            ## results$table_recruited_all_month %$% table(Site) %>% print()
-            ## results$table_recruited_all_month %$% table(Date) %>% print()
         }
         if(plot.by %in% c('site', 'both')){
             results$table_recruited_site_month <- dplyr::filter(results$recruited, site != 'All') %>%
@@ -186,10 +174,6 @@ recruitment <- function(df              = master$screening_form,
                                                                n     = 'Recruited',
                                                                total = 'Total Recruited',
                                                                status = FALSE)
-            ## print('By Site Recruited by Month')
-            ## results$table_recruited_all_month %>% dim() %>% print()
-            ## results$table_recruited_all_month %$% table(Site) %>% print()
-            ## results$table_recruited_all_month %$% table(Date) %>% print()
         }
         if(plot.by %in% c('both')){
             results$table_recruited_month <- bind_rows(results$table_recruited_all_month,
@@ -229,12 +213,6 @@ recruitment <- function(df              = master$screening_form,
         results$screened_recruited <- results$screened_recruited %>%
                                       dplyr::select(-n) %>%
                                       spread(key = status, value = sum)
-        print('Screened')
-        results$screened %>% names() %>% print()
-        print('Recruited')
-        results$recruited %>% names() %>% print()
-        print('Screened_Recruited')
-        results$screened_recruited %>% names() %>% print()
         ## Plot
         if(plot.by %in% c('all', 'both')){
             ## Metric : Screened and Recruited
