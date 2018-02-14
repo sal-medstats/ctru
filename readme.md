@@ -4,6 +4,13 @@
 
 This repository contains R functions to facilitate work at the [Sheffield Clinical Trials Research Unit (CTRU)](https://www.shef.ac.uk/scharr/sections/dts/ctru), part of the [School of Health and Related Research (ScHARR)](http://www.sheffield.ac.uk/scharr) at [The University of Sheffield](http://www.sheffield.ac.uk/).  The intention is to share code between colleagues so that common repetitive tasks become trivial and we do not spend time solving the same problems.
 
+Readers may also find the following slides useful, they contain a host of examples and links to additional resoures...
+
+
+* [RepRoducibility](https://www.overleaf.com/read/czjppxskyxpj) Slides written by the author of this package on using R to work in a reprodcible manner.
+* [Reporting in the 21st Century](https://www.overleaf.com/read/wkbxddshhgzg) slides for a short presentation to the Medical Statistics Group on working in a reproducible manner.
+
+
 ## Installation and Usage
 
 If all you want to do is use these functions then its pretty straight-forward to install them thanks to the [`devtools`](https://cran.r-project.org/web/packages/devtools/index.html) package.  Install it from CRAN and then install this repository from GitHub...
