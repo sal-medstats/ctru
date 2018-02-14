@@ -111,5 +111,5 @@ I would advocate using [SSH Keys](https://help.github.com/articles/generating-an
 
 A few links to other resources that people might find useful...
 
-  * [[https://www.overleaf.com/read/czjppxskyxpj|RepRoducibility]] Slides written by the author of this package on using R to work in a reprodcible manner.
-  * [[https://www.overleaf.com/read/wkbxddshhgzg|Reporting in the 21st Century]] slides for a short presentation to the Medical Statistics Group on working in a reproducible manner.
+  * [[RepRoducibility](https://www.overleaf.com/read/czjppxskyxpj) Slides written by the author of this package on using R to work in a reprodcible manner.
+  * [Reporting in the 21st Century](https://www.overleaf.com/read/wkbxddshhgzg) slides for a short presentation to the Medical Statistics Group on working in a reproducible manner.
