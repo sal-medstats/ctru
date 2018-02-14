@@ -367,7 +367,7 @@ At a bare minimum your Depends should read...
 ```
 Depends:
     R (>= 3.2.3),
-    ctru (>= 0.20170612)
+    ctru (>= 0.20180208)
 ```
 
 ...but there are a large number of useful packages that you might commonly use so its worth including them.
@@ -375,7 +375,7 @@ Depends:
 ```
 Depends:
     R (>= 3.2.3),
-    ctru (>= 0.0.0.9),
+    ctru (>= 0.20180208),
     tidyverse (>= 1.1.1),
 License: GPL-2
 LazyData: true
