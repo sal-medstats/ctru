@@ -106,3 +106,9 @@ I would advocate using [SSH Keys](https://help.github.com/articles/generating-an
 * Option (default) to exponentiate model coefficients and CIs when link function is `binomial`.
 * Include ability to bootstrap regression results, particularly important for mixed models where p-values are unreliable due to uncertainty in the degrees of freedom.  Some leverage to do this via `texreg()` but `stargazer()` is a more flexible tabulating option.
 * Include all results from ITT/PP models, coefficients and CIs, p-values as part fo the returned list which can then be parsed for inclusion in text.
+
+## Links
+
+A few links to other resources that people might find useful...
+
+  * [[https://www.overleaf.com/3718320bkhvjg#/10637430/|RepRoducibility]] Slides written by the author of this package on using R to work in a reprodcible manner.
