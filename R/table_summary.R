@@ -14,7 +14,7 @@
 #' @param df Data frame.
 #' @param lookup_fields Data frame with descriptions of variables.  If working with data from Prospect this should be the imported \code{Fields} worksheet from the database specification spreadsheet(/GoogleSheet).
 #' @param id Unique identifier for individuals.
-#' @param select Variables to be summarised.
+#' @param select Variables to be summarised, these can (and mostly should) be both continuous numerical \emph{and} factor variables.  The data frame is subset for these variables and the type of each assessed so that numerical and factor variables are summarised appropriately.
 #' @param time Variable that defines the events over time, default is that used in Prospect \code{event_name}.
 #' @param group Variable that defines the grouping of participants, default is that used in Prospect \code{group}.
 #' @param nomissing Logical of whether to remove from summary of continuous variables instances where all observations are missing.
