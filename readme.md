@@ -24,6 +24,7 @@ library(ctru)
 
 You can now use the functions `read_prospect()`, `fields_prospect()` and so forth.
 
+
 ## Collaborating
 
 To collaborate in this work you will need to install [Git](https://git-scm.com) on your computer and have a [GitHub account](https://www.github.com/join).  If you're not familiar with either of these you may find the tutorial [Conversational Git](http://blog.anvard.org/conversational-git/) a useful place to start.  The [GitHub help pages](https://help.github.com/) are also excellent.
@@ -59,8 +60,9 @@ I would advocate using [SSH Keys](https://help.github.com/articles/generating-an
 
 ### `table_summary()`
 
-* Function to summarise specified measurements by specified subset.
-* N/Mean/SD/Min/Max/Median/IQR reported for specified variables for the specified grouping.
+* Function to summarise specified measurements (numerical/continuous and factor variables are handled) by the specified subset and time points.
+* For numerical/continuous variables N/Mean/SD/Min/Max/Median/IQR reported for specified variables for the specified grouping.
+* For factor variables that are reported numbers and proportions are reported for the specified variables.
 
 #### ToDo
 
@@ -113,6 +115,16 @@ I would advocate using [SSH Keys](https://help.github.com/articles/generating-an
 * Option (default) to exponentiate model coefficients and CIs when link function is `binomial`.
 * Include ability to bootstrap regression results, particularly important for mixed models where p-values are unreliable due to uncertainty in the degrees of freedom.  Some leverage to do this via `texreg()` but `stargazer()` is a more flexible tabulating option.
 * Include all results from ITT/PP models, coefficients and CIs, p-values as part fo the returned list which can then be parsed for inclusion in text.
+
+## Shiny Applications
+
+[Shiny]() application is included in this packages. A helper function (`ctru_shiny()`) is included to start the different applications.  It includes the option to specify the `display.mode` which can be useful if you wish to look at the source code in the application (use the option `display.mode = "showcase"` if so).
+
+### Sample Size Calculations
+
+A WebUI to a number of R packages which will calculate sample sizes and/or power for the specified parameters.  .  To start it run...
+
+    ctru_shiny(example = 'sample_size')
 
 ## Links
 
