@@ -4,7 +4,7 @@
 
 This repository contains R functions to facilitate work at the [Sheffield Clinical Trials Research Unit (CTRU)](https://www.shef.ac.uk/scharr/sections/dts/ctru), part of the [School of Health and Related Research (ScHARR)](http://www.sheffield.ac.uk/scharr) at [The University of Sheffield](http://www.sheffield.ac.uk/).  The intention is to share code between colleagues so that common repetitive tasks become trivial and we do not spend time solving the same problems.
 
-Readers may also find the following slides useful, they contain a host of examples and links to additional resoures...
+Readers may also find the following slides useful.  They are written by the author of this package and contain a host of examples and links to additional resoures on using R in a reproducible workflow...
 
 
 * [RepRoducibility](https://www.overleaf.com/read/czjppxskyxpj) Slides written by the author of this package on using R to work in a reprodcible manner.
