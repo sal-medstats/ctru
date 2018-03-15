@@ -26,7 +26,7 @@ body <- dashboardBody(
                                    a(href = "https://cran.r-project.org/web/packages/simglm/index.html",
                                      "simglm"),
                                    " (",
-                                   a(href = "https://github.com/christophergandrud/simGLM",
+                                   a(href = "https://github.com/lebebr01/simglm",
                                      "GitHub"),
                                    ") which allows a more complete specification of many study designs and performs simulations to determine the power of a given sample size.  It includes a Shiny WebUI application to ease the process of specifying models.")
                                  )
