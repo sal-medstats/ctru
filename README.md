@@ -26,7 +26,7 @@ You can now use the functions `read_prospect()`, `fields_prospect()` and so fort
 
 The package now includes a [Shiny](https://shiny.rstudio.com/) application (i.e. interactive Web page) that allows the calculation of sample sizes using a number of different R packages.  A helper function is included so that once you have installed and loaded the library (as describved above) you can start the application using...
 
-    run_example()
+    ctru_shiny()
 
 ## Collaborating
 
