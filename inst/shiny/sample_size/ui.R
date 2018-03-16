@@ -87,7 +87,8 @@ body <- dashboardBody(
                         ),
                 tabItem(tabName = "pwr",
                         h2("pwr"),
-                        fluidRow(width = 12,
+                        fluidRow(
+                            column(width = 6,
                                  p("Perform sample size calculations using the ",
                                    a(href = "https://cran.r-project.org/web/packages/pwr/",
                                      "pwr",
@@ -172,14 +173,20 @@ body <- dashboardBody(
                                              max     = 1,
                                              step    = 0.01,
                                              round   = FALSE,
-                                             ticks   = TRUE),
-                                 p("The sample size required is...",
-                                   textOutput("pwr"))
-                                )
+                                             ticks   = TRUE)# ,
+                                 ## column(width = 3,
+                                 ##        valueBoxOutput("pwr"))
+                                 ),
+                                 column(width = 6,
+                                        valueBoxOutput("pwr_n"),
+                                        valueBoxOutput("pwr_alpha"),
+                                        valueBoxOutput("pwr_power"))
+                            )
                         ),
                 tabItem(tabName = "samplesize",
                         h2("samplesize"),
-                        fluidRow(width = 12,
+                        fluidRow(
+                            column(width = 5,
                                  p("Perform sample size calculations using the ",
                                    a(href = "https://cran.r-project.org/web/packages/samplesize/",
                                      "samplesize",
@@ -226,7 +233,8 @@ body <- dashboardBody(
                                              choices = c("Equal"       = "equal",
                                                          "Unequal"     = "unequal")
                                              )
-                                )
+                                 )
+                            )
                         ),
                 tabItem(tabName = "TrialSize",
                         h2("TrialSize"),
@@ -245,59 +253,66 @@ body <- dashboardBody(
                         ),
                 tabItem(tabName = "clusterPower",
                         h2("clusterPower"),
-                        fluidRow(width = 12,
-                                 p("Perform sample size calculations using the ",
-                                   a(href = "https://cran.r-project.org/web/packages/clusterPower/",
-                                     "clusterPower",
-                                     target = "_blank"),
-                                   " package.  There is no package vignette."),
-                                 p("The package documentation can be viewed ",
-                                   a(href = "https://www.rdocumentation.org/packages/clusterPower/",
-                                     "online",
-                                     target = "_blank"),
-                                   ".")
-                                )
+                        fluidRow(
+                            column(width = 5,
+                                   p("Perform sample size calculations using the ",
+                                     a(href = "https://cran.r-project.org/web/packages/clusterPower/",
+                                       "clusterPower",
+                                       target = "_blank"),
+                                     " package.  There is no package vignette."),
+                                   p("The package documentation can be viewed ",
+                                     a(href = "https://www.rdocumentation.org/packages/clusterPower/",
+                                       "online",
+                                       target = "_blank"),
+                                     ".")
+                                   )
+                              )
                         ),
                 tabItem(tabName = "longpower",
                         h2("longpower"),
-                        fluidRow(width = 12,
-                                 p("Perform sample size calculations using the ",
-                                   a(href = "https://cran.r-project.org/web/packages/longpower/",
-                                     "longpower",
-                                     target = "_blank"),
-                                   " package.  A useful reference is the package vignette",
-                                   a(href = "https://cran.r-project.org/web/packages/longpower/vignettes/longpower.pdf",
-                                     "Power calculations for longitudinal data",
-                                     target = "_blank"),
+                        fluidRow(
+                            column(width = 5,
+                                   p("Perform sample size calculations using the ",
+                                     a(href = "https://cran.r-project.org/web/packages/longpower/",
+                                       "longpower",
+                                       target = "_blank"),
+                                     " package.  A useful reference is the package vignette",
+                                     a(href = "https://cran.r-project.org/web/packages/longpower/vignettes/longpower.pdf",
+                                       "Power calculations for longitudinal data",
+                                       target = "_blank"),
                                      "."),
-                                 p("The package documentation can be viewed ",
-                                   a(href = "https://www.rdocumentation.org/packages/longpower/",
-                                     "online",
-                                     target = "_blank"),
-                                   ".")
-                                )
+                                   p("The package documentation can be viewed ",
+                                     a(href = "https://www.rdocumentation.org/packages/longpower/",
+                                       "online",
+                                       target = "_blank"),
+                                     ".")
+                                   )
+                               )
                         ),
                 tabItem(tabName = "PowerTOST",
                         h2("PowerTOST"),
-                        fluidRow(width = 12,
-                                 p("Perform sample size calculations using the ",
-                                   a(href = "https://cran.r-project.org/web/packages/PowerTOST/",
-                                     "PowerTOST",
-                                     target = "_blank"),
-                                   " package for (Bio)Equivalence studies.  There is no package vignette."),
-                                 p("The package documentation can be viewed ",
-                                   a(href = "https://www.rdocumentation.org/packages/powerTOST/",
-                                     "online",
-                                     target = "_blank"),
-                                   ".")
-                                )
+                        fluidRow(
+                            column(width = 5,
+                                   p("Perform sample size calculations using the ",
+                                     a(href = "https://cran.r-project.org/web/packages/PowerTOST/",
+                                       "PowerTOST",
+                                       target = "_blank"),
+                                     " package for (Bio)Equivalence studies.  There is no package vignette."),
+                                   p("The package documentation can be viewed ",
+                                     a(href = "https://www.rdocumentation.org/packages/powerTOST/",
+                                       "online",
+                                       target = "_blank"),
+                                     ".")
+                                   )
+                              )
                         )
             )
 )
 
 ui <- dashboardPage(header,
                     side,
-                    body)
+                    body,
+                    skin = "purple")
 
 
 ## Generic sample code to copy and paste into sections above
