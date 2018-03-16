@@ -15,15 +15,18 @@ Readers may also find the following slides useful.  They are written by the auth
 
 If all you want to do is use these functions then its pretty straight-forward to install them thanks to the [`devtools`](https://cran.r-project.org/web/packages/devtools/index.html) package.  Install it from CRAN and then install this repository from GitHub...
 
-```
-install.packages('devtools')
-devtools::install_github('ns-ctru/ctru')
-## And of course load the library
-library(ctru)
-```
+    install.packages('devtools')
+    devtools::install_github('ns-ctru/ctru')
+    ## And of course load the library
+    library(ctru)
 
 You can now use the functions `read_prospect()`, `fields_prospect()` and so forth.
 
+### Shiny Application(s)
+
+The package now includes a [Shiny](https://shiny.rstudio.com/) application (i.e. interactive Web page) that allows the calculation of sample sizes using a number of different R packages.  A helper function is included so that once you have installed and loaded the library (as describved above) you can start the application using...
+
+    run_example()
 
 ## Collaborating
 
