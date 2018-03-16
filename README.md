@@ -28,6 +28,8 @@ The package now includes a [Shiny](https://shiny.rstudio.com/) application (i.e.
 
     ctru_shiny()
 
+Read more about the included Shiny applications below.
+
 ## Collaborating
 
 To collaborate in this work you will need to install [Git](https://git-scm.com) on your computer and have a [GitHub account](https://www.github.com/join).  If you're not familiar with either of these you may find the tutorial [Conversational Git](http://blog.anvard.org/conversational-git/) a useful place to start.  The [GitHub help pages](https://help.github.com/) are also excellent.
