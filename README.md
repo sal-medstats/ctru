@@ -4,7 +4,7 @@
 
 This repository contains R functions to facilitate work at the [Sheffield Clinical Trials Research Unit (CTRU)](https://www.shef.ac.uk/scharr/sections/dts/ctru), part of the [School of Health and Related Research (ScHARR)](http://www.sheffield.ac.uk/scharr) at [The University of Sheffield](http://www.sheffield.ac.uk/).  The intention is to share code between colleagues so that common repetitive tasks become trivial and we do not spend time solving the same problems.
 
-Readers may also find the following slides useful, they contain a host of examples and links to additional resoures...
+Readers may also find the following slides useful.  They are written by the author of this package and contain a host of examples and links to additional resoures on using R in a reproducible workflow...
 
 
 * [RepRoducibility](https://www.overleaf.com/read/czjppxskyxpj) Slides written by the author of this package on using R to work in a reprodcible manner.
@@ -15,14 +15,20 @@ Readers may also find the following slides useful, they contain a host of exampl
 
 If all you want to do is use these functions then its pretty straight-forward to install them thanks to the [`devtools`](https://cran.r-project.org/web/packages/devtools/index.html) package.  Install it from CRAN and then install this repository from GitHub...
 
-```
-install.packages('devtools')
-devtools::install_github('ns-ctru/ctru')
-## And of course load the library
-library(ctru)
-```
+    install.packages('devtools')
+    devtools::install_github('ns-ctru/ctru')
+    ## And of course load the library
+    library(ctru)
 
 You can now use the functions `read_prospect()`, `fields_prospect()` and so forth.
+
+### Shiny Application(s)
+
+The package now includes a [Shiny](https://shiny.rstudio.com/) application (i.e. interactive Web page) that allows the calculation of sample sizes using a number of different R packages.  A helper function is included so that once you have installed and loaded the library (as describved above) you can start the application using...
+
+    ctru_shiny()
+
+Read more about the included Shiny applications below.
 
 ## Collaborating
 
@@ -59,8 +65,9 @@ I would advocate using [SSH Keys](https://help.github.com/articles/generating-an
 
 ### `table_summary()`
 
-* Function to summarise specified measurements by specified subset.
-* N/Mean/SD/Min/Max/Median/IQR reported for specified variables for the specified grouping.
+* Function to summarise specified measurements (numerical/continuous and factor variables are handled) by the specified subset and time points.
+* For numerical/continuous variables N/Mean/SD/Min/Max/Median/IQR reported for specified variables for the specified grouping.
+* For factor variables that are reported numbers and proportions are reported for the specified variables.
 
 #### ToDo
 
@@ -113,6 +120,16 @@ I would advocate using [SSH Keys](https://help.github.com/articles/generating-an
 * Option (default) to exponentiate model coefficients and CIs when link function is `binomial`.
 * Include ability to bootstrap regression results, particularly important for mixed models where p-values are unreliable due to uncertainty in the degrees of freedom.  Some leverage to do this via `texreg()` but `stargazer()` is a more flexible tabulating option.
 * Include all results from ITT/PP models, coefficients and CIs, p-values as part fo the returned list which can then be parsed for inclusion in text.
+
+## Shiny Applications
+
+[Shiny](https://shiny.rstudio.com/) applications are included in this packages (currently n = 1). A helper function (`ctru_shiny()`) is included to start the different applications.  It includes the option to specify the `display.mode` which can be useful if you wish to look at the source code in the application (use the option `display.mode = "showcase"` if so).
+
+### Sample Size Calculations
+
+A WebUI to a number of R packages which will calculate sample sizes and/or power for the specified parameters.  .  To start it run...
+
+    ctru_shiny(example = 'sample_size')
 
 ## Links
 
