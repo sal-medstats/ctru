@@ -93,7 +93,7 @@ ggplot(randomisation,
 
 ```
 
-Once the list has been generated it can be sent to whomever is to use it.  A useful feature though is to upload it to Google Sheets for others to use and this can be acheived using the `[googlesheets](https://cran.r-project.org/web/packages/googlesheets/)` packages.  The first time you run this you will be asked to authorise and permit R/`googlesheets` to your Google Drive.  For more information on this please refer to the [googlesheets Basic Usage vignette](https://rawgit.com/jennybc/googlesheets/master/vignettes/basic-usage.html)
+Once the list has been generated it can be sent to whomever is to use it.  A useful feature though is to upload it to Google Sheets for others to use and this can be acheived using the [googlesheets](https://cran.r-project.org/web/packages/googlesheets/) package.  The first time you run this you will be asked to authorise and permit R/`googlesheets` to your Google Drive.  For more information on this please refer to the [googlesheets Basic Usage vignette](https://rawgit.com/jennybc/googlesheets/master/vignettes/basic-usage.html)
 
 ```{r upload_to_googlesheets, cache = FALSE, echo = TRUE, warnings = FALSE, results = 'hide', eval = TRUE}
 ## Write the randomisation file to CSV and upload to GoogleSheets
