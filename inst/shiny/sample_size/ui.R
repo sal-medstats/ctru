@@ -1,5 +1,7 @@
-ui <- fluidPage(
-    sidebarPanel(
+## Define Title
+title <- titlePanel("Sample Size")
+## Define Sidebar Panel
+side <- sidebarPanel(
         sliderInput(inputId = "power",
                     label   = "Power (1 - Beta)",
                     value   = 0.9,
@@ -19,7 +21,7 @@ ui <- fluidPage(
         selectInput(inputId  = "pkg",
                     label    = "Package",
                     selected = "pwr",
-                    choices  = c("pwr" = "pwr",
+                    choices  = c("pwr"          = "pwr",
                                  "samplesize"   = "samplesize",
                                  "TrialSize"    = "TrialSize",
                                  "clusterPower" = "clusterPower",
@@ -56,7 +58,7 @@ ui <- fluidPage(
                         label    = "Function from TrialSize package",
                         selected = NULL,
                         choices  = c("ANOVA - Pairwise Comparison for Multiple Sample One-Way" = "OneWayANOVA.pairwise",
-                                     "ANOVA - One-Way Pairwise Comparison" = "OneWayANOVA/PariwsieComparison",
+                                     "ANOVA - One-Way Pairwise Comparison" = "OneWayANOVA.PariwsieComparison",
                                      "ANOVA - Repeated Measures" = "ANOVA.Repeat.Measure",
                                      "Average Bioequivalence" = "ABE",
                                      "Cox Proportional Hazard Test for Equality" = "Cox.Equality",
@@ -257,8 +259,8 @@ ui <- fluidPage(
         ),
         conditionalPanel(
             condition = "input.test == 'pwr.anova.test'",
-            sliderInput(inputId = "f",
-                        label   = "Effect Size (f)",
+            sliderInput(inputId = "k",
+                        label   = "Effect Size",
                         value   = 0.2,
                         min     = 0,
                         max     = 2,
@@ -269,22 +271,134 @@ ui <- fluidPage(
                         label   = "Number of groups",
                         value   = 2,
                         min     = 0,
-                        max     = 10,
+                        max     = 100,
                         step    = 1,
                         round   = FALSE,
+                        ticks   = TRUE)
+        ),
+        conditionalPanel(
+            condition = "input.test == 'pwr.r.test'",
+            sliderInput(inputId = "r",
+                        label   = "Linear Correlation Coefficient",
+                        value   = 0.2,
+                        min     = 0,
+                        max     = 2,
+                        step    = 0.01,
+                        round   = FALSE,
                         ticks   = TRUE),
-        ) ## ,
-        ## conditionalPanel(
-        ##     condition = "input.test == 'pwr.r.test'",
-        ## ),
-        ## conditionalPanel(
-        ##     condition = "input.test == 'pwr.chisq.test'",
-        ## ),
-        ## conditionalPanel(
-        ##     condition = "input.test == 'pwr.f.test'",
-        ## )
+            selectInput(inputId  = "alternative",
+                        label    = "Alternative Hypothesis",
+                        selected = "two.sided",
+                        choices  = c("Two-Sided" = "two.sided",
+                                     "Greater"   = "greater",
+                                     "Less"      = "less"))
+        ),
+        conditionalPanel(
+            condition = "input.test == 'pwr.chisq.test'",
+            sliderInput(inputId = "w",
+                        label   = "Effect Size",
+                        value   = 0.2,
+                        min     = 0,
+                        max     = 2,
+                        step    = 0.01,
+                        round   = FALSE,
+                        ticks   = TRUE),
+            sliderInput(inputId = "df",
+                        label   = "Degrees of Freedom",
+                        value   = 1,
+                        min     = 1,
+                        max     = 80,
+                        step    = 1,
+                        round   = FALSE,
+                        ticks   = TRUE)
+        ),
+        conditionalPanel(
+            condition = "input.test == 'pwr.f2.test'",
+            sliderInput(inputId = "f2",
+                        label   = "Effect Size",
+                        value   = 0.2,
+                        min     = 0,
+                        max     = 2,
+                        step    = 0.01,
+                        round   = FALSE,
+                        ticks   = TRUE),
+            sliderInput(inputId = "u",
+                        label   = "Degrees of Freedom for Numerator",
+                        value   = 4,
+                        min     = 0,
+                        max     = 1000,
+                        step    = 1,
+                        round   = FALSE,
+                        ticks   = TRUE)
+        ),
+                  h2("ToDo"),
+                  p("This is a work in progress, completed mostly in the authors personal time for gratis.  There are a number of ways in which it can be improved, some of which are listed below."),
+                  HTML("<ul>
+                           <li> Expand dynamic sidebar to include <i>all</i> functions offered by each package.
+                           <li> Improve documentation of the site, e.g. pop-up dialog boxes when moving the mouse over input parameters.
+                           <li> Migrate the site to <a href='', target='_blank'>shinydashboard</a>.
+                           <li> Take the parameters provided and perform calculations for a range of values around these, plotting results and displaying these since the point estimates are likely to be off and its useful for researchers to know how this will impact the sample size they should be looking to obtain.
+                           <li> Include 'modules' for calculating sample sizes for the various group-sequential study design packages that are available
+                        </ul>")
+        ## ToDo - Parameters for all other functions need adding here, they take the form...
+        ##
+        ##          conditionalPanel(
+        ##              condition = "input.test == '[test]'",
+        ##              sliderInput(inputid = "[parmaeter]",
+        ##                          label   = "[label]",
+        ##                          value   = 0.2,
+        ##                          min     = 0,
+        ##                          max     = 1,
+        ##                          step    = 0.01,
+        ##                          round   = FALSE,
+        ##                          ticks   = TRUE),
+        ##              ),
+        ##              selectInput(inputId  = "[parameter]",
+        ##                          label    = "[label]",
+        ##                          selected = "[default]",
+        ##                          choices  = c("Default" = "default",
+        ##                                       "Option A"   = "optiona",
+        ##                                       "Option B"   = "optionb"))
+        ##              )
     )
-    mainPanel(
+## Define mainPanel
+main <- mainPanel(
+    fluidRow(width = 8,
+        h2("Overview"),
+        p("This site allows you to compute sample sizes for lots of study designs.  It uses a number of packages that are listed on the",
+          a(href = "https://cran.r-project.org/web/views/ClinicalTrials.html",
+            "CRAN Clinical Trials TaskView"),
+          " and is in essence simply a graphical wrapper for the various packages listed there saving the user to be familiar with ",
+          a(href = "https://www.r-project.org/",
+            "R"),
+          " and its syntax in order to perform sample size calculations.  For now only point estimates of the estimated power based on the supplied parameters are provided but in due course the site will be extended and will perform calculations around the parameters estimated and plot these graphically since there is very often uncertainty around the estimates of effect sizes and the obtained sample size will often differ from that desired due to missing data (whether thats failure to recruit sufficient participants or loss to follow-up).  Currently the packages that are supported are listed on the left.") ,
+        HTML("<ul>
+                            <li> <a href='https://cran.r-project.org/web/packages/pwr/' target='_blank'>pwr</a>
+                            <li> <a href='https://cran.r-project.org/web/packages/samplesize/' target='_blank'>samplesize</a>
+                            <li> <a href='https://cran.r-project.org/web/packages/TrialSize/' target='_blank'>TrialSize</a>
+                            <li> <a href='https://cran.r-project.org/web/packages/clusterPower/' target='_blank'>clusterPower</a>
+                            <li> <a href='https://cran.r-project.org/web/packages/longpower/' target='_blank'>longpower</a>
+                            <li> <a href='https://cran.r-project.org/web/packages/powerTOST/' target='_blank'>powerTOST</a>
+                           </ul>")
+        ),
+    fluidRow(width = 8,
 
+    ),
+    fluidRow(width = 8,
+        h2("Note..."),
+        p("Many of these calculations over-simplify the analysis, assuming a direct test of proportions, or comparison of means is made (some of the provided calculators account for study designs such as clustering and/or longitudinal analyses).  Very often analyses are far more sophisticated and include adjustments for covariates and in doing so the power of the test performed is altered.  Such factors affecting the sample size calculations performed here are not accounted for.  Users interested in a more complete and rounded approach to sample size calculations that accounts for this may be interested in simulation and are pointed towards the excellent package ",
+          a(href = "https://cran.r-project.org/web/packages/simglm/index.html",
+            "simglm"),
+          " (",
+          a(href = "https://github.com/lebebr01/simglm",
+            "GitHub"),
+          ") which allows a more complete specification of many study designs and performs simulations to determine the power of a given sample size.  It includes a Shiny WebUI application to ease the process of specifying models.  It includes several vignettes, the most relevant of which is",
+          a(href = "https://cran.r-project.org/web/packages/simglm/vignettes/Power.html",
+            "Power Analysis with simglm"),
+          ".")
     )
 )
+## Pass title, side and main to ui as a Fluid Page
+ui <- fluidPage(title,
+                side,
+                main)
