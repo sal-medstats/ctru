@@ -369,10 +369,10 @@ main <- mainPanel(
         p("This site allows you to compute sample sizes for lots of study designs.  It uses a number of packages that are listed on the",
           a(href = "https://cran.r-project.org/web/views/ClinicalTrials.html",
             "CRAN Clinical Trials TaskView"),
-          " and is in essence simply a graphical wrapper for the various packages listed there saving the user to be familiar with ",
+          " and is simply a graphical wrapper for the various packages listed there saving the user to be familiar with ",
           a(href = "https://www.r-project.org/",
             "R"),
-          " and its syntax in order to perform sample size calculations.  For now only point estimates of the estimated power based on the supplied parameters are provided but in due course the site will be extended and will perform calculations around the parameters estimated and plot these graphically since there is very often uncertainty around the estimates of effect sizes and the obtained sample size will often differ from that desired due to missing data (whether thats failure to recruit sufficient participants or loss to follow-up).  Currently the packages that are supported are listed below (links open the CRAN page in a new tab).") ,
+          " and its syntax in order to perform sample size calculations.  For now only point estimates of the estimated power based on the supplied parameters are provided (see ToDo list for possible extensions).  Currently the packages that are supported are listed below and it is recommended you read and understand each package/function so that you can provide the appropriate input (links open the CRAN page in a new tab).") ,
         HTML("<ul>
                             <li> <a href='https://cran.r-project.org/web/packages/pwr/' target='_blank'>pwr</a>
                             <li> <a href='https://cran.r-project.org/web/packages/samplesize/' target='_blank'>samplesize</a>
@@ -382,7 +382,13 @@ main <- mainPanel(
                             <li> <a href='https://cran.r-project.org/web/packages/powerTOST/' target='_blank'>powerTOST</a>
                            </ul>")
         ),
-    fluidRow(width = 8
+    fluidRow(width = 10,
+             column(width = 10,
+                    valueBoxOutput("pkg"),
+                    valueBoxOutput("n"),
+                    valueBoxOutput("alpha"),
+                    valueBoxOutput("power")
+             )
     ),
     fluidRow(width = 8,
         h2("Note..."),
