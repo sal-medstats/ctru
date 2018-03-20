@@ -112,7 +112,7 @@ gs_upload(file = file,
 
 ## Genesis
 
-This example is based on work done by other members of staff in the CTRU who have since left (namely Oscar Bortolami who derived a randomisation schedule for the [Bridging The Age Gap study](https://github.com/ns-ctru/age-gap)).  For transparency his code is included below (the original file is located at `../xdrive/PR_Age_Gap/Restricted/Randomisation/Randomisation\ list/Randomisation\ list.R`).
+This example is based on work done by other members of staff in the CTRU who have since left (namely Oscar Bortolami who derived a randomisation schedule for the [Bridging The Age Gap study](https://github.com/ns-ctru/age-gap)).  For transparency his code is included below (the original file is located at `xdrive/PR_Age_Gap/Restricted/Randomisation/Randomisation\ list/Randomisation\ list.R`).
 
     ## set working directory to load stratification lists
     setwd("N:/projects/Age Gap Restricted/Randomisation/Stratification")
