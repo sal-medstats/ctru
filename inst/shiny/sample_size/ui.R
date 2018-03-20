@@ -21,7 +21,7 @@ side <- sidebarPanel(
         selectInput(inputId  = "pkg",
                     label    = "Package",
                     selected = "pwr",
-                    choices  = c("pwr"          = "pwr",
+                    choices  = c("pwr" = "pwr",
                                  "samplesize"   = "samplesize",
                                  "TrialSize"    = "TrialSize",
                                  "clusterPower" = "clusterPower",
@@ -58,7 +58,7 @@ side <- sidebarPanel(
                         label    = "Function from TrialSize package",
                         selected = NULL,
                         choices  = c("ANOVA - Pairwise Comparison for Multiple Sample One-Way" = "OneWayANOVA.pairwise",
-                                     "ANOVA - One-Way Pairwise Comparison" = "OneWayANOVA.PariwsieComparison",
+                                     "ANOVA - One-Way Pairwise Comparison" = "OneWayANOVA.pairwiseComparison",
                                      "ANOVA - Repeated Measures" = "ANOVA.Repeat.Measure",
                                      "Average Bioequivalence" = "ABE",
                                      "Cox Proportional Hazard Test for Equality" = "Cox.Equality",
@@ -99,7 +99,7 @@ side <- sidebarPanel(
                                      ## "Sample Size Calculations for Linear Mixed Models of Rate of Change based on pilot estimates " = "lmmpower",
                                      ## "" = ""))
         ),
-        ## ToDo - Add functions from this package
+        ## ToDo - Add functions from package PowerTOST
         ## conditionalPanel(
         ##     condition = "input.pkg == 'PowerTOST'",
         ##     selectInput(inputId  = "test",
@@ -333,13 +333,14 @@ side <- sidebarPanel(
         ),
                   h2("ToDo"),
                   p("This is a work in progress, completed mostly in the authors personal time for gratis.  There are a number of ways in which it can be improved, some of which are listed below."),
-                  HTML("<ul>
+                  HTML("<ol>
+                           <li> Take the parameters provided and perform calculations for a range of values around these, plotting results and displaying these since the point estimates are likely to be off and its useful for researchers to know how this will impact the sample size they should be looking to obtain.
+                           <li> Allow users to specify mean and sd for appropriate functions and calculate effect size (Cohen's D) in the background.
                            <li> Expand dynamic sidebar to include <i>all</i> functions offered by each package.
                            <li> Improve documentation of the site, e.g. pop-up dialog boxes when moving the mouse over input parameters.
                            <li> Migrate the site to <a href='', target='_blank'>shinydashboard</a>.
-                           <li> Take the parameters provided and perform calculations for a range of values around these, plotting results and displaying these since the point estimates are likely to be off and its useful for researchers to know how this will impact the sample size they should be looking to obtain.
-                           <li> Include 'modules' for calculating sample sizes for the various group-sequential study design packages that are available
-                        </ul>")
+                           <li> Include 'modules' for calculating sample sizes for the various group-sequential study design packages that are available.
+                        </ol>")
         ## ToDo - Parameters for all other functions need adding here, they take the form...
         ##
         ##          conditionalPanel(
@@ -371,7 +372,7 @@ main <- mainPanel(
           " and is in essence simply a graphical wrapper for the various packages listed there saving the user to be familiar with ",
           a(href = "https://www.r-project.org/",
             "R"),
-          " and its syntax in order to perform sample size calculations.  For now only point estimates of the estimated power based on the supplied parameters are provided but in due course the site will be extended and will perform calculations around the parameters estimated and plot these graphically since there is very often uncertainty around the estimates of effect sizes and the obtained sample size will often differ from that desired due to missing data (whether thats failure to recruit sufficient participants or loss to follow-up).  Currently the packages that are supported are listed on the left.") ,
+          " and its syntax in order to perform sample size calculations.  For now only point estimates of the estimated power based on the supplied parameters are provided but in due course the site will be extended and will perform calculations around the parameters estimated and plot these graphically since there is very often uncertainty around the estimates of effect sizes and the obtained sample size will often differ from that desired due to missing data (whether thats failure to recruit sufficient participants or loss to follow-up).  Currently the packages that are supported are listed below (links open the CRAN page in a new tab).") ,
         HTML("<ul>
                             <li> <a href='https://cran.r-project.org/web/packages/pwr/' target='_blank'>pwr</a>
                             <li> <a href='https://cran.r-project.org/web/packages/samplesize/' target='_blank'>samplesize</a>
@@ -381,8 +382,7 @@ main <- mainPanel(
                             <li> <a href='https://cran.r-project.org/web/packages/powerTOST/' target='_blank'>powerTOST</a>
                            </ul>")
         ),
-    fluidRow(width = 8,
-
+    fluidRow(width = 8
     ),
     fluidRow(width = 8,
         h2("Note..."),
