@@ -1,6 +1,6 @@
 Package: ctru
 Title: Working with data at Sheffield Clinical Trials Research Unit
-Version: 0.20180208
+Version: 0.20180320
 Authors@R: person("Neil", "Shephard",
                   email = "n.shephard@sheffield.ac.uk",
 		  role = c("aut", "cre"),
@@ -18,7 +18,7 @@ Description: The functions contained within this package simplify some of the
     simplify such common tasks with a view to sharing code and reducing the amount
     of time and effort spent working in isolation.
 Depends:
-    R (>= 3.4.0),
+    R (>= 3.4.4),
     googlesheets (>= 0.2.2),
     Hmisc (>= 3.17-1),
     lubridate (>= 1.7.1),
@@ -27,6 +27,13 @@ Depends:
     plotly (>= 4.7.0),
     readxl (>= 1.0.0),
     reshape2 (>= 1.4.1),
+    pwr (>= 1.2-2),
+    samplesize (>= 0.2-4),
+    TrialSize (>= 1.3),
+    longpower (>= 1.0-16),
+    clusterPower (>= 0.6.111),
+    shiny (>= 1.0.5),
+    shinydashboard (>= 0.6.1),
     stargazer(>= 5.1),
     texreg (>= 1.35),
     tidyverse (>= 1.1.1),
