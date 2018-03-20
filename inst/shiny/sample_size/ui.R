@@ -331,36 +331,40 @@ side <- sidebarPanel(
                         round   = FALSE,
                         ticks   = TRUE)
         ),
-                  h2("ToDo"),
-                  p("This is a work in progress, completed mostly in the authors personal time for gratis.  There are a number of ways in which it can be improved, some of which are listed below."),
-                  HTML("<ol>
-                           <li> Take the parameters provided and perform calculations for a range of values around these, plotting results and displaying these since the point estimates are likely to be off and its useful for researchers to know how this will impact the sample size they should be looking to obtain.
-                           <li> Allow users to specify mean and sd for appropriate functions and calculate effect size (Cohen's D) in the background.
-                           <li> Expand dynamic sidebar to include <i>all</i> functions offered by each package.
-                           <li> Improve documentation of the site, e.g. pop-up dialog boxes when moving the mouse over input parameters.
-                           <li> Migrate the site to <a href='', target='_blank'>shinydashboard</a>.
-                           <li> Include 'modules' for calculating sample sizes for the various group-sequential study design packages that are available.
-                        </ol>")
-        ## ToDo - Parameters for all other functions need adding here, they take the form...
-        ##
-        ##          conditionalPanel(
-        ##              condition = "input.test == '[test]'",
-        ##              sliderInput(inputid = "[parmaeter]",
-        ##                          label   = "[label]",
-        ##                          value   = 0.2,
-        ##                          min     = 0,
-        ##                          max     = 1,
-        ##                          step    = 0.01,
-        ##                          round   = FALSE,
-        ##                          ticks   = TRUE),
-        ##              ),
-        ##              selectInput(inputId  = "[parameter]",
-        ##                          label    = "[label]",
-        ##                          selected = "[default]",
-        ##                          choices  = c("Default" = "default",
-        ##                                       "Option A"   = "optiona",
-        ##                                       "Option B"   = "optionb"))
-        ##              )
+    h2("ToDo"),
+    p("This is a work in progress, completed mostly in the authors personal time for gratis.  There are a number of ways in which it can be improved, some of which are listed below."),
+    HTML("<ol>
+            <li> Take the parameters provided and perform calculations for a range of values around these, plotting results and displaying these since the point estimates are likely to be off and its useful for researchers to know how this will impact the sample size they should be looking to obtain.
+            <li> Allow users to specify mean and sd for appropriate functions and calculate effect size (Cohen's D) in the background.
+            <li> Expand dynamic sidebar to include <i>all</i> functions offered by each package.
+            <li> Improve documentation of the site, e.g. pop-up dialog boxes when moving the mouse over input parameters.
+            <li> Migrate the site to <a href='', target='_blank'>shinydashboard</a>.
+            <li> Include 'modules' for calculating sample sizes for the various group-sequential study design packages that are available.
+          </ol>"),
+    p("This application is part of the ",
+      a(href = "https://github.com/ns-ctru/ctru",
+        "ctru R package"),
+      ".")
+    ## ToDo - Parameters for all other functions need adding here, they take the form...
+    ##
+    ##          conditionalPanel(
+    ##              condition = "input.test == '[test]'",
+    ##              sliderInput(inputid = "[parmaeter]",
+    ##                          label   = "[label]",
+    ##                          value   = 0.2,
+    ##                          min     = 0,
+    ##                          max     = 1,
+    ##                          step    = 0.01,
+    ##                          round   = FALSE,
+    ##                          ticks   = TRUE),
+    ##              ),
+    ##              selectInput(inputId  = "[parameter]",
+    ##                          label    = "[label]",
+    ##                          selected = "[default]",
+    ##                          choices  = c("Default" = "default",
+    ##                                       "Option A"   = "optiona",
+    ##                                       "Option B"   = "optionb"))
+    ##              )
     )
 ## Define mainPanel
 main <- mainPanel(
