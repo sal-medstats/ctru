@@ -365,6 +365,12 @@ side <- sidebarPanel(
     ##                                       "Option A"   = "optiona",
     ##                                       "Option B"   = "optionb"))
     ##              )
+    ##
+    ## ...where [test] should reflect the function that is being used and [parameter] should
+    ## be the name of the argument to the function.  [label] should be a textual description of
+    ## the field that is being completed.  For selectInput() the input is an option of those listed
+    ## by the function, these should have the form
+    ## "choices = c("Descriptive label shown in Shiny" = "option.in.package")
     )
 ## Define mainPanel
 main <- mainPanel(
@@ -387,6 +393,7 @@ main <- mainPanel(
                            </ul>")
         ),
     fluidRow(width = 10,
+             h2("Results"),
              column(width = 10,
                     valueBoxOutput("pkg"),
                     valueBoxOutput("n"),
