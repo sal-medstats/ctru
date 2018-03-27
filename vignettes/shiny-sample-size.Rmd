@@ -1,0 +1,35 @@
+---
+title: "Shiny Sample Size Application"
+author: "n.shephard@sheffield.ac.uk"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{CTRU R Functions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Overview
+
+The [ctru](https://github.com/ns-ctru/ctru/) includes a [Shiny](https://shiny.rstudio.com/) application that is a front-end for a number of [sample-size](https://en.wikipedia.org/wiki/Sample_size_determination) packages (most of which are detailed in the [Clincial Trials CRAN TaskView](https://cran.r-project.org/web/views/ClinicalTrials.html)).  It provides a simple WebUI (Web-based User Interface) method for performing sample size calculations for a range of study designs as implemented in the various packages.
+
+This document details usage of the Shiny app as it stands and how to go about extending it to include more packages and functions.
+
+# Installation
+
+You need to install and load the [ctru](https://github.com/ns-ctru/ctru/) package on your computer.
+
+    library(devtools)
+	install_github("ns-ctru/ctru")
+	library(ctru)
+
+# Usage
+
+You can now run the application on your computer by running the included function with the `sample_size` argument...
+
+	library(ctru)
+    ctru::ctru_shiny(example = "sample_size")
+
+A new tab in your default web-browser will open with the Shiny application running.  If you receive any error messages about packages not being available please take the time to submit a [pull-request](https://help.github.com/articles/creating-a-pull-request/) to include the package in the dependencies listed in the `DESCRIPTION` file.
+
+# Extending
